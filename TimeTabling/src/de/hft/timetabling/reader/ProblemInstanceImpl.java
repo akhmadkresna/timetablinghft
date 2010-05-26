@@ -2,7 +2,7 @@ package de.hft.timetabling.reader;
 
 import de.hft.timetabling.common.IProblemInstance;
 
-final class ProblemInstance implements IProblemInstance {
+final class ProblemInstanceImpl implements IProblemInstance {
 
 	private String name;
 

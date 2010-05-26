@@ -14,7 +14,7 @@ public final class Reader implements IReaderService {
 
 	@Override
 	public IProblemInstance readInstance(String fileName) throws IOException {
-		ProblemInstance instance = new ProblemInstance();
+		ProblemInstanceImpl instance = new ProblemInstanceImpl();
 		readFile(fileName, instance);
 		return instance;
 	}
@@ -30,7 +30,7 @@ public final class Reader implements IReaderService {
 		return bufferedReader;
 	}
 
-	private void readFile(String fileName, ProblemInstance instance)
+	private void readFile(String fileName, ProblemInstanceImpl instance)
 			throws IOException {
 
 		BufferedReader bufferedReader = getBufferedReader(fileName);
@@ -45,7 +45,7 @@ public final class Reader implements IReaderService {
 	}
 
 	private void readGeneralInformation(String line, int lineNumber,
-			ProblemInstance instance) {
+			ProblemInstanceImpl instance) {
 
 		String value = line.substring(line.lastIndexOf(":") + 2);
 		switch (lineNumber) {
