@@ -12,7 +12,7 @@ import de.hft.timetabling.reader.Reader;
 import de.hft.timetabling.services.IReaderService;
 import de.hft.timetabling.services.ServiceLocator;
 
-public class Main {
+public final class Main {
 
 	public static void main(String[] args) {
 		ServiceLocator.getInstance().setReaderService(new Reader());
