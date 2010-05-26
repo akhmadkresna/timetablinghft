@@ -56,7 +56,7 @@ public final class Reader implements IReaderService {
 					} else if (line.equals("CURRICULA:")) {
 						readRooms = false;
 						readCurricula = true;
-					} else if (line.equals("UNAVAILABILITY_CONSTRAINTS")) {
+					} else if (line.equals("UNAVAILABILITY_CONSTRAINTS:")) {
 						readCurricula = false;
 						readUnavailabilityConstraints = true;
 					} else {
@@ -83,7 +83,20 @@ public final class Reader implements IReaderService {
 	private void readUnavailabilityConstraints(String line,
 			ProblemInstanceImpl instance) {
 
-		// TODO AW
+		StringTokenizer tokenizer = new StringTokenizer(line, " ");
+		String courseId = tokenizer.nextToken();
+		ICourse course = instance.getCourseById(courseId);
+
+		int day = Integer.valueOf(tokenizer.nextToken());
+		int period = Integer.valueOf(tokenizer.nextToken());
+		int periodsPerDay = instance.getPeriodsPerDay();
+		int convertedPeriod = convertPeriod(day, period, periodsPerDay);
+
+		instance.addUnavailabilityConstraint(course, convertedPeriod);
+	}
+
+	private int convertPeriod(int day, int period, int periodsPerDay) {
+		return period + day * periodsPerDay;
 	}
 
 	private void readCurriculum(String line, ProblemInstanceImpl instance) {
@@ -92,7 +105,7 @@ public final class Reader implements IReaderService {
 		int numberOfCourses = Integer.valueOf(tokenizer.nextToken());
 		CurriculumImpl curriculum = new CurriculumImpl(id, numberOfCourses);
 
-		for (int i = 2; i < tokenizer.countTokens(); i++) {
+		for (int i = 0; i <= tokenizer.countTokens() + 1; i++) {
 			String courseId = tokenizer.nextToken();
 			ICourse memberCourse = instance.getCourseById(courseId);
 			curriculum.addCourse(memberCourse);

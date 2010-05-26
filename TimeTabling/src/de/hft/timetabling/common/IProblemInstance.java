@@ -1,6 +1,7 @@
 package de.hft.timetabling.common;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IProblemInstance {
 
@@ -25,5 +26,7 @@ public interface IProblemInstance {
 	List<ICurriculum> getCurricula();
 
 	ICourse getCourseById(String courseId);
+
+	Map<ICourse, List<Integer>> getUnavailabilityConstraints();
 
 }

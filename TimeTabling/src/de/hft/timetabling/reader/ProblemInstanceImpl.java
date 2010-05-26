@@ -2,7 +2,9 @@ package de.hft.timetabling.reader;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
@@ -25,16 +27,19 @@ final class ProblemInstanceImpl implements IProblemInstance {
 
 	private int periodsPerDay;
 
-	private List<ICourse> courses;
+	private final List<ICourse> courses;
 
-	private List<IRoom> rooms;
+	private final List<IRoom> rooms;
 
-	private List<ICurriculum> curricula;
+	private final List<ICurriculum> curricula;
+
+	private final Map<ICourse, List<Integer>> unavailabilityConstraints;
 
 	public ProblemInstanceImpl() {
 		courses = new ArrayList<ICourse>();
 		rooms = new ArrayList<IRoom>();
 		curricula = new ArrayList<ICurriculum>();
+		unavailabilityConstraints = new HashMap<ICourse, List<Integer>>();
 	}
 
 	@Override
@@ -112,6 +117,15 @@ final class ProblemInstanceImpl implements IProblemInstance {
 		curricula.add(curriculum);
 	}
 
+	void addUnavailabilityConstraint(ICourse course, int period) {
+		List<Integer> periodsForCourse = unavailabilityConstraints.get(course);
+		if (periodsForCourse == null) {
+			periodsForCourse = new ArrayList<Integer>();
+		}
+		periodsForCourse.add(period);
+		unavailabilityConstraints.put(course, periodsForCourse);
+	}
+
 	@Override
 	public List<ICourse> getCourses() {
 		return Collections.unmodifiableList(courses);
@@ -125,6 +139,11 @@ final class ProblemInstanceImpl implements IProblemInstance {
 	@Override
 	public List<IRoom> getRooms() {
 		return Collections.unmodifiableList(rooms);
+	}
+
+	@Override
+	public Map<ICourse, List<Integer>> getUnavailabilityConstraints() {
+		return Collections.unmodifiableMap(unavailabilityConstraints);
 	}
 
 	@Override
