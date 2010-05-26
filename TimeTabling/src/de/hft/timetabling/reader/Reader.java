@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import de.hft.timetabling.common.ICourse;
@@ -17,9 +19,60 @@ public final class Reader implements IReaderService {
 
 	@Override
 	public IProblemInstance readInstance(String fileName) throws IOException {
-		ProblemInstanceImpl instance = new ProblemInstanceImpl();
-		readFile(fileName, instance);
+		List<String> lines = readFile(fileName);
+		ProblemInstanceImpl instance = readGeneralInformation(lines);
+		readContents(lines, instance);
 		return instance;
+	}
+
+	private void readContents(List<String> lines, ProblemInstanceImpl instance) {
+		boolean readCourses = false;
+		boolean readRooms = false;
+		boolean readCurricula = false;
+		boolean readUnavailabilityConstraints = false;
+
+		for (int i = 8; i < lines.size() - 2; i++) {
+			String line = lines.get(i);
+			if ((line.length() > 0)) {
+				if (line.equals("COURSES:")) {
+					readCourses = true;
+				} else if (line.equals("ROOMS:")) {
+					readCourses = false;
+					readRooms = true;
+				} else if (line.equals("CURRICULA:")) {
+					readRooms = false;
+					readCurricula = true;
+				} else if (line.equals("UNAVAILABILITY_CONSTRAINTS:")) {
+					readCurricula = false;
+					readUnavailabilityConstraints = true;
+				} else {
+					if (readCourses) {
+						readCourse(line, instance);
+					}
+					if (readRooms) {
+						readRoom(line, instance);
+					}
+					if (readCurricula) {
+						readCurriculum(line, instance);
+					}
+					if (readUnavailabilityConstraints) {
+						readUnavailabilityConstraint(line, instance);
+					}
+				}
+			}
+		}
+	}
+
+	private List<String> readFile(String fileName) throws IOException {
+		List<String> lines = new ArrayList<String>();
+		BufferedReader bufferedReader = getBufferedReader(fileName);
+		String line = bufferedReader.readLine();
+		while (line != null) {
+			lines.add(line);
+			line = bufferedReader.readLine();
+		}
+		bufferedReader.close();
+		return lines;
 	}
 
 	private BufferedReader getBufferedReader(String fileName)
@@ -33,54 +86,28 @@ public final class Reader implements IReaderService {
 		return bufferedReader;
 	}
 
-	private void readFile(String fileName, ProblemInstanceImpl instance)
-			throws IOException {
+	private ProblemInstanceImpl readGeneralInformation(List<String> lines) {
+		String name = getGeneralInfoValue(lines.get(0));
+		int numberOfCourses = Integer
+				.valueOf(getGeneralInfoValue(lines.get(1)));
+		int numberOfRooms = Integer.valueOf(getGeneralInfoValue(lines.get(2)));
+		int numberOfDays = Integer.valueOf(getGeneralInfoValue(lines.get(3)));
+		int periodsPerDay = Integer.valueOf(getGeneralInfoValue(lines.get(4)));
+		int numberOfCurricula = Integer.valueOf(getGeneralInfoValue(lines
+				.get(5)));
+		int numberOfConstraints = Integer.valueOf(getGeneralInfoValue(lines
+				.get(6)));
 
-		boolean readCourses = false;
-		boolean readRooms = false;
-		boolean readCurricula = false;
-		boolean readUnavailabilityConstraints = false;
-
-		BufferedReader bufferedReader = getBufferedReader(fileName);
-		String line = bufferedReader.readLine();
-		for (int i = 0; line != null; i++) {
-			if (i <= 6) {
-				readGeneralInformation(line, i, instance);
-			} else {
-				if ((line.length() > 0) && !(line.equals("END."))) {
-					if (line.equals("COURSES:")) {
-						readCourses = true;
-					} else if (line.equals("ROOMS:")) {
-						readCourses = false;
-						readRooms = true;
-					} else if (line.equals("CURRICULA:")) {
-						readRooms = false;
-						readCurricula = true;
-					} else if (line.equals("UNAVAILABILITY_CONSTRAINTS:")) {
-						readCurricula = false;
-						readUnavailabilityConstraints = true;
-					} else {
-						if (readCourses) {
-							readCourse(line, instance);
-						}
-						if (readRooms) {
-							readRoom(line, instance);
-						}
-						if (readCurricula) {
-							readCurriculum(line, instance);
-						}
-						if (readUnavailabilityConstraints) {
-							readUnavailabilityConstraints(line, instance);
-						}
-					}
-				}
-			}
-			line = bufferedReader.readLine();
-		}
-		bufferedReader.close();
+		return new ProblemInstanceImpl(name, numberOfCourses, numberOfRooms,
+				numberOfDays, periodsPerDay, numberOfCurricula,
+				numberOfConstraints);
 	}
 
-	private void readUnavailabilityConstraints(String line,
+	private String getGeneralInfoValue(String line) {
+		return line.substring(line.lastIndexOf(":") + 2);
+	}
+
+	private void readUnavailabilityConstraint(String line,
 			ProblemInstanceImpl instance) {
 
 		StringTokenizer tokenizer = new StringTokenizer(line, " ");
@@ -132,35 +159,6 @@ public final class Reader implements IReaderService {
 		ICourse course = new CourseImpl(id, minWorkingDays, numberOfLectures,
 				numberOfStudents, teacher);
 		instance.addCourse(course);
-	}
-
-	private void readGeneralInformation(String line, int lineNumber,
-			ProblemInstanceImpl instance) {
-
-		String value = line.substring(line.lastIndexOf(":") + 2);
-		switch (lineNumber) {
-		case 0:
-			instance.setName(value);
-			break;
-		case 1:
-			instance.setNumberOfCourses(Integer.valueOf(value));
-			break;
-		case 2:
-			instance.setNumberOfRooms(Integer.valueOf(value));
-			break;
-		case 3:
-			instance.setNumberOfDays(Integer.valueOf(value));
-			break;
-		case 4:
-			instance.setPeriodsPerDay(Integer.valueOf(value));
-			break;
-		case 5:
-			instance.setNumberOfCurricula(Integer.valueOf(value));
-			break;
-		case 6:
-			instance.setNumberOfConstraints(Integer.valueOf(value));
-			break;
-		}
 	}
 
 	@Override

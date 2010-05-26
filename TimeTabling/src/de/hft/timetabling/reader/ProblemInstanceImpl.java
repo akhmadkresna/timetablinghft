@@ -13,19 +13,19 @@ import de.hft.timetabling.common.IRoom;
 
 final class ProblemInstanceImpl implements IProblemInstance {
 
-	private String name;
+	private final String name;
 
-	private int numberOfConstraints;
+	private final int numberOfConstraints;
 
-	private int numberOfCourses;
+	private final int numberOfCourses;
 
-	private int numberOfCurricula;
+	private final int numberOfCurricula;
 
-	private int numberOfDays;
+	private final int numberOfDays;
 
-	private int numberOfRooms;
+	private final int numberOfRooms;
 
-	private int periodsPerDay;
+	private final int periodsPerDay;
 
 	private final List<ICourse> courses;
 
@@ -35,7 +35,18 @@ final class ProblemInstanceImpl implements IProblemInstance {
 
 	private final Map<ICourse, List<Integer>> unavailabilityConstraints;
 
-	public ProblemInstanceImpl() {
+	public ProblemInstanceImpl(String name, int numberOfCourses,
+			int numberOfRooms, int numberOfDays, int periodsPerDay,
+			int numberOfCurricula, int numberOfConstraints) {
+
+		this.name = name;
+		this.numberOfCourses = numberOfCourses;
+		this.numberOfRooms = numberOfRooms;
+		this.numberOfDays = numberOfDays;
+		this.periodsPerDay = periodsPerDay;
+		this.numberOfCurricula = numberOfCurricula;
+		this.numberOfConstraints = numberOfConstraints;
+
 		courses = new ArrayList<ICourse>();
 		rooms = new ArrayList<IRoom>();
 		curricula = new ArrayList<ICurriculum>();
@@ -75,34 +86,6 @@ final class ProblemInstanceImpl implements IProblemInstance {
 	@Override
 	public int getPeriodsPerDay() {
 		return periodsPerDay;
-	}
-
-	void setName(String name) {
-		this.name = name;
-	}
-
-	void setNumberOfConstraints(int numberOfConstraints) {
-		this.numberOfConstraints = numberOfConstraints;
-	}
-
-	void setNumberOfCourses(int numberOfCourses) {
-		this.numberOfCourses = numberOfCourses;
-	}
-
-	void setNumberOfCurricula(int numberOfCurricula) {
-		this.numberOfCurricula = numberOfCurricula;
-	}
-
-	void setNumberOfDays(int numberOfDays) {
-		this.numberOfDays = numberOfDays;
-	}
-
-	void setNumberOfRooms(int numberOfRooms) {
-		this.numberOfRooms = numberOfRooms;
-	}
-
-	void setPeriodsPerDay(int periodsPerDay) {
-		this.periodsPerDay = periodsPerDay;
 	}
 
 	void addCourse(ICourse course) {
