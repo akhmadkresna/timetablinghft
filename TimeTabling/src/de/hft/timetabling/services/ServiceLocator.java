@@ -18,7 +18,7 @@ public final class ServiceLocator {
 
 	public IOutputService getOutputService() {
 		if (outputService == null) {
-			throw new RuntimeException("Output service available.");
+			throw new RuntimeException("Output service not available.");
 		}
 		return outputService;
 	}
