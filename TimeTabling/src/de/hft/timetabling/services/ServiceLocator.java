@@ -38,4 +38,9 @@ public final class ServiceLocator {
 		this.readerService = readerService;
 	}
 
+	@Override
+	public String toString() {
+		return "Service Locator";
+	}
+
 }
