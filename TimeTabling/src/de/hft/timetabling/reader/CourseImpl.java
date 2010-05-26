@@ -54,10 +54,6 @@ final class CourseImpl implements ICourse {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + minWorkingDays;
-		result = prime * result + numberOfLectures;
-		result = prime * result + numberOfStudents;
-		result = prime * result + ((teacher == null) ? 0 : teacher.hashCode());
 		return result;
 	}
 
@@ -78,22 +74,6 @@ final class CourseImpl implements ICourse {
 				return false;
 			}
 		} else if (!id.equals(other.id)) {
-			return false;
-		}
-		if (minWorkingDays != other.minWorkingDays) {
-			return false;
-		}
-		if (numberOfLectures != other.numberOfLectures) {
-			return false;
-		}
-		if (numberOfStudents != other.numberOfStudents) {
-			return false;
-		}
-		if (teacher == null) {
-			if (other.teacher != null) {
-				return false;
-			}
-		} else if (!teacher.equals(other.teacher)) {
 			return false;
 		}
 		return true;

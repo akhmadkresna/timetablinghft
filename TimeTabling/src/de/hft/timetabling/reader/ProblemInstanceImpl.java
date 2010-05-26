@@ -157,6 +157,97 @@ final class ProblemInstanceImpl implements IProblemInstance {
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((courses == null) ? 0 : courses.hashCode());
+		result = prime * result
+				+ ((curricula == null) ? 0 : curricula.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + numberOfConstraints;
+		result = prime * result + numberOfCourses;
+		result = prime * result + numberOfCurricula;
+		result = prime * result + numberOfDays;
+		result = prime * result + numberOfRooms;
+		result = prime * result + periodsPerDay;
+		result = prime * result + ((rooms == null) ? 0 : rooms.hashCode());
+		result = prime
+				* result
+				+ ((unavailabilityConstraints == null) ? 0
+						: unavailabilityConstraints.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		ProblemInstanceImpl other = (ProblemInstanceImpl) obj;
+		if (courses == null) {
+			if (other.courses != null) {
+				return false;
+			}
+		} else if (!courses.equals(other.courses)) {
+			return false;
+		}
+		if (curricula == null) {
+			if (other.curricula != null) {
+				return false;
+			}
+		} else if (!curricula.equals(other.curricula)) {
+			return false;
+		}
+		if (name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!name.equals(other.name)) {
+			return false;
+		}
+		if (numberOfConstraints != other.numberOfConstraints) {
+			return false;
+		}
+		if (numberOfCourses != other.numberOfCourses) {
+			return false;
+		}
+		if (numberOfCurricula != other.numberOfCurricula) {
+			return false;
+		}
+		if (numberOfDays != other.numberOfDays) {
+			return false;
+		}
+		if (numberOfRooms != other.numberOfRooms) {
+			return false;
+		}
+		if (periodsPerDay != other.periodsPerDay) {
+			return false;
+		}
+		if (rooms == null) {
+			if (other.rooms != null) {
+				return false;
+			}
+		} else if (!rooms.equals(other.rooms)) {
+			return false;
+		}
+		if (unavailabilityConstraints == null) {
+			if (other.unavailabilityConstraints != null) {
+				return false;
+			}
+		} else if (!unavailabilityConstraints
+				.equals(other.unavailabilityConstraints)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
 	public String toString() {
 		return "Problem Instance: " + name;
 	}

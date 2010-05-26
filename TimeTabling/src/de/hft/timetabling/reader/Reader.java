@@ -163,4 +163,9 @@ public final class Reader implements IReaderService {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "Reader";
+	}
+
 }
