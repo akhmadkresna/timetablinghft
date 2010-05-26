@@ -10,17 +10,17 @@ public final class ServiceLocator {
 
 	private IReaderService readerService;
 
-	private IOutputService outputService;
+	private IWriterService writerService;
 
 	private ServiceLocator() {
 		// Singleton constructor.
 	}
 
-	public IOutputService getOutputService() {
-		if (outputService == null) {
-			throw new RuntimeException("Output service not available.");
+	public IWriterService getWriterService() {
+		if (writerService == null) {
+			throw new RuntimeException("Writer service not available.");
 		}
-		return outputService;
+		return writerService;
 	}
 
 	public IReaderService getReaderService() {
@@ -30,8 +30,8 @@ public final class ServiceLocator {
 		return readerService;
 	}
 
-	public void setOutputService(IOutputService outputService) {
-		this.outputService = outputService;
+	public void setOutputService(IWriterService outputService) {
+		writerService = outputService;
 	}
 
 	public void setReaderService(IReaderService readerService) {
