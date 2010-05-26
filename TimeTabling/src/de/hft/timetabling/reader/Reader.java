@@ -6,8 +6,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
+import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
+import de.hft.timetabling.common.IRoom;
 import de.hft.timetabling.services.IReaderService;
 
 public final class Reader implements IReaderService {
@@ -33,15 +36,89 @@ public final class Reader implements IReaderService {
 	private void readFile(String fileName, ProblemInstanceImpl instance)
 			throws IOException {
 
+		boolean readCourses = false;
+		boolean readRooms = false;
+		boolean readCurricula = false;
+		boolean readUnavailabilityConstraints = false;
+
 		BufferedReader bufferedReader = getBufferedReader(fileName);
 		String line = bufferedReader.readLine();
 		for (int i = 0; line != null; i++) {
 			if (i <= 6) {
 				readGeneralInformation(line, i, instance);
+			} else {
+				if ((line.length() > 0) && !(line.equals("END."))) {
+					if (line.equals("COURSES:")) {
+						readCourses = true;
+					} else if (line.equals("ROOMS:")) {
+						readCourses = false;
+						readRooms = true;
+					} else if (line.equals("CURRICULA:")) {
+						readRooms = false;
+						readCurricula = true;
+					} else if (line.equals("UNAVAILABILITY_CONSTRAINTS")) {
+						readCurricula = false;
+						readUnavailabilityConstraints = true;
+					} else {
+						if (readCourses) {
+							readCourse(line, instance);
+						}
+						if (readRooms) {
+							readRoom(line, instance);
+						}
+						if (readCurricula) {
+							readCurriculum(line, instance);
+						}
+						if (readUnavailabilityConstraints) {
+							readUnavailabilityConstraints(line, instance);
+						}
+					}
+				}
 			}
 			line = bufferedReader.readLine();
 		}
 		bufferedReader.close();
+	}
+
+	private void readUnavailabilityConstraints(String line,
+			ProblemInstanceImpl instance) {
+
+		// TODO AW
+	}
+
+	private void readCurriculum(String line, ProblemInstanceImpl instance) {
+		StringTokenizer tokenizer = new StringTokenizer(line, " ");
+		String id = tokenizer.nextToken();
+		int numberOfCourses = Integer.valueOf(tokenizer.nextToken());
+		CurriculumImpl curriculum = new CurriculumImpl(id, numberOfCourses);
+
+		for (int i = 2; i < tokenizer.countTokens(); i++) {
+			String courseId = tokenizer.nextToken();
+			ICourse memberCourse = instance.getCourseById(courseId);
+			curriculum.addCourse(memberCourse);
+		}
+
+		instance.addCurriculum(curriculum);
+	}
+
+	private void readRoom(String line, ProblemInstanceImpl instance) {
+		StringTokenizer tokenizer = new StringTokenizer(line, " ");
+		String id = tokenizer.nextToken();
+		int capacity = Integer.valueOf(tokenizer.nextToken());
+		IRoom room = new RoomImpl(id, capacity);
+		instance.addRoom(room);
+	}
+
+	private void readCourse(String line, ProblemInstanceImpl instance) {
+		StringTokenizer tokenizer = new StringTokenizer(line, " ");
+		String id = tokenizer.nextToken();
+		String teacher = tokenizer.nextToken();
+		int numberOfLectures = Integer.valueOf(tokenizer.nextToken());
+		int minWorkingDays = Integer.valueOf(tokenizer.nextToken());
+		int numberOfStudents = Integer.valueOf(tokenizer.nextToken());
+		ICourse course = new CourseImpl(id, minWorkingDays, numberOfLectures,
+				numberOfStudents, teacher);
+		instance.addCourse(course);
 	}
 
 	private void readGeneralInformation(String line, int lineNumber,

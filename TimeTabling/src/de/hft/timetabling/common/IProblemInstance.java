@@ -1,5 +1,7 @@
 package de.hft.timetabling.common;
 
+import java.util.List;
+
 public interface IProblemInstance {
 
 	String getName();
@@ -15,5 +17,13 @@ public interface IProblemInstance {
 	int getNumberOfRooms();
 
 	int getPeriodsPerDay();
+
+	List<ICourse> getCourses();
+
+	List<IRoom> getRooms();
+
+	List<ICurriculum> getCurricula();
+
+	ICourse getCourseById(String courseId);
 
 }
