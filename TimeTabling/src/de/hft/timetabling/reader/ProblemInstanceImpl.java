@@ -125,8 +125,12 @@ final class ProblemInstanceImpl implements IProblemInstance {
 	}
 
 	@Override
-	public Map<ICourse, List<Integer>> getUnavailabilityConstraints() {
-		return Collections.unmodifiableMap(unavailabilityConstraints);
+	public List<Integer> getUnavailabilityConstraints(ICourse course) {
+		List<Integer> constraints = unavailabilityConstraints.get(course);
+		if (constraints != null) {
+			return Collections.unmodifiableList(constraints);
+		}
+		return new ArrayList<Integer>(0);
 	}
 
 	@Override

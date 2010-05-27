@@ -2,7 +2,6 @@ package de.hft.timetabling.main;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
@@ -77,15 +76,16 @@ public final class Main {
 		System.out.println("");
 
 		System.out.println("UNAVAILABILITY CONSTRAINTS");
-		Map<ICourse, List<Integer>> unavailabilityConstraints = problemInstance
-				.getUnavailabilityConstraints();
-		for (ICourse course : unavailabilityConstraints.keySet()) {
-			System.out.print(course.getId());
-			for (Integer forbiddenPeriod : unavailabilityConstraints
-					.get(course)) {
-				System.out.print(" " + forbiddenPeriod);
+		for (ICourse course : problemInstance.getCourses()) {
+			List<Integer> unavailabilityConstraints = problemInstance
+					.getUnavailabilityConstraints(course);
+			if (unavailabilityConstraints.size() > 0) {
+				System.out.print(course.getId());
+				for (Integer forbiddenPeriod : unavailabilityConstraints) {
+					System.out.print(" " + forbiddenPeriod);
+				}
+				System.out.print("\n");
 			}
-			System.out.print("\n");
 		}
 	}
 }
