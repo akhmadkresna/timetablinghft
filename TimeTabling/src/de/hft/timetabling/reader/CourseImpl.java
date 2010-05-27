@@ -1,6 +1,6 @@
 package de.hft.timetabling.reader;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
@@ -60,7 +60,7 @@ final class CourseImpl implements ICourse {
 
 	@Override
 	public Set<ICurriculum> getCurricula() {
-		Set<ICurriculum> curricula = new HashSet<ICurriculum>();
+		Set<ICurriculum> curricula = new LinkedHashSet<ICurriculum>();
 		for (ICurriculum curriculum : problemInstance.getCurricula()) {
 			if (curriculum.containsCourse(this)) {
 				curricula.add(curriculum);
