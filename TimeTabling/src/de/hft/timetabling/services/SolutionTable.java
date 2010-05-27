@@ -5,8 +5,22 @@ import java.util.Map;
 
 import de.hft.timetabling.common.ISolution;
 
+/**
+ * Implementation of the solution table service.
+ * 
+ * @author Alexander Weickmann
+ * 
+ * @see ISolutionTableService
+ */
 public final class SolutionTable implements ISolutionTableService {
 
+	/** Defines how many solution are held in the solution table. */
+	private static final int TABLE_SIZE = 10;
+
+	/**
+	 * The solution table is implemented as a map which assigns a unique number
+	 * to each solution.
+	 */
 	private final Map<Integer, SolutionVote> solutionTable;
 
 	private SolutionVote bestSolution;
@@ -39,6 +53,8 @@ public final class SolutionTable implements ISolutionTableService {
 			throw new RuntimeException("This solution was already voted.");
 		}
 		solutionVote.setVoteSum(vote);
+
+		// Update best solution if necessary.
 		if ((bestSolution == null) || (bestSolution.getVoteSum() < vote)) {
 			bestSolution = new SolutionVote(solution, vote);
 		}
@@ -49,6 +65,10 @@ public final class SolutionTable implements ISolutionTableService {
 		return getSolutionVoteForSolution(solution).getVoteSum();
 	}
 
+	/**
+	 * Returns the internal data structure used to associate solutions with
+	 * votes for the given solution instance.
+	 */
 	private SolutionVote getSolutionVoteForSolution(ISolution solution) {
 		for (Integer solutionNumber : solutionTable.keySet()) {
 			SolutionVote solutionVote = solutionTable.get(solutionNumber);
@@ -59,13 +79,25 @@ public final class SolutionTable implements ISolutionTableService {
 		throw new RuntimeException("Solution not found in solution table.");
 	}
 
+	/**
+	 * Assures that the given solution number is within the valid range.
+	 */
 	private void checkSolutionNumber(int solutionNumber) {
-		if ((solutionNumber < 0) || (solutionNumber > 9)) {
+		if ((solutionNumber < 0) || (solutionNumber >= TABLE_SIZE)) {
 			throw new IndexOutOfBoundsException(
-					"Solution table numbers only range from 0 to 9.");
+					"Solution table numbers only range from 0 to "
+							+ (TABLE_SIZE - 1) + ".");
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "Solution Table";
+	}
+
+	/**
+	 * Used to associate a given solution with a vote sum.
+	 */
 	private static class SolutionVote {
 
 		private final ISolution solution;

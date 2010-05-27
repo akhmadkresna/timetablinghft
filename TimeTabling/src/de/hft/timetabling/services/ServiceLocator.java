@@ -1,5 +1,14 @@
 package de.hft.timetabling.services;
 
+/**
+ * The service locator is a singleton granting access to the various sub systems
+ * (called services) of the overall system. By doing so, it reduces the coupling
+ * between the individual sub systems, because the sub system don't need to know
+ * the details of the other sub systems that way. Each sub system only
+ * communicates with other sub systems trough it's service interface.
+ * 
+ * @author Alexander Weickmann
+ */
 public final class ServiceLocator {
 
 	private static final ServiceLocator instance = new ServiceLocator();

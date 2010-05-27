@@ -4,8 +4,19 @@ import java.util.Arrays;
 
 import de.hft.timetabling.common.ISolution;
 
-final class SolutionImpl implements ISolution, Cloneable {
+/**
+ * Immutable solution implementation.
+ * 
+ * @author Alexander Weickmann
+ * 
+ * @see ISolution
+ */
+final class SolutionImpl implements ISolution {
 
+	/**
+	 * The coding of the solution associates course IDs (which are strings) with
+	 * rooms and time periods.
+	 */
 	private final String[][] coding;
 
 	SolutionImpl(String[][] coding) {
