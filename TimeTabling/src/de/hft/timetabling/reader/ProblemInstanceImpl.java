@@ -127,10 +127,10 @@ final class ProblemInstanceImpl implements IProblemInstance {
 	@Override
 	public List<Integer> getUnavailabilityConstraints(ICourse course) {
 		List<Integer> constraints = unavailabilityConstraints.get(course);
-		if (constraints != null) {
-			return Collections.unmodifiableList(constraints);
+		if (constraints == null) {
+			constraints = new ArrayList<Integer>(0);
 		}
-		return new ArrayList<Integer>(0);
+		return Collections.unmodifiableList(constraints);
 	}
 
 	@Override
