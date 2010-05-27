@@ -5,7 +5,7 @@ package de.hft.timetabling.services;
  * (called services) of the overall system. By doing so, it reduces the coupling
  * between the individual sub systems, because the sub system don't need to know
  * the details of the other sub systems that way. Each sub system only
- * communicates with other sub systems trough it's service interface.
+ * communicates with other sub systems trough their service interfaces.
  * 
  * @author Alexander Weickmann
  */

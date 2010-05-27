@@ -15,7 +15,7 @@ final class SolutionImpl implements ISolution {
 
 	/**
 	 * The coding of the solution associates course IDs (which are strings) with
-	 * rooms and time periods.
+	 * time periods (x-dimension) and rooms (y-dimension).
 	 */
 	private final String[][] coding;
 
