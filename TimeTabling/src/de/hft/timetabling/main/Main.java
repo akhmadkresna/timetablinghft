@@ -11,17 +11,24 @@ import de.hft.timetabling.common.IRoom;
 import de.hft.timetabling.reader.Reader;
 import de.hft.timetabling.services.IReaderService;
 import de.hft.timetabling.services.ServiceLocator;
+import de.hft.timetabling.services.SolutionTable;
 
 public final class Main {
 
 	public static void main(String[] args) {
-		ServiceLocator.getInstance().setReaderService(new Reader());
+		setUpServices();
 
 		try {
 			exampleUsage();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static void setUpServices() {
+		ServiceLocator.getInstance().setReaderService(new Reader());
+		ServiceLocator.getInstance().setSolutionTableService(
+				new SolutionTable());
 	}
 
 	private static void exampleUsage() throws IOException {

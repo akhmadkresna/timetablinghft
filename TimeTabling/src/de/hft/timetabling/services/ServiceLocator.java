@@ -8,6 +8,8 @@ public final class ServiceLocator {
 		return instance;
 	}
 
+	private ISolutionTableService solutionTableService;
+
 	private IReaderService readerService;
 
 	private IWriterService writerService;
@@ -28,6 +30,19 @@ public final class ServiceLocator {
 			throw new RuntimeException("Reader service not available.");
 		}
 		return readerService;
+	}
+
+	public ISolutionTableService getSolutionTableService() {
+		if (solutionTableService == null) {
+			throw new RuntimeException("Solution table service not available.");
+		}
+		return solutionTableService;
+	}
+
+	public void setSolutionTableService(
+			ISolutionTableService solutionTableService) {
+
+		this.solutionTableService = solutionTableService;
 	}
 
 	public void setOutputService(IWriterService outputService) {
