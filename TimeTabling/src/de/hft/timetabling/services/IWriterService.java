@@ -7,6 +7,6 @@ package de.hft.timetabling.services;
  */
 public interface IWriterService {
 
-	// TODO AW: Design the writer service.
+	void outputBestSolution();
 
 }

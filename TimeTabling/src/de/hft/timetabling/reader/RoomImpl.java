@@ -2,6 +2,11 @@ package de.hft.timetabling.reader;
 
 import de.hft.timetabling.common.IRoom;
 
+/**
+ * Immutable room implementation.
+ * 
+ * @author Alexander Weickmann
+ */
 final class RoomImpl implements IRoom {
 
 	private final String id;

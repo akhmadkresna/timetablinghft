@@ -54,8 +54,8 @@ public final class ServiceLocator {
 		this.solutionTableService = solutionTableService;
 	}
 
-	public void setOutputService(IWriterService outputService) {
-		writerService = outputService;
+	public void setWriterService(IWriterService writerService) {
+		this.writerService = writerService;
 	}
 
 	public void setReaderService(IReaderService readerService) {

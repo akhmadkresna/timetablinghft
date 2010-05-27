@@ -11,7 +11,13 @@ import de.hft.timetabling.reader.Reader;
 import de.hft.timetabling.services.IReaderService;
 import de.hft.timetabling.services.ServiceLocator;
 import de.hft.timetabling.services.SolutionTable;
+import de.hft.timetabling.writer.Writer;
 
+/**
+ * The main class contains the main function that's needed to start the program.
+ * 
+ * @author Alexander Weickmann
+ */
 public final class Main {
 
 	public static void main(String[] args) {
@@ -24,17 +30,25 @@ public final class Main {
 		}
 	}
 
+	/**
+	 * At first, the individual sub systems must be initialized and registered
+	 * with the service locator.
+	 */
 	private static void setUpServices() {
-		ServiceLocator.getInstance().setReaderService(new Reader());
-		ServiceLocator.getInstance().setSolutionTableService(
-				new SolutionTable());
+		ServiceLocator serviceLocator = ServiceLocator.getInstance();
+		serviceLocator.setReaderService(new Reader());
+		serviceLocator.setSolutionTableService(new SolutionTable());
+		serviceLocator.setWriterService(new Writer());
 	}
 
+	/**
+	 * Small test to show how the {@link IProblemInstance} API works.
+	 */
 	private static void exampleUsage() throws IOException {
 		IReaderService readerService = ServiceLocator.getInstance()
 				.getReaderService();
 		IProblemInstance problemInstance = readerService
-				.readInstance("example.txt");
+				.readInstance("instances/example.txt");
 
 		System.out.println("GENERAL INFORMATION");
 		System.out.println("Name: " + problemInstance.getName());

@@ -7,6 +7,13 @@ import java.util.Set;
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
 
+/**
+ * Immutable implementation of a curriculum.
+ * 
+ * @author Alexander Weickmann
+ * 
+ * @see ICurriculum
+ */
 final class CurriculumImpl implements ICurriculum {
 
 	private final String id;

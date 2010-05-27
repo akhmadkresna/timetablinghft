@@ -7,6 +7,13 @@ import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 
+/**
+ * Immutable implementation of a course.
+ * 
+ * @author Alexander Weickmann
+ * 
+ * @see ICourse
+ */
 final class CourseImpl implements ICourse {
 
 	private final String id;

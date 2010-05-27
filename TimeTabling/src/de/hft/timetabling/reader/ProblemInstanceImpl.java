@@ -11,6 +11,13 @@ import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.IRoom;
 
+/**
+ * Immutable implementation of the {@link IProblemInstance} interface.
+ * 
+ * @author Alexander Weickmann
+ * 
+ * @see IProblemInstance
+ */
 final class ProblemInstanceImpl implements IProblemInstance {
 
 	private final String name;

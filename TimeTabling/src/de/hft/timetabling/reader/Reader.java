@@ -15,54 +15,27 @@ import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.IRoom;
 import de.hft.timetabling.services.IReaderService;
 
+/**
+ * Implementation of the reader service.
+ * 
+ * @author Alexander Weickmann
+ * 
+ * @see IReaderService
+ */
 public final class Reader implements IReaderService {
 
 	@Override
 	public IProblemInstance readInstance(String fileName) throws IOException {
 		List<String> lines = readFile(fileName);
-		ProblemInstanceImpl instance = readGeneralInformation(lines);
-		readContents(lines, instance);
+		ProblemInstanceImpl instance = parseGeneralInformation(lines);
+		parseContents(lines, instance);
 		return instance;
 	}
 
-	private void readContents(List<String> lines, ProblemInstanceImpl instance) {
-		boolean readCourses = false;
-		boolean readRooms = false;
-		boolean readCurricula = false;
-		boolean readUnavailabilityConstraints = false;
-
-		for (int i = 8; i < lines.size() - 2; i++) {
-			String line = lines.get(i);
-			if ((line.length() > 0)) {
-				if (line.equals("COURSES:")) {
-					readCourses = true;
-				} else if (line.equals("ROOMS:")) {
-					readCourses = false;
-					readRooms = true;
-				} else if (line.equals("CURRICULA:")) {
-					readRooms = false;
-					readCurricula = true;
-				} else if (line.equals("UNAVAILABILITY_CONSTRAINTS:")) {
-					readCurricula = false;
-					readUnavailabilityConstraints = true;
-				} else {
-					if (readCourses) {
-						readCourse(line, instance);
-					}
-					if (readRooms) {
-						readRoom(line, instance);
-					}
-					if (readCurricula) {
-						readCurriculum(line, instance);
-					}
-					if (readUnavailabilityConstraints) {
-						readUnavailabilityConstraint(line, instance);
-					}
-				}
-			}
-		}
-	}
-
+	/**
+	 * Reads the input file specified by the file name line by line and returns
+	 * the contents as a list of strings.
+	 */
 	private List<String> readFile(String fileName) throws IOException {
 		List<String> lines = new ArrayList<String>();
 		BufferedReader bufferedReader = getBufferedReader(fileName);
@@ -75,18 +48,67 @@ public final class Reader implements IReaderService {
 		return lines;
 	}
 
+	/**
+	 * Returns a {@link BufferedReader} that can be used to read the file
+	 * identified by the given file name.
+	 */
 	private BufferedReader getBufferedReader(String fileName)
 			throws FileNotFoundException {
 
-		FileInputStream fileStream = new FileInputStream("instances/"
-				+ fileName);
+		FileInputStream fileStream = new FileInputStream(fileName);
 		DataInputStream dataStream = new DataInputStream(fileStream);
 		BufferedReader bufferedReader = new BufferedReader(
 				new InputStreamReader(dataStream));
 		return bufferedReader;
 	}
 
-	private ProblemInstanceImpl readGeneralInformation(List<String> lines) {
+	/**
+	 * Parses the contents of the read file and fills the provided problem
+	 * instance with information.
+	 */
+	private void parseContents(List<String> lines, ProblemInstanceImpl instance) {
+		boolean parseCourses = false;
+		boolean parseRooms = false;
+		boolean parseCurricula = false;
+		boolean parseUnavailabilityConstraints = false;
+
+		for (int i = 8; i < lines.size() - 2; i++) {
+			String line = lines.get(i);
+			if ((line.length() > 0)) {
+				if (line.equals("COURSES:")) {
+					parseCourses = true;
+				} else if (line.equals("ROOMS:")) {
+					parseCourses = false;
+					parseRooms = true;
+				} else if (line.equals("CURRICULA:")) {
+					parseRooms = false;
+					parseCurricula = true;
+				} else if (line.equals("UNAVAILABILITY_CONSTRAINTS:")) {
+					parseCurricula = false;
+					parseUnavailabilityConstraints = true;
+				} else {
+					if (parseCourses) {
+						parseCourse(line, instance);
+					}
+					if (parseRooms) {
+						parseRoom(line, instance);
+					}
+					if (parseCurricula) {
+						parseCurriculum(line, instance);
+					}
+					if (parseUnavailabilityConstraints) {
+						parseUnavailabilityConstraint(line, instance);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Parses the general information lines at the beginning of the file and
+	 * creates and returns a new {@link IProblemInstance} based upon this data.
+	 */
+	private ProblemInstanceImpl parseGeneralInformation(List<String> lines) {
 		String name = getGeneralInfoValue(lines.get(0));
 		int numberOfCourses = Integer
 				.valueOf(getGeneralInfoValue(lines.get(1)));
@@ -103,11 +125,14 @@ public final class Reader implements IReaderService {
 				numberOfConstraints);
 	}
 
+	/**
+	 * Retrieves the actual value associated with a general information line.
+	 */
 	private String getGeneralInfoValue(String line) {
 		return line.substring(line.lastIndexOf(":") + 2);
 	}
 
-	private void readUnavailabilityConstraint(String line,
+	private void parseUnavailabilityConstraint(String line,
 			ProblemInstanceImpl instance) {
 
 		StringTokenizer tokenizer = new StringTokenizer(line, " ");
@@ -122,11 +147,7 @@ public final class Reader implements IReaderService {
 		instance.addUnavailabilityConstraint(course, convertedPeriod);
 	}
 
-	private int convertPeriod(int day, int period, int periodsPerDay) {
-		return period + day * periodsPerDay;
-	}
-
-	private void readCurriculum(String line, ProblemInstanceImpl instance) {
+	private void parseCurriculum(String line, ProblemInstanceImpl instance) {
 		StringTokenizer tokenizer = new StringTokenizer(line, " ");
 		String id = tokenizer.nextToken();
 		int numberOfCourses = Integer.valueOf(tokenizer.nextToken());
@@ -141,7 +162,7 @@ public final class Reader implements IReaderService {
 		instance.addCurriculum(curriculum);
 	}
 
-	private void readRoom(String line, ProblemInstanceImpl instance) {
+	private void parseRoom(String line, ProblemInstanceImpl instance) {
 		StringTokenizer tokenizer = new StringTokenizer(line, " ");
 		String id = tokenizer.nextToken();
 		int capacity = Integer.valueOf(tokenizer.nextToken());
@@ -149,7 +170,7 @@ public final class Reader implements IReaderService {
 		instance.addRoom(room);
 	}
 
-	private void readCourse(String line, ProblemInstanceImpl instance) {
+	private void parseCourse(String line, ProblemInstanceImpl instance) {
 		StringTokenizer tokenizer = new StringTokenizer(line, " ");
 		String id = tokenizer.nextToken();
 		String teacher = tokenizer.nextToken();
@@ -159,6 +180,14 @@ public final class Reader implements IReaderService {
 		ICourse course = new CourseImpl(id, minWorkingDays, numberOfLectures,
 				numberOfStudents, teacher, instance);
 		instance.addCourse(course);
+	}
+
+	/**
+	 * Converts the day-period format used by the competition's input format to
+	 * a period-only format.
+	 */
+	private int convertPeriod(int day, int period, int periodsPerDay) {
+		return period + day * periodsPerDay;
 	}
 
 	@Override
