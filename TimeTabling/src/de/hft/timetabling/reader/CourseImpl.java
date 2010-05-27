@@ -1,6 +1,11 @@
 package de.hft.timetabling.reader;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import de.hft.timetabling.common.ICourse;
+import de.hft.timetabling.common.ICurriculum;
+import de.hft.timetabling.common.IProblemInstance;
 
 final class CourseImpl implements ICourse {
 
@@ -14,14 +19,18 @@ final class CourseImpl implements ICourse {
 
 	private final String teacher;
 
+	private final IProblemInstance problemInstance;
+
 	CourseImpl(String id, int minWorkingDays, int numberOfLectures,
-			int numberOfStudents, String teacher) {
+			int numberOfStudents, String teacher,
+			IProblemInstance problemInstance) {
 
 		this.id = id;
 		this.minWorkingDays = minWorkingDays;
 		this.numberOfLectures = numberOfLectures;
 		this.numberOfStudents = numberOfStudents;
 		this.teacher = teacher;
+		this.problemInstance = problemInstance;
 	}
 
 	@Override
@@ -50,10 +59,23 @@ final class CourseImpl implements ICourse {
 	}
 
 	@Override
+	public Set<ICurriculum> getCurricula() {
+		Set<ICurriculum> curricula = new HashSet<ICurriculum>();
+		for (ICurriculum curriculum : problemInstance.getCurricula()) {
+			if (curriculum.containsCourse(this)) {
+				curricula.add(curriculum);
+			}
+		}
+		return curricula;
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result
+				+ ((problemInstance == null) ? 0 : problemInstance.hashCode());
 		return result;
 	}
 
@@ -74,6 +96,13 @@ final class CourseImpl implements ICourse {
 				return false;
 			}
 		} else if (!id.equals(other.id)) {
+			return false;
+		}
+		if (problemInstance == null) {
+			if (other.problemInstance != null) {
+				return false;
+			}
+		} else if (!problemInstance.equals(other.problemInstance)) {
 			return false;
 		}
 		return true;

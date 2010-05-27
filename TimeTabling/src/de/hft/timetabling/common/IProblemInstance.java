@@ -1,6 +1,6 @@
 package de.hft.timetabling.common;
 
-import java.util.List;
+import java.util.Set;
 
 public interface IProblemInstance {
 
@@ -18,14 +18,14 @@ public interface IProblemInstance {
 
 	int getPeriodsPerDay();
 
-	List<ICourse> getCourses();
+	Set<ICourse> getCourses();
 
-	List<IRoom> getRooms();
+	Set<IRoom> getRooms();
 
-	List<ICurriculum> getCurricula();
+	Set<ICurriculum> getCurricula();
 
 	ICourse getCourseById(String courseId);
 
-	List<Integer> getUnavailabilityConstraints(ICourse course);
+	Set<Integer> getUnavailabilityConstraints(ICourse course);
 
 }

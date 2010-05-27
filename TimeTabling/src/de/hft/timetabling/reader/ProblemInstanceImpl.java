@@ -1,10 +1,10 @@
 package de.hft.timetabling.reader;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
@@ -27,13 +27,13 @@ final class ProblemInstanceImpl implements IProblemInstance {
 
 	private final int periodsPerDay;
 
-	private final List<ICourse> courses;
+	private final Set<ICourse> courses;
 
-	private final List<IRoom> rooms;
+	private final Set<IRoom> rooms;
 
-	private final List<ICurriculum> curricula;
+	private final Set<ICurriculum> curricula;
 
-	private final Map<ICourse, List<Integer>> unavailabilityConstraints;
+	private final Map<ICourse, Set<Integer>> unavailabilityConstraints;
 
 	public ProblemInstanceImpl(String name, int numberOfCourses,
 			int numberOfRooms, int numberOfDays, int periodsPerDay,
@@ -47,10 +47,10 @@ final class ProblemInstanceImpl implements IProblemInstance {
 		this.numberOfCurricula = numberOfCurricula;
 		this.numberOfConstraints = numberOfConstraints;
 
-		courses = new ArrayList<ICourse>();
-		rooms = new ArrayList<IRoom>();
-		curricula = new ArrayList<ICurriculum>();
-		unavailabilityConstraints = new HashMap<ICourse, List<Integer>>();
+		courses = new LinkedHashSet<ICourse>();
+		rooms = new LinkedHashSet<IRoom>();
+		curricula = new LinkedHashSet<ICurriculum>();
+		unavailabilityConstraints = new HashMap<ICourse, Set<Integer>>();
 	}
 
 	@Override
@@ -101,36 +101,36 @@ final class ProblemInstanceImpl implements IProblemInstance {
 	}
 
 	void addUnavailabilityConstraint(ICourse course, int period) {
-		List<Integer> periodsForCourse = unavailabilityConstraints.get(course);
+		Set<Integer> periodsForCourse = unavailabilityConstraints.get(course);
 		if (periodsForCourse == null) {
-			periodsForCourse = new ArrayList<Integer>();
+			periodsForCourse = new LinkedHashSet<Integer>();
 		}
 		periodsForCourse.add(period);
 		unavailabilityConstraints.put(course, periodsForCourse);
 	}
 
 	@Override
-	public List<ICourse> getCourses() {
-		return Collections.unmodifiableList(courses);
+	public Set<ICourse> getCourses() {
+		return Collections.unmodifiableSet(courses);
 	}
 
 	@Override
-	public List<ICurriculum> getCurricula() {
-		return Collections.unmodifiableList(curricula);
+	public Set<ICurriculum> getCurricula() {
+		return Collections.unmodifiableSet(curricula);
 	}
 
 	@Override
-	public List<IRoom> getRooms() {
-		return Collections.unmodifiableList(rooms);
+	public Set<IRoom> getRooms() {
+		return Collections.unmodifiableSet(rooms);
 	}
 
 	@Override
-	public List<Integer> getUnavailabilityConstraints(ICourse course) {
-		List<Integer> constraints = unavailabilityConstraints.get(course);
+	public Set<Integer> getUnavailabilityConstraints(ICourse course) {
+		Set<Integer> constraints = unavailabilityConstraints.get(course);
 		if (constraints == null) {
-			constraints = new ArrayList<Integer>(0);
+			constraints = new LinkedHashSet<Integer>(0);
 		}
-		return Collections.unmodifiableList(constraints);
+		return Collections.unmodifiableSet(constraints);
 	}
 
 	@Override
@@ -141,97 +141,6 @@ final class ProblemInstanceImpl implements IProblemInstance {
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((courses == null) ? 0 : courses.hashCode());
-		result = prime * result
-				+ ((curricula == null) ? 0 : curricula.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + numberOfConstraints;
-		result = prime * result + numberOfCourses;
-		result = prime * result + numberOfCurricula;
-		result = prime * result + numberOfDays;
-		result = prime * result + numberOfRooms;
-		result = prime * result + periodsPerDay;
-		result = prime * result + ((rooms == null) ? 0 : rooms.hashCode());
-		result = prime
-				* result
-				+ ((unavailabilityConstraints == null) ? 0
-						: unavailabilityConstraints.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		ProblemInstanceImpl other = (ProblemInstanceImpl) obj;
-		if (courses == null) {
-			if (other.courses != null) {
-				return false;
-			}
-		} else if (!courses.equals(other.courses)) {
-			return false;
-		}
-		if (curricula == null) {
-			if (other.curricula != null) {
-				return false;
-			}
-		} else if (!curricula.equals(other.curricula)) {
-			return false;
-		}
-		if (name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		} else if (!name.equals(other.name)) {
-			return false;
-		}
-		if (numberOfConstraints != other.numberOfConstraints) {
-			return false;
-		}
-		if (numberOfCourses != other.numberOfCourses) {
-			return false;
-		}
-		if (numberOfCurricula != other.numberOfCurricula) {
-			return false;
-		}
-		if (numberOfDays != other.numberOfDays) {
-			return false;
-		}
-		if (numberOfRooms != other.numberOfRooms) {
-			return false;
-		}
-		if (periodsPerDay != other.periodsPerDay) {
-			return false;
-		}
-		if (rooms == null) {
-			if (other.rooms != null) {
-				return false;
-			}
-		} else if (!rooms.equals(other.rooms)) {
-			return false;
-		}
-		if (unavailabilityConstraints == null) {
-			if (other.unavailabilityConstraints != null) {
-				return false;
-			}
-		} else if (!unavailabilityConstraints
-				.equals(other.unavailabilityConstraints)) {
-			return false;
-		}
-		return true;
 	}
 
 	@Override

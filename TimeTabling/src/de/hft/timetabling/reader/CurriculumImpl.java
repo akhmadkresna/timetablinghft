@@ -1,8 +1,8 @@
 package de.hft.timetabling.reader;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
@@ -13,17 +13,17 @@ final class CurriculumImpl implements ICurriculum {
 
 	private final int numberOfCourses;
 
-	private final List<ICourse> courses;
+	private final Set<ICourse> courses;
 
 	CurriculumImpl(String id, int numberOfCourses) {
 		this.id = id;
 		this.numberOfCourses = numberOfCourses;
-		courses = new ArrayList<ICourse>(numberOfCourses);
+		courses = new LinkedHashSet<ICourse>(numberOfCourses);
 	}
 
 	@Override
-	public List<ICourse> getCourses() {
-		return Collections.unmodifiableList(courses);
+	public Set<ICourse> getCourses() {
+		return Collections.unmodifiableSet(courses);
 	}
 
 	@Override
@@ -34,6 +34,11 @@ final class CurriculumImpl implements ICurriculum {
 	@Override
 	public int getNumberOfCourses() {
 		return numberOfCourses;
+	}
+
+	@Override
+	public boolean containsCourse(ICourse course) {
+		return courses.contains(course);
 	}
 
 	void addCourse(ICourse course) {

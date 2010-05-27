@@ -1,6 +1,6 @@
 package de.hft.timetabling.common;
 
-import java.util.List;
+import java.util.Set;
 
 public interface ICurriculum {
 
@@ -8,6 +8,8 @@ public interface ICurriculum {
 
 	int getNumberOfCourses();
 
-	List<ICourse> getCourses();
+	Set<ICourse> getCourses();
+
+	boolean containsCourse(ICourse course);
 
 }

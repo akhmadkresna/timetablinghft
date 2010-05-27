@@ -1,7 +1,7 @@
 package de.hft.timetabling.main;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
@@ -77,7 +77,7 @@ public final class Main {
 
 		System.out.println("UNAVAILABILITY CONSTRAINTS");
 		for (ICourse course : problemInstance.getCourses()) {
-			List<Integer> unavailabilityConstraints = problemInstance
+			Set<Integer> unavailabilityConstraints = problemInstance
 					.getUnavailabilityConstraints(course);
 			if (unavailabilityConstraints.size() > 0) {
 				System.out.print(course.getId());

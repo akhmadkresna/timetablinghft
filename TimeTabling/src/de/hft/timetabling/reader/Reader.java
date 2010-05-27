@@ -157,7 +157,7 @@ public final class Reader implements IReaderService {
 		int minWorkingDays = Integer.valueOf(tokenizer.nextToken());
 		int numberOfStudents = Integer.valueOf(tokenizer.nextToken());
 		ICourse course = new CourseImpl(id, minWorkingDays, numberOfLectures,
-				numberOfStudents, teacher);
+				numberOfStudents, teacher, instance);
 		instance.addCourse(course);
 	}
 
