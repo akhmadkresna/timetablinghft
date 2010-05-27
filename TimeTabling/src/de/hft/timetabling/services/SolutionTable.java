@@ -17,7 +17,7 @@ public final class SolutionTable implements ISolutionTableService {
 
 	@Override
 	public ISolution createNewSolution(String[][] coding) {
-		return new Solution(coding);
+		return new SolutionImpl(coding);
 	}
 
 	@Override

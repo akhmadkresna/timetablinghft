@@ -4,11 +4,11 @@ import java.util.Arrays;
 
 import de.hft.timetabling.common.ISolution;
 
-final class Solution implements ISolution, Cloneable {
+final class SolutionImpl implements ISolution, Cloneable {
 
 	private final String[][] coding;
 
-	Solution(String[][] coding) {
+	SolutionImpl(String[][] coding) {
 		this.coding = coding;
 	}
 
@@ -36,7 +36,7 @@ final class Solution implements ISolution, Cloneable {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		Solution other = (Solution) obj;
+		SolutionImpl other = (SolutionImpl) obj;
 		if (!Arrays.equals(coding, other.coding)) {
 			return false;
 		}
