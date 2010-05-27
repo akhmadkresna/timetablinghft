@@ -14,9 +14,6 @@ import de.hft.timetabling.common.ISolution;
  */
 public final class SolutionTable implements ISolutionTableService {
 
-	/** Defines how many solution are held in the solution table. */
-	private static final int TABLE_SIZE = 10;
-
 	/**
 	 * The solution table is implemented as a map which assigns a unique number
 	 * to each solution.
@@ -37,7 +34,8 @@ public final class SolutionTable implements ISolutionTableService {
 	@Override
 	public ISolution getSolution(int solutionNumber) {
 		checkSolutionNumber(solutionNumber);
-		return solutionTable.get(solutionNumber).getSolution();
+		SolutionVote solutionVote = solutionTable.get(solutionNumber);
+		return (solutionVote == null) ? null : solutionVote.getSolution();
 	}
 
 	@Override
@@ -88,6 +86,11 @@ public final class SolutionTable implements ISolutionTableService {
 					"Solution table numbers only range from 0 to "
 							+ (TABLE_SIZE - 1) + ".");
 		}
+	}
+
+	@Override
+	public ISolution getBestSolution() {
+		return (bestSolution == null) ? null : bestSolution.getSolution();
 	}
 
 	@Override
