@@ -155,7 +155,7 @@ public final class Reader implements IReaderService {
 		int numberOfCourses = Integer.valueOf(tokenizer.nextToken());
 		CurriculumImpl curriculum = new CurriculumImpl(id, numberOfCourses);
 
-		for (int i = 0; i <= tokenizer.countTokens() + 1; i++) {
+		while (tokenizer.countTokens() > 0) {
 			String courseId = tokenizer.nextToken();
 			ICourse memberCourse = instance.getCourseById(courseId);
 			curriculum.addCourse(memberCourse);
