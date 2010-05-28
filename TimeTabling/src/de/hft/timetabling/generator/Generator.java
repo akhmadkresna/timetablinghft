@@ -13,6 +13,10 @@ import de.hft.timetabling.common.IProblemInstance;
 
 public class Generator {
 
+	private static int instanceCount = 1;
+
+	private boolean assignedCourse = true;
+
 	private final IProblemInstance instance;
 
 	private Map<ICourse, List<Integer>> availableSlots = new HashMap<ICourse, List<Integer>>();
@@ -33,116 +37,154 @@ public class Generator {
 	}
 
 	public void generateFeasibileSolutin() {
-		Set<ICourse> prioterized = new HashSet<ICourse>();
-		Set<ICourse> nonPrioterized = new HashSet<ICourse>();
-		Set<ICourse> unassigned = new HashSet<ICourse>();
+		System.out.println("Instance " + instanceCount++ + ": "
+				+ instance.getName());
+		boolean solutionFound = false;
+		int maxIter = 25;
+		int currentIter = 0;
 
-		int maxLoops = 10;
-		int loops = 0;
+		while (!solutionFound && (currentIter < maxIter)) {
+			resetInternalMemory();
+			assignedCourse = true;
 
-		// ICourse[][] schedule = new
-		// ICourse[periods][instance.getNumberOfRooms()];
-		ICourse[] schedule = new ICourse[slots];
+			Set<ICourse> prioterized = new HashSet<ICourse>();
+			Set<ICourse> nonPrioterized = new HashSet<ICourse>();
+			Set<ICourse> unassigned = new HashSet<ICourse>();
 
-		while (!unassigned.isEmpty() && (loops < maxLoops)) {
-			System.out.println("Loop: " + loops);
+			int maxLoops = 10;
+			int loops = 0;
 
-			prioterized.addAll(unassigned);
-			unassigned = new HashSet<ICourse>();
-			nonPrioterized = new HashSet<ICourse>();
-			nonPrioterized.addAll(instance.getCourses());
-			nonPrioterized.removeAll(prioterized);
+			ICourse[] schedule = new ICourse[slots];
 
-			while (!prioterized.isEmpty()) {
-				ICourse critical = getMostCriticalEvent(schedule, prioterized);
+			do {
+				// System.out.println("Loop: " + loops);
 
-				if (availablePeriods.get(critical) >= critical
-						.getNumberOfLectures()) {
-					assignRandomViableSlots(critical, schedule);
-				} else {
-					unassigned.add(critical);
+				prioterized.addAll(unassigned);
+				unassigned = new HashSet<ICourse>();
+				nonPrioterized = new HashSet<ICourse>();
+				nonPrioterized.addAll(instance.getCourses());
+				nonPrioterized.removeAll(prioterized);
+
+				while (!prioterized.isEmpty()) {
+					ICourse critical = getMostCriticalEvent(schedule,
+							prioterized);
+
+					if (availablePeriods.get(critical) >= critical
+							.getNumberOfLectures()) {
+						assignRandomViableSlots(critical, schedule);
+						assignedCourse = true;
+					} else {
+						unassigned.add(critical);
+						assignedCourse = false;
+						availablePeriods.remove(critical);
+						availableSlots.remove(critical);
+					}
+					prioterized.remove(critical);
 				}
-				prioterized.remove(critical);
-			}
 
-			while (!nonPrioterized.isEmpty()) {
-				ICourse critical = getMostCriticalEvent(schedule,
-						nonPrioterized);
+				while (!nonPrioterized.isEmpty()) {
+					ICourse critical = getMostCriticalEvent(schedule,
+							nonPrioterized);
 
-				if (availablePeriods.get(critical) > critical
-						.getNumberOfLectures()) {
-					assignRandomViableSlots(critical, schedule);
-				} else {
-					unassigned.add(critical);
+					if (availablePeriods.get(critical) >= critical
+							.getNumberOfLectures()) {
+						assignRandomViableSlots(critical, schedule);
+						assignedCourse = true;
+					} else {
+						unassigned.add(critical);
+						assignedCourse = false;
+						availablePeriods.remove(critical);
+						availableSlots.remove(critical);
+					}
+
+					nonPrioterized.remove(critical);
+
 				}
 
-				nonPrioterized.remove(critical);
+				loops++;
+			} while (!unassigned.isEmpty() && (loops < maxLoops));
 
+			if (unassigned.isEmpty()) {
+				System.out.println("Solution found");
+				solutionFound = true;
+			} else {
+				System.err.println("NO SOLUTIN FOUND");
 			}
-
-			loops++;
+			currentIter++;
 		}
 	}
 
 	private ICourse getMostCriticalEvent(ICourse[] schedule,
 			Set<ICourse> courses) {
 
-		availableSlots = new HashMap<ICourse, List<Integer>>();
-		availablePeriods = new HashMap<ICourse, Integer>();
+		if (assignedCourse) {
+			availableSlots = new HashMap<ICourse, List<Integer>>();
+			availablePeriods = new HashMap<ICourse, Integer>();
 
-		for (ICourse course : courses) {
-			availableSlots.put(course, new ArrayList<Integer>());
-			availablePeriods.put(course, 0);
-		}
+			for (ICourse course : courses) {
+				availableSlots.put(course, new ArrayList<Integer>());
+				availablePeriods.put(course, 0);
+			}
 
-		/*
-		 * calculate available slots for each course
-		 */
-		for (ICourse course : courses) {
-			int i = 0;
-			while (i < schedule.length) {
-
-				/*
-				 * calculate period from slot
-				 */
-				int period = getPeriodForSlot(i);
-
-				/*
-				 * Whole range corresponding to a single period will be skipped
-				 * if a) There are already courses from the same curriculum (any
-				 * curriculum) in this period or b) the teacher holding the
-				 * course is already giving another lecture in this period or c)
-				 * unavailability constraints are violated
-				 */
-				Set<ICurriculum> intersectionCurricula = new HashSet<ICurriculum>();
-				intersectionCurricula.addAll(curriculaInPeriod.get(period));
-				intersectionCurricula.retainAll(course.getCurricula());
-
-				if ((intersectionCurricula.size() > 0)
-						|| teachersInPeriod.get(period).contains(
-								course.getTeacher())
-						|| violatesConstraints(course, period)) {
+			/*
+			 * calculate available slots for each course
+			 */
+			for (ICourse course : courses) {
+				int i = 0;
+				while (i < schedule.length) {
 
 					/*
-					 * skip range belonging to current period
+					 * calculate period from slot
 					 */
-					i += instance.getNumberOfRooms();
-				} else {
+					int period = getPeriodForSlot(i);
+
 					/*
-					 * Add available slots
+					 * Whole range corresponding to a single period will be
+					 * skipped if a) There are already courses from the same
+					 * curriculum (any curriculum) in this period or b) the
+					 * teacher holding the course is already giving another
+					 * lecture in this period or c) unavailability constraints
+					 * are violated
 					 */
-					int j = i;
-					while (i < j + instance.getNumberOfRooms()) {
-						if (schedule[i] == null) {
-							availableSlots.get(course).add(i);
+					Set<ICurriculum> intersectionCurricula = new HashSet<ICurriculum>();
+					intersectionCurricula.addAll(curriculaInPeriod.get(period));
+					intersectionCurricula.retainAll(course.getCurricula());
+
+					if ((intersectionCurricula.size() > 0)
+							|| teachersInPeriod.get(period).contains(
+									course.getTeacher())
+							|| violatesConstraints(course, period)
+							|| allRoomsOccupied(schedule, period)) {
+
+						/*
+						 * skip range belonging to current period
+						 */
+						i += instance.getNumberOfRooms();
+					} else {
+						/*
+						 * Add available slots
+						 */
+						int j = i;
+						while (i < j + instance.getNumberOfRooms()) {
+							if (schedule[i] == null) {
+								availableSlots.get(course).add(i);
+							}
+
+							i++;
 						}
+
 						int p = availablePeriods.get(course);
 						p += 1;
 						availablePeriods.put(course, p);
-
-						i++;
 					}
 				}
+			}
+		}
+
+		for (ICourse course : courses) {
+			if (!availablePeriods.keySet().contains(course)) {
+				availablePeriods.put(course, 0);
+				availableSlots.put(course, new ArrayList<Integer>());
 			}
 		}
 
@@ -202,5 +244,18 @@ public class Generator {
 			curriculaInPeriod.add(new HashSet<ICurriculum>());
 			teachersInPeriod.add(new HashSet<String>());
 		}
+	}
+
+	private boolean allRoomsOccupied(ICourse[] schedule, int period) {
+		int slot = period * instance.getNumberOfRooms();
+		int periodEnd = slot + instance.getNumberOfRooms();
+
+		for (int i = slot; i < periodEnd; i++) {
+			if (schedule[i] == null) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }
