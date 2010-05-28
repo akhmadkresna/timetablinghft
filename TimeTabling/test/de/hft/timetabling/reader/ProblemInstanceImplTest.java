@@ -62,8 +62,8 @@ public class ProblemInstanceImplTest extends AbstractReaderTest {
 	public void testGetRooms() {
 		assertEquals(0, instance.getRooms().size());
 
-		IRoom room1 = new RoomImpl("r1", 15, instance);
-		IRoom room2 = new RoomImpl("r2", 30, instance);
+		IRoom room1 = new RoomImpl("r1", 15, 0, instance);
+		IRoom room2 = new RoomImpl("r2", 30, 1, instance);
 		instance.addRoom(room1);
 		instance.addRoom(room2);
 
@@ -139,6 +139,17 @@ public class ProblemInstanceImplTest extends AbstractReaderTest {
 		assertEquals(course2, instance.getCourseById("c2"));
 		assertEquals(course1, instance.getCourseById("c1"));
 		assertNull(instance.getCourseById("c3"));
+	}
+
+	public void testGetRoomByUniqueNumber() {
+		IRoom room1 = new RoomImpl("r1", 15, 0, instance);
+		IRoom room2 = new RoomImpl("r2", 30, 1, instance);
+		instance.addRoom(room1);
+		instance.addRoom(room2);
+
+		assertEquals(room1, instance.getRoomByUniqueNumber(0));
+		assertEquals(room2, instance.getRoomByUniqueNumber(1));
+		assertNull(instance.getRoomByUniqueNumber(2));
 	}
 
 	public void testToString() {

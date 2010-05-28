@@ -85,4 +85,13 @@ public interface IProblemInstance {
 	 */
 	Set<Integer> getUnavailabilityConstraints(ICourse course);
 
+	/**
+	 * Returns the room with the given unique room number or <tt>null</tt> if no
+	 * room with the given unique room number exists.
+	 * 
+	 * @param uniqueRoomNumber
+	 *            The searched room's unique number.
+	 */
+	IRoom getRoomByUniqueNumber(int uniqueRoomNumber);
+
 }

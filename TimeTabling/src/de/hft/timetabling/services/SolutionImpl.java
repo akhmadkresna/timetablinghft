@@ -36,4 +36,9 @@ final class SolutionImpl implements ISolution {
 		return coding;
 	}
 
+	@Override
+	public String toString() {
+		return "Solution: " + coding.toString();
+	}
+
 }

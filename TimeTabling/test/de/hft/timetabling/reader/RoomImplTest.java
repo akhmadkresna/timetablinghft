@@ -7,6 +7,8 @@ import de.hft.timetabling.common.IRoom;
  */
 public class RoomImplTest extends AbstractReaderTest {
 
+	private static final int UNIQUE_NUMBER = 0;
+
 	private static final String ID = "r1";
 
 	private static final int CAPACITY = 20;
@@ -16,7 +18,7 @@ public class RoomImplTest extends AbstractReaderTest {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		room = new RoomImpl(ID, CAPACITY, instance);
+		room = new RoomImpl(ID, CAPACITY, UNIQUE_NUMBER, instance);
 	}
 
 	public void testGetProblemInstance() {
@@ -31,8 +33,13 @@ public class RoomImplTest extends AbstractReaderTest {
 		assertEquals(CAPACITY, room.getCapacity());
 	}
 
+	public void testGetUniqueNumber() {
+		assertEquals(UNIQUE_NUMBER, room.getUniqueNumber());
+	}
+
 	public void testToString() {
-		assertEquals("Room: " + ID + " (" + CAPACITY + ")", room.toString());
+		assertEquals("Room: " + ID + " (" + UNIQUE_NUMBER + ")", room
+				.toString());
 	}
 
 }

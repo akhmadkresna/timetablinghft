@@ -24,12 +24,20 @@ import de.hft.timetabling.services.IReaderService;
  */
 public final class Reader implements IReaderService {
 
+	/** The current unique number that is assigned to a room. */
+	private int currentUniqueNumber;
+
 	@Override
 	public IProblemInstance readInstance(String fileName) throws IOException {
+		reset();
 		List<String> lines = readFile("instances/" + fileName);
 		ProblemInstanceImpl instance = parseGeneralInformation(lines, fileName);
 		parseContents(lines, instance);
 		return instance;
+	}
+
+	private void reset() {
+		currentUniqueNumber = 0;
 	}
 
 	/**
@@ -171,8 +179,9 @@ public final class Reader implements IReaderService {
 		StringTokenizer tokenizer = new StringTokenizer(line, " ");
 		String id = tokenizer.nextToken();
 		int capacity = Integer.valueOf(tokenizer.nextToken());
-		IRoom room = new RoomImpl(id, capacity, instance);
+		IRoom room = new RoomImpl(id, capacity, currentUniqueNumber, instance);
 		instance.addRoom(room);
+		currentUniqueNumber++;
 	}
 
 	private void parseCourse(String line, ProblemInstanceImpl instance) {

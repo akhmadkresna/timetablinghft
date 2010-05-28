@@ -14,11 +14,16 @@ final class RoomImpl implements IRoom {
 
 	private final int capacity;
 
+	private final int uniqueNumber;
+
 	private final IProblemInstance problemInstance;
 
-	RoomImpl(String id, int capacity, IProblemInstance problemInstance) {
+	RoomImpl(String id, int capacity, int uniqueNumber,
+			IProblemInstance problemInstance) {
+
 		this.id = id;
 		this.capacity = capacity;
+		this.uniqueNumber = uniqueNumber;
 		this.problemInstance = problemInstance;
 	}
 
@@ -35,6 +40,11 @@ final class RoomImpl implements IRoom {
 	@Override
 	public String getId() {
 		return id;
+	}
+
+	@Override
+	public int getUniqueNumber() {
+		return uniqueNumber;
 	}
 
 	@Override
@@ -78,7 +88,7 @@ final class RoomImpl implements IRoom {
 
 	@Override
 	public String toString() {
-		return "Room: " + id + " (" + capacity + ")";
+		return "Room: " + id + " (" + uniqueNumber + ")";
 	}
 
 }
