@@ -1,5 +1,6 @@
 package de.hft.timetabling.services;
 
+import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ISolution;
 
 /**
@@ -7,7 +8,7 @@ import de.hft.timetabling.common.ISolution;
  */
 public class SolutionImplTest extends AbstractServicesTest {
 
-	private static final String[][] CODING = new String[][] {};
+	private static final ICourse[][] CODING = new ICourse[][] {};
 
 	private ISolution solution;
 

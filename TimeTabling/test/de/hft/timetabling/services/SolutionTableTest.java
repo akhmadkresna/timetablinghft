@@ -1,5 +1,6 @@
 package de.hft.timetabling.services;
 
+import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ISolution;
 
 /**
@@ -14,14 +15,14 @@ public class SolutionTableTest extends AbstractServicesTest {
 		super.setUp();
 		solutionTable = new SolutionTable();
 		for (int i = 0; i < ISolutionTableService.TABLE_SIZE; i++) {
-			String[][] coding = new String[][] { { "" + i } };
+			ICourse[][] coding = new ICourse[][] {};
 			solutionTable.putSolution(i, solutionTable.createNewSolution(
 					coding, instance));
 		}
 	}
 
 	public void testCreateNewSolution() {
-		String[][] coding = new String[][] {};
+		ICourse[][] coding = new ICourse[][] {};
 		ISolution newSolution = solutionTable.createNewSolution(coding,
 				instance);
 		assertEquals(coding, newSolution.getCoding());
@@ -35,12 +36,15 @@ public class SolutionTableTest extends AbstractServicesTest {
 			// Expected exception.
 		}
 
+		ISolution newSolution = solutionTable.createNewSolution(
+				new ICourse[][] {}, instance);
+		solutionTable.putSolution(5, newSolution);
 		ISolution solution = solutionTable.getSolution(5);
-		assertEquals("5", solution.getCoding()[0][0]);
+		assertEquals(newSolution, solution);
 	}
 
 	public void testSetSolution() {
-		String[][] coding = new String[][] { { "new" } };
+		ICourse[][] coding = new ICourse[][] {};
 		ISolution newSolution = solutionTable.createNewSolution(coding,
 				instance);
 		try {
@@ -93,7 +97,7 @@ public class SolutionTableTest extends AbstractServicesTest {
 		assertEquals(expectedBestSolution, solutionTable.getBestSolution());
 
 		solutionTable.putSolution(0, solutionTable.createNewSolution(
-				new String[][] { { "new" } }, instance));
+				new ICourse[][] {}, instance));
 		assertEquals(expectedBestSolution, solutionTable.getBestSolution());
 
 		solutionTable.voteForSolution(5, 1000);

@@ -1,5 +1,6 @@
 package de.hft.timetabling.services;
 
+import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
 
@@ -30,7 +31,7 @@ public interface ISolutionTableService {
 	 * @param problemInstance
 	 *            The {@link IProblemInstance} the new solution is for.
 	 */
-	ISolution createNewSolution(String[][] coding,
+	ISolution createNewSolution(ICourse[][] coding,
 			IProblemInstance problemInstance);
 
 	/**

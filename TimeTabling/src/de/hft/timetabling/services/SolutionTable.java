@@ -3,6 +3,7 @@ package de.hft.timetabling.services;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
 
@@ -28,7 +29,7 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
-	public ISolution createNewSolution(String[][] coding,
+	public ISolution createNewSolution(ICourse[][] coding,
 			IProblemInstance problemInstance) {
 
 		return new SolutionImpl(coding, problemInstance);

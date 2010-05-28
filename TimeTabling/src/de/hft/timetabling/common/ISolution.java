@@ -13,10 +13,10 @@ public interface ISolution {
 	/**
 	 * Returns the coding for this solution. The x-dimension of the returned
 	 * array represents periods, while the y-dimension represents rooms. The
-	 * content of the array are course IDs. So overall, a course ID is
+	 * content of the array are course objects. So overall, a course is
 	 * associated to a specific period and room.
 	 */
-	String[][] getCoding();
+	ICourse[][] getCoding();
 
 	/**
 	 * Returns the problem instance this is a solution for.
