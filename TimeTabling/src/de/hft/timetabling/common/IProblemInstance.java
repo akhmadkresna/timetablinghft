@@ -62,7 +62,8 @@ public interface IProblemInstance {
 	Set<ICurriculum> getCurricula();
 
 	/**
-	 * Returns the course identified by the given course ID.
+	 * Returns the course identified by the given course ID or <tt>null</tt> if
+	 * there is no course with the given ID.
 	 * 
 	 * @param courseId
 	 *            The ID identifying the course to retrieve.
