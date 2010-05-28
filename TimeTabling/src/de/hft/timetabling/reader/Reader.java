@@ -74,6 +74,8 @@ public final class Reader implements IReaderService {
 
 		for (int i = 8; i < lines.size() - 2; i++) {
 			String line = lines.get(i);
+			// Replace all tabs with spaces.
+			line = line.replaceAll("\t", " ");
 			if ((line.length() > 0)) {
 				if (line.equals("COURSES:")) {
 					parseCourses = true;
