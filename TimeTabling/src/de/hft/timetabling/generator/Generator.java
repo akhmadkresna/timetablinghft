@@ -13,9 +13,13 @@ import de.hft.timetabling.common.IProblemInstance;
 
 public class Generator {
 
+	/*
+	 * variable for private use of the implementor
+	 */
 	private static int instanceCount = 1;
 
 	private boolean assignedCourse = true;
+	private boolean solutionFound = false;
 
 	private final IProblemInstance instance;
 
@@ -36,12 +40,18 @@ public class Generator {
 		resetInternalMemory();
 	}
 
-	public void generateFeasibileSolutin() {
+	public ICourse[][] generateFeasibileSolution()
+			throws NoFeasibleSolutionFoundException {
+		return generateFeasibileSolution(25);
+	}
+
+	public ICourse[][] generateFeasibileSolution(int maxIter)
+			throws NoFeasibleSolutionFoundException {
 		System.out.println("Instance " + instanceCount++ + ": "
 				+ instance.getName());
-		boolean solutionFound = false;
-		int maxIter = 25;
 		int currentIter = 0;
+
+		ICourse[] schedule = new ICourse[slots];
 
 		while (!solutionFound && (currentIter < maxIter)) {
 			resetInternalMemory();
@@ -54,7 +64,7 @@ public class Generator {
 			int maxLoops = 10;
 			int loops = 0;
 
-			ICourse[] schedule = new ICourse[slots];
+			schedule = new ICourse[slots];
 
 			do {
 				// System.out.println("Loop: " + loops);
@@ -76,6 +86,10 @@ public class Generator {
 					} else {
 						unassigned.add(critical);
 						assignedCourse = false;
+						/*
+						 * Remove course so it doesn't show up in recalculation
+						 * of most critical course
+						 */
 						availablePeriods.remove(critical);
 						availableSlots.remove(critical);
 					}
@@ -93,12 +107,15 @@ public class Generator {
 					} else {
 						unassigned.add(critical);
 						assignedCourse = false;
+						/*
+						 * Remove course so it doesn't show up in recalculation
+						 * of most critical course
+						 */
 						availablePeriods.remove(critical);
 						availableSlots.remove(critical);
 					}
 
 					nonPrioterized.remove(critical);
-
 				}
 
 				loops++;
@@ -108,15 +125,24 @@ public class Generator {
 				System.out.println("Solution found");
 				solutionFound = true;
 			} else {
-				System.err.println("NO SOLUTIN FOUND");
+				System.err.println("NO SOLUTION FOUND IN ITERATION");
 			}
 			currentIter++;
 		}
+
+		if (solutionFound) {
+			return convert(schedule);
+		}
+
+		throw new NoFeasibleSolutionFoundException();
 	}
 
 	private ICourse getMostCriticalEvent(ICourse[] schedule,
 			Set<ICourse> courses) {
 
+		/*
+		 * Only recalculate if changes to the schedule occurred
+		 */
 		if (assignedCourse) {
 			availableSlots = new HashMap<ICourse, List<Integer>>();
 			availablePeriods = new HashMap<ICourse, Integer>();
@@ -144,7 +170,8 @@ public class Generator {
 					 * curriculum (any curriculum) in this period or b) the
 					 * teacher holding the course is already giving another
 					 * lecture in this period or c) unavailability constraints
-					 * are violated
+					 * are violated or d) when all rooms in the period are
+					 * already occupied
 					 */
 					Set<ICurriculum> intersectionCurricula = new HashSet<ICurriculum>();
 					intersectionCurricula.addAll(curriculaInPeriod.get(period));
@@ -166,6 +193,9 @@ public class Generator {
 						 */
 						int j = i;
 						while (i < j + instance.getNumberOfRooms()) {
+							/*
+							 * Check if the slot is alread reserved
+							 */
 							if (schedule[i] == null) {
 								availableSlots.get(course).add(i);
 							}
@@ -173,6 +203,10 @@ public class Generator {
 							i++;
 						}
 
+						/*
+						 * Remember in how many periods a course can be
+						 * potentially placed
+						 */
 						int p = availablePeriods.get(course);
 						p += 1;
 						availablePeriods.put(course, p);
@@ -181,6 +215,9 @@ public class Generator {
 			}
 		}
 
+		/*
+		 * Account for all courses for which no viable slots were found
+		 */
 		for (ICourse course : courses) {
 			if (!availablePeriods.keySet().contains(course)) {
 				availablePeriods.put(course, 0);
@@ -189,7 +226,7 @@ public class Generator {
 		}
 
 		/*
-		 * Determine the course with the least number of available timeslots
+		 * Determine the course with the least number of available time slots
 		 */
 		int minimum = Integer.MAX_VALUE;
 		ICourse critical = null;
@@ -257,5 +294,20 @@ public class Generator {
 		}
 
 		return true;
+	}
+
+	private ICourse[][] convert(ICourse[] schedule) {
+		ICourse[][] finalSchedule = new ICourse[periods][instance
+				.getNumberOfRooms()];
+		int x = 0;
+
+		for (int i = 0; i < periods; i++) {
+			for (int j = 0; j < instance.getNumberOfDays(); j++) {
+				finalSchedule[i][j] = schedule[x];
+				x++;
+			}
+		}
+
+		return finalSchedule;
 	}
 }
