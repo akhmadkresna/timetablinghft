@@ -27,7 +27,7 @@ public class ReaderTest extends TestCase {
 	 * Tests whether a specific problem instance input file is read correctly.
 	 */
 	public void testReadInstance() throws IOException {
-		IProblemInstance instance = reader.readInstance("example.txt");
+		IProblemInstance instance = reader.readInstance("test.txt");
 
 		// # GENERAL INFORMATION
 		assertEquals("ToyExample", instance.getName());

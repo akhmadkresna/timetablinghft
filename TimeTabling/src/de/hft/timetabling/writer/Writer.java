@@ -29,20 +29,36 @@ public final class Writer implements IWriterService {
 		ISolution bestSolution = solutionTableService.getBestSolution();
 		IProblemInstance problemInstance = bestSolution.getProblemInstance();
 
+		long timestamp = System.currentTimeMillis() / 1000;
 		String fileName = problemInstance.getFileName();
 		fileName = fileName.substring(0, fileName.lastIndexOf('.'));
-		long timestamp = System.currentTimeMillis() / 1000;
-		FileWriter fileWriter = new FileWriter("output/" + fileName + "_"
-				+ timestamp + ".ctt");
+		fileName = "output/" + fileName + "_" + timestamp + ".ctt";
+		outputSolution(fileName, bestSolution, problemInstance);
+	}
+
+	/**
+	 * This method was split off from the above method so it can be tested with
+	 * any file name and solution.
+	 */
+	void outputSolution(String fileName, ISolution bestSolution,
+			IProblemInstance problemInstance) throws IOException {
+
+		FileWriter fileWriter = new FileWriter(fileName);
 		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
 		ICourse[][] coding = bestSolution.getCoding();
-		for (int period = 0; period < problemInstance.getNumberOfPeriods(); period++) {
+		int numberOfPeriods = problemInstance.getNumberOfPeriods();
+		int numberOfRooms = problemInstance.getNumberOfRooms();
+		for (int period = 0; period < numberOfPeriods; period++) {
 			ICourse[] coursesInPeriod = coding[period];
-			for (int roomNumber = 0; roomNumber < problemInstance
-					.getNumberOfRooms(); roomNumber++) {
+			for (int roomNumber = 0; roomNumber < numberOfRooms; roomNumber++) {
 
 				ICourse course = coursesInPeriod[roomNumber];
+				// Continue if no assignment at this location.
+				if (course == null) {
+					continue;
+				}
+
 				IRoom room = problemInstance.getRoomByUniqueNumber(roomNumber);
 				int periodsPerDay = problemInstance.getPeriodsPerDay();
 				int day = PeriodUtil
@@ -52,7 +68,10 @@ public final class Writer implements IWriterService {
 
 				bufferedWriter.write(course.getId() + " " + room.getId() + " "
 						+ day + " " + convertedPeriod);
-				bufferedWriter.newLine();
+				// Append new line if not at end of file.
+				if (!((period == numberOfPeriods - 1) && (roomNumber == numberOfRooms - 1))) {
+					bufferedWriter.newLine();
+				}
 			}
 		}
 
