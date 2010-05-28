@@ -48,7 +48,7 @@ public final class Main {
 		IReaderService readerService = ServiceLocator.getInstance()
 				.getReaderService();
 		IProblemInstance problemInstance = readerService
-				.readInstance("instances/comp10.ctt");
+				.readInstance("instances/example.txt");
 
 		System.out.println("GENERAL INFORMATION");
 		System.out.println("Name: " + problemInstance.getName());
