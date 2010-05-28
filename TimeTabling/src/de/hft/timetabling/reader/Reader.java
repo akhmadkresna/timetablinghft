@@ -14,6 +14,7 @@ import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.IRoom;
 import de.hft.timetabling.services.IReaderService;
+import de.hft.timetabling.util.PeriodUtil;
 
 /**
  * Implementation of the reader service.
@@ -154,7 +155,8 @@ public final class Reader implements IReaderService {
 		int day = Integer.valueOf(tokenizer.nextToken());
 		int period = Integer.valueOf(tokenizer.nextToken());
 		int periodsPerDay = instance.getPeriodsPerDay();
-		int convertedPeriod = convertPeriod(day, period, periodsPerDay);
+		int convertedPeriod = PeriodUtil.convertToPeriodOnly(day, period,
+				periodsPerDay);
 
 		instance.addUnavailabilityConstraint(course, convertedPeriod);
 	}
@@ -194,14 +196,6 @@ public final class Reader implements IReaderService {
 		ICourse course = new CourseImpl(id, minWorkingDays, numberOfLectures,
 				numberOfStudents, teacher, instance);
 		instance.addCourse(course);
-	}
-
-	/**
-	 * Converts the day-period format used by the competition's input format to
-	 * a period-only format.
-	 */
-	private int convertPeriod(int day, int period, int periodsPerDay) {
-		return period + day * periodsPerDay;
 	}
 
 	@Override
