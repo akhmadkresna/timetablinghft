@@ -70,6 +70,19 @@ public interface ISolutionTableService {
 	void voteForSolution(ISolution solution, int vote);
 
 	/**
+	 * Allows to vote for the solution located at the specified solution number.
+	 * 
+	 * @param solutionNumber
+	 *            The solution number identifying the solution to vote for.
+	 * @param vote
+	 *            The value of the vote.
+	 * 
+	 * @throws IndexOutOfBoundsException
+	 *             If the given solution number is not inside the allowed range.
+	 */
+	void voteForSolution(int solutionNumber, int vote);
+
+	/**
 	 * Returns the vote sum for the given solution.
 	 * 
 	 * @param solution
@@ -82,9 +95,28 @@ public interface ISolutionTableService {
 	int getVoteSumForSolution(ISolution solution);
 
 	/**
+	 * Returns the vote sum for the solution identified by the given solution
+	 * number.
+	 * 
+	 * @param solutionNumber
+	 *            The solution number identifying the solution to obtain the
+	 *            vote sum for.
+	 * 
+	 * @throws IndexOutOfBoundsException
+	 *             If the given solution number is not inside the allowed range.
+	 */
+	int getVoteSumForSolution(int solutionNumber);
+
+	/**
 	 * Returns the best solution so far or <tt>null</tt> if no best solution is
 	 * available yet.
 	 */
 	ISolution getBestSolution();
+
+	/**
+	 * Returns the vote sum of the best solution or 0 if there is no best
+	 * solution available yet.
+	 */
+	int getBestSolutionVoteSum();
 
 }

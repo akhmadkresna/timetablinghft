@@ -58,6 +58,18 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
+	public void voteForSolution(int solutionNumber, int vote) {
+		checkSolutionNumber(solutionNumber);
+		voteForSolution(getSolution(solutionNumber), vote);
+	}
+
+	@Override
+	public int getVoteSumForSolution(int solutionNumber) {
+		checkSolutionNumber(solutionNumber);
+		return getVoteSumForSolution(getSolution(solutionNumber));
+	}
+
+	@Override
 	public int getVoteSumForSolution(ISolution solution) {
 		return getSolutionVoteForSolution(solution).getVoteSum();
 	}
@@ -90,6 +102,11 @@ public final class SolutionTable implements ISolutionTableService {
 	@Override
 	public ISolution getBestSolution() {
 		return (bestSolution == null) ? null : bestSolution.getSolution();
+	}
+
+	@Override
+	public int getBestSolutionVoteSum() {
+		return (bestSolution == null) ? 0 : bestSolution.getVoteSum();
 	}
 
 	@Override
