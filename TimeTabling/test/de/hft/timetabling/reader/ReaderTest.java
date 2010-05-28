@@ -27,8 +27,7 @@ public class ReaderTest extends TestCase {
 	 * Tests whether a specific problem instance input file is read correctly.
 	 */
 	public void testReadInstance() throws IOException {
-		IProblemInstance instance = reader
-				.readInstance("instances/example.txt");
+		IProblemInstance instance = reader.readInstance("example.txt");
 
 		// # GENERAL INFORMATION
 		assertEquals("ToyExample", instance.getName());
@@ -148,7 +147,7 @@ public class ReaderTest extends TestCase {
 			if (fileName.equals(".svn")) {
 				continue;
 			}
-			reader.readInstance("instances/" + fileName);
+			reader.readInstance(fileName);
 		}
 	}
 

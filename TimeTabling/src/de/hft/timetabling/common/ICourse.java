@@ -43,4 +43,9 @@ public interface ICourse {
 	 */
 	Set<ICurriculum> getCurricula();
 
+	/**
+	 * Returns the problem instance this course belongs to.
+	 */
+	IProblemInstance getProblemInstance();
+
 }

@@ -1,5 +1,6 @@
 package de.hft.timetabling.reader;
 
+import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.IRoom;
 
 /**
@@ -13,9 +14,17 @@ final class RoomImpl implements IRoom {
 
 	private final int capacity;
 
-	RoomImpl(String id, int capacity) {
+	private final IProblemInstance problemInstance;
+
+	RoomImpl(String id, int capacity, IProblemInstance problemInstance) {
 		this.id = id;
 		this.capacity = capacity;
+		this.problemInstance = problemInstance;
+	}
+
+	@Override
+	public IProblemInstance getProblemInstance() {
+		return problemInstance;
 	}
 
 	@Override

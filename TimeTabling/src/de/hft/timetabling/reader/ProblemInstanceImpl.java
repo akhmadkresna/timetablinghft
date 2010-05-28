@@ -20,6 +20,8 @@ import de.hft.timetabling.common.IRoom;
  */
 final class ProblemInstanceImpl implements IProblemInstance {
 
+	private final String fileName;
+
 	private final String name;
 
 	private final int numberOfConstraints;
@@ -42,10 +44,11 @@ final class ProblemInstanceImpl implements IProblemInstance {
 
 	private final Map<ICourse, Set<Integer>> unavailabilityConstraints;
 
-	public ProblemInstanceImpl(String name, int numberOfCourses,
-			int numberOfRooms, int numberOfDays, int periodsPerDay,
-			int numberOfCurricula, int numberOfConstraints) {
+	public ProblemInstanceImpl(String fileName, String name,
+			int numberOfCourses, int numberOfRooms, int numberOfDays,
+			int periodsPerDay, int numberOfCurricula, int numberOfConstraints) {
 
+		this.fileName = fileName;
 		this.name = name;
 		this.numberOfCourses = numberOfCourses;
 		this.numberOfRooms = numberOfRooms;
@@ -58,6 +61,11 @@ final class ProblemInstanceImpl implements IProblemInstance {
 		rooms = new LinkedHashSet<IRoom>();
 		curricula = new LinkedHashSet<ICurriculum>();
 		unavailabilityConstraints = new HashMap<ICourse, Set<Integer>>();
+	}
+
+	@Override
+	public String getFileName() {
+		return fileName;
 	}
 
 	@Override

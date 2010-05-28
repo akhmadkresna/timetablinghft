@@ -18,4 +18,9 @@ public interface IRoom {
 	 */
 	int getCapacity();
 
+	/**
+	 * Returns the problem instance this room belongs to.
+	 */
+	IProblemInstance getProblemInstance();
+
 }

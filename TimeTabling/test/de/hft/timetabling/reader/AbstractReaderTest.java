@@ -7,6 +7,8 @@ import junit.framework.TestCase;
  */
 public abstract class AbstractReaderTest extends TestCase {
 
+	protected static final String FILE_NAME = "test.ctt";
+
 	protected static final String NAME = "Test Instance";
 
 	protected static final int NUMBER_OF_COURSES = 3;
@@ -26,7 +28,7 @@ public abstract class AbstractReaderTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		instance = new ProblemInstanceImpl(NAME, NUMBER_OF_COURSES,
+		instance = new ProblemInstanceImpl(FILE_NAME, NAME, NUMBER_OF_COURSES,
 				NUMBER_OF_ROOMS, NUMBER_OF_DAYS, PERIODS_PER_DAY,
 				NUMBER_OF_CURRICULA, NUMBER_OF_CONSTRAINTS);
 	}

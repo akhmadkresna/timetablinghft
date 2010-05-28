@@ -6,6 +6,7 @@ import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
+import de.hft.timetabling.common.IProblemInstance;
 
 /**
  * Immutable implementation of a curriculum.
@@ -22,10 +23,20 @@ final class CurriculumImpl implements ICurriculum {
 
 	private final Set<ICourse> courses;
 
-	CurriculumImpl(String id, int numberOfCourses) {
+	private final IProblemInstance problemInstance;
+
+	CurriculumImpl(String id, int numberOfCourses,
+			IProblemInstance problemInstance) {
+
 		this.id = id;
 		this.numberOfCourses = numberOfCourses;
+		this.problemInstance = problemInstance;
 		courses = new LinkedHashSet<ICourse>(numberOfCourses);
+	}
+
+	@Override
+	public IProblemInstance getProblemInstance() {
+		return problemInstance;
 	}
 
 	@Override

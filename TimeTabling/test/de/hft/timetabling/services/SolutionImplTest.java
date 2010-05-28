@@ -1,12 +1,11 @@
 package de.hft.timetabling.services;
 
-import junit.framework.TestCase;
 import de.hft.timetabling.common.ISolution;
 
 /**
  * @author Alexander Weickmann
  */
-public class SolutionImplTest extends TestCase {
+public class SolutionImplTest extends AbstractServicesTest {
 
 	private static final String[][] CODING = new String[][] {};
 
@@ -15,7 +14,11 @@ public class SolutionImplTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		solution = new SolutionImpl(CODING);
+		solution = new SolutionImpl(CODING, instance);
+	}
+
+	public void testGetProblemInstance() {
+		assertEquals(instance, solution.getProblemInstance());
 	}
 
 	public void testGetCoding() {

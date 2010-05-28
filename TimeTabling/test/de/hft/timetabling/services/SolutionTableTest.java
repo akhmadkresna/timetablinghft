@@ -1,12 +1,11 @@
 package de.hft.timetabling.services;
 
-import junit.framework.TestCase;
 import de.hft.timetabling.common.ISolution;
 
 /**
  * @author Alexander Weickmann
  */
-public class SolutionTableTest extends TestCase {
+public class SolutionTableTest extends AbstractServicesTest {
 
 	private ISolutionTableService solutionTable;
 
@@ -16,14 +15,15 @@ public class SolutionTableTest extends TestCase {
 		solutionTable = new SolutionTable();
 		for (int i = 0; i < ISolutionTableService.TABLE_SIZE; i++) {
 			String[][] coding = new String[][] { { "" + i } };
-			solutionTable.setSolution(i, solutionTable
-					.createNewSolution(coding));
+			solutionTable.putSolution(i, solutionTable.createNewSolution(
+					coding, instance));
 		}
 	}
 
 	public void testCreateNewSolution() {
 		String[][] coding = new String[][] {};
-		ISolution newSolution = solutionTable.createNewSolution(coding);
+		ISolution newSolution = solutionTable.createNewSolution(coding,
+				instance);
 		assertEquals(coding, newSolution.getCoding());
 	}
 
@@ -41,16 +41,17 @@ public class SolutionTableTest extends TestCase {
 
 	public void testSetSolution() {
 		String[][] coding = new String[][] { { "new" } };
-		ISolution newSolution = solutionTable.createNewSolution(coding);
+		ISolution newSolution = solutionTable.createNewSolution(coding,
+				instance);
 		try {
-			solutionTable.setSolution(ISolutionTableService.TABLE_SIZE + 1,
+			solutionTable.putSolution(ISolutionTableService.TABLE_SIZE + 1,
 					newSolution);
 			fail();
 		} catch (IndexOutOfBoundsException e) {
 			// Expected exception.
 		}
 
-		solutionTable.setSolution(9, newSolution);
+		solutionTable.putSolution(9, newSolution);
 		assertEquals(newSolution, solutionTable.getSolution(9));
 	}
 
@@ -91,8 +92,8 @@ public class SolutionTableTest extends TestCase {
 		ISolution expectedBestSolution = solutionTable.getSolution(0);
 		assertEquals(expectedBestSolution, solutionTable.getBestSolution());
 
-		solutionTable.setSolution(0, solutionTable
-				.createNewSolution(new String[][] { { "new" } }));
+		solutionTable.putSolution(0, solutionTable.createNewSolution(
+				new String[][] { { "new" } }, instance));
 		assertEquals(expectedBestSolution, solutionTable.getBestSolution());
 
 		solutionTable.voteForSolution(5, 1000);

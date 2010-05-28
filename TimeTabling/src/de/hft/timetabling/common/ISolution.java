@@ -18,4 +18,9 @@ public interface ISolution {
 	 */
 	String[][] getCoding();
 
+	/**
+	 * Returns the problem instance this is a solution for.
+	 */
+	IProblemInstance getProblemInstance();
+
 }

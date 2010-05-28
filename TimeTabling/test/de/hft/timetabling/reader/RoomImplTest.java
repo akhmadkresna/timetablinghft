@@ -16,7 +16,11 @@ public class RoomImplTest extends AbstractReaderTest {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		room = new RoomImpl(ID, CAPACITY);
+		room = new RoomImpl(ID, CAPACITY, instance);
+	}
+
+	public void testGetProblemInstance() {
+		assertEquals(instance, room.getProblemInstance());
 	}
 
 	public void testGetId() {

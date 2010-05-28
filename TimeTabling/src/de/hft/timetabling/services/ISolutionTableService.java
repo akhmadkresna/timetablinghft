@@ -1,5 +1,6 @@
 package de.hft.timetabling.services;
 
+import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
 
 /**
@@ -23,8 +24,14 @@ public interface ISolutionTableService {
 
 	/**
 	 * Factory method allowing to create new solution instances.
+	 * 
+	 * @param coding
+	 *            The coding of the solution to create.
+	 * @param problemInstance
+	 *            The {@link IProblemInstance} the new solution is for.
 	 */
-	ISolution createNewSolution(String[][] coding);
+	ISolution createNewSolution(String[][] coding,
+			IProblemInstance problemInstance);
 
 	/**
 	 * Replaces the solution in the table identified by the given solution
@@ -39,7 +46,7 @@ public interface ISolutionTableService {
 	 * @throws IndexOutOfBoundsException
 	 *             If the given solution number is not inside the allowed range.
 	 */
-	void setSolution(int solutionNumber, ISolution solution);
+	void putSolution(int solutionNumber, ISolution solution);
 
 	/**
 	 * Returns the solution that's currently located at the given solution table

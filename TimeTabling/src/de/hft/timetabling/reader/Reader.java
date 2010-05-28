@@ -26,8 +26,8 @@ public final class Reader implements IReaderService {
 
 	@Override
 	public IProblemInstance readInstance(String fileName) throws IOException {
-		List<String> lines = readFile(fileName);
-		ProblemInstanceImpl instance = parseGeneralInformation(lines);
+		List<String> lines = readFile("instances/" + fileName);
+		ProblemInstanceImpl instance = parseGeneralInformation(lines, fileName);
 		parseContents(lines, instance);
 		return instance;
 	}
@@ -110,7 +110,9 @@ public final class Reader implements IReaderService {
 	 * Parses the general information lines at the beginning of the file and
 	 * creates and returns a new {@link IProblemInstance} based upon this data.
 	 */
-	private ProblemInstanceImpl parseGeneralInformation(List<String> lines) {
+	private ProblemInstanceImpl parseGeneralInformation(List<String> lines,
+			String fileName) {
+
 		String name = getGeneralInfoValue(lines.get(0));
 		int numberOfCourses = Integer
 				.valueOf(getGeneralInfoValue(lines.get(1)));
@@ -122,8 +124,8 @@ public final class Reader implements IReaderService {
 		int numberOfConstraints = Integer.valueOf(getGeneralInfoValue(lines
 				.get(6)));
 
-		return new ProblemInstanceImpl(name, numberOfCourses, numberOfRooms,
-				numberOfDays, periodsPerDay, numberOfCurricula,
+		return new ProblemInstanceImpl(fileName, name, numberOfCourses,
+				numberOfRooms, numberOfDays, periodsPerDay, numberOfCurricula,
 				numberOfConstraints);
 	}
 
@@ -153,7 +155,8 @@ public final class Reader implements IReaderService {
 		StringTokenizer tokenizer = new StringTokenizer(line, " ");
 		String id = tokenizer.nextToken();
 		int numberOfCourses = Integer.valueOf(tokenizer.nextToken());
-		CurriculumImpl curriculum = new CurriculumImpl(id, numberOfCourses);
+		CurriculumImpl curriculum = new CurriculumImpl(id, numberOfCourses,
+				instance);
 
 		while (tokenizer.countTokens() > 0) {
 			String courseId = tokenizer.nextToken();
@@ -168,7 +171,7 @@ public final class Reader implements IReaderService {
 		StringTokenizer tokenizer = new StringTokenizer(line, " ");
 		String id = tokenizer.nextToken();
 		int capacity = Integer.valueOf(tokenizer.nextToken());
-		IRoom room = new RoomImpl(id, capacity);
+		IRoom room = new RoomImpl(id, capacity, instance);
 		instance.addRoom(room);
 	}
 

@@ -33,4 +33,9 @@ public interface ICurriculum {
 	 */
 	boolean containsCourse(ICourse course);
 
+	/**
+	 * Returns the problem instance this curriculum belongs to.
+	 */
+	IProblemInstance getProblemInstance();
+
 }

@@ -11,6 +11,11 @@ import java.util.Set;
 public interface IProblemInstance {
 
 	/**
+	 * Returns the file name of the input file.
+	 */
+	String getFileName();
+
+	/**
 	 * Returns the name of the problem.
 	 */
 	String getName();

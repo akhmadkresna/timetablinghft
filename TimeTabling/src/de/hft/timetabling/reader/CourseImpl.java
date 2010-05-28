@@ -41,6 +41,11 @@ final class CourseImpl implements ICourse {
 	}
 
 	@Override
+	public IProblemInstance getProblemInstance() {
+		return problemInstance;
+	}
+
+	@Override
 	public String getId() {
 		return id;
 	}

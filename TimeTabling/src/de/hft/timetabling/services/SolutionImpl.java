@@ -2,6 +2,7 @@ package de.hft.timetabling.services;
 
 import java.util.Arrays;
 
+import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
 
 /**
@@ -19,8 +20,16 @@ final class SolutionImpl implements ISolution {
 	 */
 	private final String[][] coding;
 
-	SolutionImpl(String[][] coding) {
+	private final IProblemInstance problemInstance;
+
+	SolutionImpl(String[][] coding, IProblemInstance problemInstance) {
 		this.coding = coding;
+		this.problemInstance = problemInstance;
+	}
+
+	@Override
+	public IProblemInstance getProblemInstance() {
+		return problemInstance;
 	}
 
 	@Override

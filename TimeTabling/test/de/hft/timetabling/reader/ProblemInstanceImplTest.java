@@ -62,8 +62,8 @@ public class ProblemInstanceImplTest extends AbstractReaderTest {
 	public void testGetRooms() {
 		assertEquals(0, instance.getRooms().size());
 
-		IRoom room1 = new RoomImpl("r1", 15);
-		IRoom room2 = new RoomImpl("r2", 30);
+		IRoom room1 = new RoomImpl("r1", 15, instance);
+		IRoom room2 = new RoomImpl("r2", 30, instance);
 		instance.addRoom(room1);
 		instance.addRoom(room2);
 
@@ -82,8 +82,8 @@ public class ProblemInstanceImplTest extends AbstractReaderTest {
 	public void testGetCurricula() {
 		assertEquals(0, instance.getCurricula().size());
 
-		ICurriculum curriculum1 = new CurriculumImpl("c1", 1);
-		ICurriculum curriculum2 = new CurriculumImpl("c2", 2);
+		ICurriculum curriculum1 = new CurriculumImpl("c1", 1, instance);
+		ICurriculum curriculum2 = new CurriculumImpl("c2", 2, instance);
 		instance.addCurriculum(curriculum1);
 		instance.addCurriculum(curriculum2);
 

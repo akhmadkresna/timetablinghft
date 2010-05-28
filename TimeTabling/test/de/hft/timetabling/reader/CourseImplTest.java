@@ -29,6 +29,10 @@ public class CourseImplTest extends AbstractReaderTest {
 				NUMBER_OF_STUDENTS, TEACHER, instance);
 	}
 
+	public void testGetProblemInstance() {
+		assertEquals(instance, course.getProblemInstance());
+	}
+
 	public void testGetId() {
 		assertEquals(ID, course.getId());
 	}
@@ -50,9 +54,9 @@ public class CourseImplTest extends AbstractReaderTest {
 	}
 
 	public void testGetCurricula() {
-		CurriculumImpl curriculum1 = new CurriculumImpl("cur1", 2);
-		CurriculumImpl curriculum2 = new CurriculumImpl("cur2", 1);
-		CurriculumImpl curriculum3 = new CurriculumImpl("cur3", 1);
+		CurriculumImpl curriculum1 = new CurriculumImpl("cur1", 2, instance);
+		CurriculumImpl curriculum2 = new CurriculumImpl("cur2", 1, instance);
+		CurriculumImpl curriculum3 = new CurriculumImpl("cur3", 1, instance);
 
 		ICourse otherCourse = new CourseImpl("cOther", 1, 1, 1, "Teacher2",
 				instance);

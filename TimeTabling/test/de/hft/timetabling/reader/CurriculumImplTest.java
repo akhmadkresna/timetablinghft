@@ -18,7 +18,11 @@ public class CurriculumImplTest extends AbstractReaderTest {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		curriculum = new CurriculumImpl(ID, NUMBER_OF_COURSES);
+		curriculum = new CurriculumImpl(ID, NUMBER_OF_COURSES, instance);
+	}
+
+	public void testGetProblemInstance() {
+		assertEquals(instance, curriculum.getProblemInstance());
 	}
 
 	public void testGetId() {
