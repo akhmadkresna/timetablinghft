@@ -3,6 +3,9 @@ package de.hft.timetabling.services;
 import junit.framework.TestCase;
 import de.hft.timetabling.common.ISolution;
 
+/**
+ * @author Alexander Weickmann
+ */
 public class SolutionTableTest extends TestCase {
 
 	private ISolutionTableService solutionTable;
@@ -111,4 +114,5 @@ public class SolutionTableTest extends TestCase {
 	public void testToString() {
 		assertEquals("Solution Table", solutionTable.toString());
 	}
+
 }
