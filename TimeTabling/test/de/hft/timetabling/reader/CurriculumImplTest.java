@@ -52,7 +52,7 @@ public class CurriculumImplTest extends AbstractReaderTest {
 			courses.remove(course1);
 			fail();
 		} catch (UnsupportedOperationException e) {
-			// Expected exception.
+			// Expected exception (immutability).
 		}
 	}
 

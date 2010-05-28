@@ -32,6 +32,20 @@ public final class SolutionTable implements ISolutionTableService {
 	public ISolution createNewSolution(ICourse[][] coding,
 			IProblemInstance problemInstance) {
 
+		int numberOfPeriods = problemInstance.getNumberOfDays()
+				* problemInstance.getPeriodsPerDay();
+		if (coding.length != numberOfPeriods) {
+			throw new IllegalArgumentException(
+					"Incomplete coding: period-dimension (x) not matching the number of periods of the problem instance.");
+		}
+		for (int period = 0; period < numberOfPeriods; period++) {
+			ICourse[] coursesPerPeriod = coding[period];
+			if (coursesPerPeriod.length != problemInstance.getNumberOfRooms()) {
+				throw new IllegalArgumentException(
+						"Incomplete coding: room-dimension (y) not matching the number of rooms of the problem instance in period "
+								+ period + ".");
+			}
+		}
 		return new SolutionImpl(coding, problemInstance);
 	}
 

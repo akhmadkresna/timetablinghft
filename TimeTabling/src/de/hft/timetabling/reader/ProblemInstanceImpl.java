@@ -169,6 +169,11 @@ final class ProblemInstanceImpl implements IProblemInstance {
 	}
 
 	@Override
+	public int getNumberOfPeriods() {
+		return numberOfDays * periodsPerDay;
+	}
+
+	@Override
 	public String toString() {
 		return "Problem Instance: " + name;
 	}

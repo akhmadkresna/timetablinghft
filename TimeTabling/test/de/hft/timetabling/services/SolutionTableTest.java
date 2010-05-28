@@ -15,17 +15,37 @@ public class SolutionTableTest extends AbstractServicesTest {
 		super.setUp();
 		solutionTable = new SolutionTable();
 		for (int i = 0; i < ISolutionTableService.TABLE_SIZE; i++) {
-			ICourse[][] coding = new ICourse[][] {};
+			ICourse[][] coding = new ICourse[instance.getNumberOfPeriods()][instance
+					.getNumberOfRooms()];
 			solutionTable.putSolution(i, solutionTable.createNewSolution(
 					coding, instance));
 		}
 	}
 
 	public void testCreateNewSolution() {
-		ICourse[][] coding = new ICourse[][] {};
+		ICourse[][] coding = new ICourse[instance.getNumberOfPeriods()][instance
+				.getNumberOfRooms()];
 		ISolution newSolution = solutionTable.createNewSolution(coding,
 				instance);
 		assertEquals(coding, newSolution.getCoding());
+
+		try {
+			coding = new ICourse[instance.getNumberOfPeriods() - 1][instance
+					.getNumberOfRooms()];
+			newSolution = solutionTable.createNewSolution(coding, instance);
+			fail();
+		} catch (IllegalArgumentException e) {
+			// Expected exception (incomplete coding).
+		}
+
+		try {
+			coding = new ICourse[instance.getNumberOfPeriods()][instance
+					.getNumberOfRooms() - 1];
+			newSolution = solutionTable.createNewSolution(coding, instance);
+			fail();
+		} catch (IllegalArgumentException e) {
+			// Expected exception (incomplete coding).
+		}
 	}
 
 	public void testGetSolution() {
@@ -33,18 +53,20 @@ public class SolutionTableTest extends AbstractServicesTest {
 			solutionTable.getSolution(ISolutionTableService.TABLE_SIZE + 1);
 			fail();
 		} catch (IndexOutOfBoundsException e) {
-			// Expected exception.
+			// Expected exception (solution number out of range).
 		}
 
 		ISolution newSolution = solutionTable.createNewSolution(
-				new ICourse[][] {}, instance);
+				new ICourse[instance.getNumberOfPeriods()][instance
+						.getNumberOfRooms()], instance);
 		solutionTable.putSolution(5, newSolution);
 		ISolution solution = solutionTable.getSolution(5);
 		assertEquals(newSolution, solution);
 	}
 
-	public void testSetSolution() {
-		ICourse[][] coding = new ICourse[][] {};
+	public void testPutSolution() {
+		ICourse[][] coding = new ICourse[instance.getNumberOfPeriods()][instance
+				.getNumberOfRooms()];
 		ISolution newSolution = solutionTable.createNewSolution(coding,
 				instance);
 		try {
@@ -52,7 +74,7 @@ public class SolutionTableTest extends AbstractServicesTest {
 					newSolution);
 			fail();
 		} catch (IndexOutOfBoundsException e) {
-			// Expected exception.
+			// Expected exception (solution number out of range).
 		}
 
 		solutionTable.putSolution(9, newSolution);
@@ -65,7 +87,7 @@ public class SolutionTableTest extends AbstractServicesTest {
 					100);
 			fail();
 		} catch (IndexOutOfBoundsException e) {
-			// Expected exception.
+			// Expected exception (solution number out of range).
 		}
 
 		solutionTable.voteForSolution(5, 200);
@@ -78,7 +100,7 @@ public class SolutionTableTest extends AbstractServicesTest {
 					.getVoteSumForSolution(ISolutionTableService.TABLE_SIZE + 1);
 			fail();
 		} catch (IndexOutOfBoundsException e) {
-			// Expected exception.
+			// Expected exception (solution number out of range).
 		}
 
 		solutionTable.voteForSolution(5, 200);
@@ -97,7 +119,8 @@ public class SolutionTableTest extends AbstractServicesTest {
 		assertEquals(expectedBestSolution, solutionTable.getBestSolution());
 
 		solutionTable.putSolution(0, solutionTable.createNewSolution(
-				new ICourse[][] {}, instance));
+				new ICourse[instance.getNumberOfPeriods()][instance
+						.getNumberOfRooms()], instance));
 		assertEquals(expectedBestSolution, solutionTable.getBestSolution());
 
 		solutionTable.voteForSolution(5, 1000);

@@ -39,6 +39,11 @@ public class ProblemInstanceImplTest extends AbstractReaderTest {
 		assertEquals(NUMBER_OF_CONSTRAINTS, instance.getNumberOfConstraints());
 	}
 
+	public void testGetNumberOfPeriods() {
+		assertEquals(NUMBER_OF_DAYS * PERIODS_PER_DAY, instance
+				.getNumberOfPeriods());
+	}
+
 	public void testGetCourses() {
 		assertEquals(0, instance.getCourses().size());
 
@@ -55,7 +60,7 @@ public class ProblemInstanceImplTest extends AbstractReaderTest {
 			courses.remove(course1);
 			fail();
 		} catch (UnsupportedOperationException e) {
-			// Expected exception.
+			// Expected exception (immutability).
 		}
 	}
 
@@ -75,7 +80,7 @@ public class ProblemInstanceImplTest extends AbstractReaderTest {
 			rooms.remove(room1);
 			fail();
 		} catch (UnsupportedOperationException e) {
-			// Expected exception.
+			// Expected exception (immutability).
 		}
 	}
 
@@ -95,7 +100,7 @@ public class ProblemInstanceImplTest extends AbstractReaderTest {
 			curricula.remove(curriculum1);
 			fail();
 		} catch (UnsupportedOperationException e) {
-			// Expected exception.
+			// Expected exception (immutability).
 		}
 	}
 
@@ -126,7 +131,7 @@ public class ProblemInstanceImplTest extends AbstractReaderTest {
 			constraintsCourse1.remove(0);
 			fail();
 		} catch (UnsupportedOperationException e) {
-			// Expected exception.
+			// Expected exception (immutability).
 		}
 	}
 

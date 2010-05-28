@@ -94,4 +94,10 @@ public interface IProblemInstance {
 	 */
 	IRoom getRoomByUniqueNumber(int uniqueRoomNumber);
 
+	/**
+	 * Returns how many periods this problem instance spans. This number is a
+	 * shortcut for <tt>getNumberOfDays() * getPeriodsPerDay()</tt>.
+	 */
+	int getNumberOfPeriods();
+
 }

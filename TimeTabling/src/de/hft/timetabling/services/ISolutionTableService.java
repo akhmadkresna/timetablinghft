@@ -27,9 +27,19 @@ public interface ISolutionTableService {
 	 * Factory method allowing to create new solution instances.
 	 * 
 	 * @param coding
-	 *            The coding of the solution to create.
+	 *            The coding of the solution to create. The x-dimension of the
+	 *            array represents periods, while the y-dimension of the array
+	 *            represents rooms. Each room has a unique number which can be
+	 *            used as array index.
 	 * @param problemInstance
 	 *            The {@link IProblemInstance} the new solution is for.
+	 * 
+	 * @throws IllegalArgumentException
+	 *             If the given coding is incomplete. A coding is considered
+	 *             complete, if for every period x, there is an entry for each
+	 *             room y and additionally, every period is contained in the
+	 *             array. That means, if for example there are 10 periods and 2
+	 *             rooms in total, the array's dimension must be 10-2.
 	 */
 	ISolution createNewSolution(ICourse[][] coding,
 			IProblemInstance problemInstance);
