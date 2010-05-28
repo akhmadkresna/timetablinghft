@@ -11,7 +11,7 @@ import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 
-class Generator {
+public class Generator {
 
 	private final IProblemInstance instance;
 
@@ -44,7 +44,9 @@ class Generator {
 		// ICourse[periods][instance.getNumberOfRooms()];
 		ICourse[] schedule = new ICourse[slots];
 
-		while (!unassigned.isEmpty() || (loops < maxLoops)) {
+		while (!unassigned.isEmpty() && (loops < maxLoops)) {
+			System.out.println("Loop: " + loops);
+
 			prioterized.addAll(unassigned);
 			unassigned = new HashSet<ICourse>();
 			nonPrioterized = new HashSet<ICourse>();
@@ -75,6 +77,7 @@ class Generator {
 				}
 
 				nonPrioterized.remove(critical);
+
 			}
 
 			loops++;
@@ -83,6 +86,14 @@ class Generator {
 
 	private ICourse getMostCriticalEvent(ICourse[] schedule,
 			Set<ICourse> courses) {
+
+		availableSlots = new HashMap<ICourse, List<Integer>>();
+		availablePeriods = new HashMap<ICourse, Integer>();
+
+		for (ICourse course : courses) {
+			availableSlots.put(course, new ArrayList<Integer>());
+			availablePeriods.put(course, 0);
+		}
 
 		/*
 		 * calculate available slots for each course
@@ -125,10 +136,12 @@ class Generator {
 						if (schedule[i] == null) {
 							availableSlots.get(course).add(i);
 						}
+						int p = availablePeriods.get(course);
+						p += 1;
+						availablePeriods.put(course, p);
+
 						i++;
 					}
-					int p = availablePeriods.get(course);
-					availablePeriods.put(course, p++);
 				}
 			}
 		}
@@ -188,11 +201,6 @@ class Generator {
 		for (int i = 0; i < periods; i++) {
 			curriculaInPeriod.add(new HashSet<ICurriculum>());
 			teachersInPeriod.add(new HashSet<String>());
-		}
-
-		for (ICourse course : instance.getCourses()) {
-			availableSlots.put(course, new ArrayList<Integer>());
-			availablePeriods.put(course, 0);
 		}
 	}
 }
