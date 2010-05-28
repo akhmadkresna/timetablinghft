@@ -18,21 +18,18 @@ class Generator {
 	private Map<ICourse, List<Integer>> availableSlots = new HashMap<ICourse, List<Integer>>();
 	private Map<ICourse, Integer> availablePeriods = new HashMap<ICourse, Integer>();
 
-	private final int periods;
-	private final int slots;
-
 	private List<Set<ICurriculum>> curriculaInPeriod;
 	private List<Set<String>> teachersInPeriod;
+
+	private final int periods;
+	private final int slots;
 
 	public Generator(IProblemInstance instance) {
 		this.instance = instance;
 		periods = instance.getNumberOfDays() * instance.getPeriodsPerDay();
 		slots = periods * instance.getNumberOfRooms();
 
-		for (int i = 0; i < periods; i++) {
-			curriculaInPeriod.add(new HashSet<ICurriculum>());
-			teachersInPeriod.add(new HashSet<String>());
-		}
+		resetInternalMemory();
 	}
 
 	public void generateFeasibileSolutin() {
@@ -119,21 +116,20 @@ class Generator {
 					 * skip range belonging to current period
 					 */
 					i += instance.getNumberOfRooms();
-					continue;
-				}
-
-				/*
-				 * Add available slots
-				 */
-				int j = i;
-				while (i < j + instance.getNumberOfRooms()) {
-					if (schedule[i] == null) {
-						availableSlots.get(course).add(i);
+				} else {
+					/*
+					 * Add available slots
+					 */
+					int j = i;
+					while (i < j + instance.getNumberOfRooms()) {
+						if (schedule[i] == null) {
+							availableSlots.get(course).add(i);
+						}
+						i++;
 					}
-					i++;
+					int p = availablePeriods.get(course);
+					availablePeriods.put(course, p++);
 				}
-				int p = availablePeriods.get(course);
-				availablePeriods.put(course, p++);
 			}
 		}
 
@@ -183,5 +179,20 @@ class Generator {
 
 	private int getPeriodForSlot(int slot) {
 		return slot / instance.getNumberOfRooms();
+	}
+
+	private void resetInternalMemory() {
+		curriculaInPeriod = new ArrayList<Set<ICurriculum>>();
+		teachersInPeriod = new ArrayList<Set<String>>();
+
+		for (int i = 0; i < periods; i++) {
+			curriculaInPeriod.add(new HashSet<ICurriculum>());
+			teachersInPeriod.add(new HashSet<String>());
+		}
+
+		for (ICourse course : instance.getCourses()) {
+			availableSlots.put(course, new ArrayList<Integer>());
+			availablePeriods.put(course, 0);
+		}
 	}
 }
