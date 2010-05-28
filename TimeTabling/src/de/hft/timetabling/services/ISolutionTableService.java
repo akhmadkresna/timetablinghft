@@ -65,7 +65,7 @@ public interface ISolutionTableService {
 	 * 
 	 * @throws RuntimeException
 	 *             If the given solution is not currently stored in the solution
-	 *             table or if the given solution was already voted for.
+	 *             table.
 	 */
 	void voteForSolution(ISolution solution, int vote);
 

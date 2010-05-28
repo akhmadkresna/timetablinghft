@@ -47,14 +47,13 @@ public final class SolutionTable implements ISolutionTableService {
 	@Override
 	public void voteForSolution(ISolution solution, int vote) {
 		SolutionVote solutionVote = getSolutionVoteForSolution(solution);
-		if (solutionVote.getVoteSum() > 0) {
-			throw new RuntimeException("This solution was already voted.");
-		}
-		solutionVote.setVoteSum(vote);
+		int voteSum = solutionVote.getVoteSum();
+		voteSum += vote;
+		solutionVote.setVoteSum(voteSum);
 
 		// Update best solution if necessary.
-		if ((bestSolution == null) || (bestSolution.getVoteSum() < vote)) {
-			bestSolution = new SolutionVote(solution, vote);
+		if ((bestSolution == null) || (bestSolution.getVoteSum() < voteSum)) {
+			bestSolution = new SolutionVote(solution, voteSum);
 		}
 	}
 
