@@ -59,37 +59,61 @@ public final class SolutionTable implements ISolutionTableService {
 	@Override
 	public void putSolution(int solutionNumber, ISolution solution) {
 		checkSolutionNumber(solutionNumber);
-		solutionTable.put(solutionNumber, new SolutionVote(solution, 0));
+		solutionTable.put(solutionNumber, new SolutionVote(solution, -1));
 	}
 
 	@Override
-	public void voteForSolution(ISolution solution, int vote) {
+	public void voteForSolution(ISolution solution, int penaltyPoints) {
 		SolutionVote solutionVote = getSolutionVoteForSolution(solution);
-		int voteSum = solutionVote.getVoteSum();
-		voteSum += vote;
-		solutionVote.setVoteSum(voteSum);
+		int penaltySum = solutionVote.getPenaltySum();
+		if (penaltySum == -1) {
+			penaltySum++;
+		}
+		penaltySum += penaltyPoints;
+		solutionVote.setPenaltySum(penaltySum);
 
-		// Update best solution if necessary.
-		if ((bestSolution == null) || (bestSolution.getVoteSum() < voteSum)) {
-			bestSolution = new SolutionVote(solution, voteSum);
+		if (bestSolution == null) {
+			bestSolution = new SolutionVote(solution, penaltySum);
+		} else {
+			updateBestSolution();
 		}
 	}
 
-	@Override
-	public void voteForSolution(int solutionNumber, int vote) {
-		checkSolutionNumber(solutionNumber);
-		voteForSolution(getSolution(solutionNumber), vote);
+	private void updateBestSolution() {
+		SolutionVote bestSoFar = null;
+		for (Integer solutionNumber : solutionTable.keySet()) {
+			SolutionVote currentSolutionVote = solutionTable
+					.get(solutionNumber);
+			int currentPenaltySum = currentSolutionVote.getPenaltySum();
+			if (currentPenaltySum == -1) {
+				continue;
+			}
+			if (bestSoFar == null) {
+				bestSoFar = currentSolutionVote;
+				continue;
+			}
+			if (currentPenaltySum < bestSoFar.getPenaltySum()) {
+				bestSoFar = currentSolutionVote;
+			}
+		}
+		bestSolution = bestSoFar;
 	}
 
 	@Override
-	public int getVoteSumForSolution(int solutionNumber) {
+	public void voteForSolution(int solutionNumber, int penaltyPoints) {
 		checkSolutionNumber(solutionNumber);
-		return getVoteSumForSolution(getSolution(solutionNumber));
+		voteForSolution(getSolution(solutionNumber), penaltyPoints);
 	}
 
 	@Override
-	public int getVoteSumForSolution(ISolution solution) {
-		return getSolutionVoteForSolution(solution).getVoteSum();
+	public int getPenaltySumForSolution(int solutionNumber) {
+		checkSolutionNumber(solutionNumber);
+		return getPenaltySumForSolution(getSolution(solutionNumber));
+	}
+
+	@Override
+	public int getPenaltySumForSolution(ISolution solution) {
+		return getSolutionVoteForSolution(solution).getPenaltySum();
 	}
 
 	/**
@@ -123,8 +147,11 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
-	public int getBestSolutionVoteSum() {
-		return (bestSolution == null) ? 0 : bestSolution.getVoteSum();
+	public int getBestSolutionPenaltySum() {
+		if (bestSolution == null) {
+			throw new RuntimeException("No best solution available yet.");
+		}
+		return bestSolution.getPenaltySum();
 	}
 
 	@Override
@@ -133,29 +160,29 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	/**
-	 * Used to associate a given solution with a vote sum.
+	 * Used to associate a given solution with a penalty sum.
 	 */
 	private static class SolutionVote {
 
 		private final ISolution solution;
 
-		private int voteSum;
+		private int penaltySum;
 
-		public SolutionVote(ISolution solution, int voteSum) {
+		public SolutionVote(ISolution solution, int penaltySum) {
 			this.solution = solution;
-			this.voteSum = voteSum;
+			this.penaltySum = penaltySum;
 		}
 
 		public ISolution getSolution() {
 			return solution;
 		}
 
-		public int getVoteSum() {
-			return voteSum;
+		public int getPenaltySum() {
+			return penaltySum;
 		}
 
-		public void setVoteSum(int voteSum) {
-			this.voteSum = voteSum;
+		public void setPenaltySum(int penaltySum) {
+			this.penaltySum = penaltySum;
 		}
 
 	}

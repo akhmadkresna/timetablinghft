@@ -78,63 +78,66 @@ public interface ISolutionTableService {
 	 * 
 	 * @param solution
 	 *            The solution to vote for.
-	 * @param vote
-	 *            The value of the vote.
+	 * @param penaltyPoints
+	 *            The number of penalty points to give.
 	 * 
 	 * @throws RuntimeException
 	 *             If the given solution is not currently stored in the solution
 	 *             table.
 	 */
-	void voteForSolution(ISolution solution, int vote);
+	void voteForSolution(ISolution solution, int penaltyPoints);
 
 	/**
 	 * Allows to vote for the solution located at the specified solution number.
 	 * 
 	 * @param solutionNumber
 	 *            The solution number identifying the solution to vote for.
-	 * @param vote
-	 *            The value of the vote.
+	 * @param penaltyPoints
+	 *            The number of penalty points to give.
 	 * 
 	 * @throws IndexOutOfBoundsException
 	 *             If the given solution number is not inside the allowed range.
 	 */
-	void voteForSolution(int solutionNumber, int vote);
+	void voteForSolution(int solutionNumber, int penaltyPoints);
 
 	/**
-	 * Returns the vote sum for the given solution.
+	 * Returns the sum of penalty points for the given solution.
 	 * 
 	 * @param solution
-	 *            The solution to retrieve the vote sum for.
+	 *            The solution to retrieve the penalty points for.
 	 * 
 	 * @throws RuntimeException
 	 *             If the given solution is not currently stored in the solution
 	 *             table.
 	 */
-	int getVoteSumForSolution(ISolution solution);
+	int getPenaltySumForSolution(ISolution solution);
 
 	/**
-	 * Returns the vote sum for the solution identified by the given solution
-	 * number.
+	 * Returns the sum of penalty points for the solution identified by the
+	 * given solution number.
 	 * 
 	 * @param solutionNumber
 	 *            The solution number identifying the solution to obtain the
-	 *            vote sum for.
+	 *            penalty points for.
 	 * 
 	 * @throws IndexOutOfBoundsException
 	 *             If the given solution number is not inside the allowed range.
 	 */
-	int getVoteSumForSolution(int solutionNumber);
+	int getPenaltySumForSolution(int solutionNumber);
 
 	/**
 	 * Returns the best solution so far or <tt>null</tt> if no best solution is
-	 * available yet.
+	 * available yet. The best solution will always be the solution with the
+	 * fewest penalty points.
 	 */
 	ISolution getBestSolution();
 
 	/**
-	 * Returns the vote sum of the best solution or 0 if there is no best
-	 * solution available yet.
+	 * Returns the penalty points of the best solution.
+	 * 
+	 * @throws RuntimeException
+	 *             If there is no best solution available yet.
 	 */
-	int getBestSolutionVoteSum();
+	int getBestSolutionPenaltySum();
 
 }

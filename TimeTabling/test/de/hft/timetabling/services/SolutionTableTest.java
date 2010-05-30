@@ -91,20 +91,20 @@ public class SolutionTableTest extends AbstractServicesTest {
 		}
 
 		solutionTable.voteForSolution(5, 200);
-		assertEquals(200, solutionTable.getVoteSumForSolution(5));
+		assertEquals(200, solutionTable.getPenaltySumForSolution(5));
 	}
 
-	public void testGetVoteSumForSolution() {
+	public void testGetPenaltySumForSolution() {
 		try {
 			solutionTable
-					.getVoteSumForSolution(ISolutionTableService.TABLE_SIZE + 1);
+					.getPenaltySumForSolution(ISolutionTableService.TABLE_SIZE + 1);
 			fail();
 		} catch (IndexOutOfBoundsException e) {
 			// Expected exception (solution number out of range).
 		}
 
 		solutionTable.voteForSolution(5, 200);
-		assertEquals(200, solutionTable.getVoteSumForSolution(5));
+		assertEquals(200, solutionTable.getPenaltySumForSolution(5));
 	}
 
 	public void testGetBestSolution() {
@@ -115,7 +115,7 @@ public class SolutionTableTest extends AbstractServicesTest {
 		solutionTable.voteForSolution(1, 500);
 		solutionTable.voteForSolution(0, 400);
 
-		ISolution expectedBestSolution = solutionTable.getSolution(0);
+		ISolution expectedBestSolution = solutionTable.getSolution(1);
 		assertEquals(expectedBestSolution, solutionTable.getBestSolution());
 
 		solutionTable.putSolution(0, solutionTable.createNewSolution(
@@ -123,20 +123,25 @@ public class SolutionTableTest extends AbstractServicesTest {
 						.getNumberOfRooms()], instance));
 		assertEquals(expectedBestSolution, solutionTable.getBestSolution());
 
-		solutionTable.voteForSolution(5, 1000);
+		solutionTable.voteForSolution(5, 100);
 		expectedBestSolution = solutionTable.getSolution(5);
 		assertEquals(expectedBestSolution, solutionTable.getBestSolution());
 	}
 
-	public void testGetBestSolutionVoteSum() {
+	public void testGetBestSolutionPenaltySum() {
 		ISolutionTableService newSolutionTable = new SolutionTable();
-		assertEquals(0, newSolutionTable.getBestSolutionVoteSum());
+		try {
+			newSolutionTable.getBestSolutionPenaltySum();
+			fail();
+		} catch (RuntimeException e) {
+			// Expected exception.
+		}
 
 		solutionTable.voteForSolution(0, 200);
 		solutionTable.voteForSolution(1, 500);
 		solutionTable.voteForSolution(0, 400);
 
-		assertEquals(600, solutionTable.getBestSolutionVoteSum());
+		assertEquals(500, solutionTable.getBestSolutionPenaltySum());
 	}
 
 	public void testToString() {
