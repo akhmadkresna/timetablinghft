@@ -82,10 +82,10 @@ public class Generator {
 					if (availablePeriods.get(critical) >= critical
 							.getNumberOfLectures()) {
 						assignRandomViableSlots(critical, schedule);
-						assignedCourse = false;
+						assignedCourse = true;
 					} else {
 						unassigned.add(critical);
-						assignedCourse = true;
+						assignedCourse = false;
 						/*
 						 * Remove course so it doesn't show up in recalculation
 						 * of most critical course
