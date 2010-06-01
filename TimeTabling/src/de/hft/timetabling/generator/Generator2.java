@@ -46,7 +46,6 @@ public class Generator2 implements IGenerator {
 			} while (!unassigned.isEmpty() && (loops++ < MAX_LOOPS));
 
 			if (unassigned.isEmpty()) {
-				System.out.println("SOLUTION FOUND");
 				return session.getCoding();
 			}
 
