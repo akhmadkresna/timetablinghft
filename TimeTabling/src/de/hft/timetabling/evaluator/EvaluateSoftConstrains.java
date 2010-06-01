@@ -21,10 +21,23 @@ public class EvaluateSoftConstrains {
 		// constructor
 	}
 
+	// Check if the ISolution already has a penalty value in the ISolutionTable
+	// and then do validation
+	// ** new/recombined solutions should not have old penalty values
+	/*
+	 * Code to be added
+	 */
+
+	// After checking constrains send the message with problems to output
+	/*
+	 * Code to be added
+	 */
+
 	private IProblemInstance currentInstance;
 	private ICourse[][] currentCode;
 	private IRoom currentRoom;
-	private ICourse currentCourseDetails;
+
+	// private ICourse currentCourseDetails;
 
 	/**
 	 * This method calculates the penalty in Room Capacity
@@ -41,12 +54,6 @@ public class EvaluateSoftConstrains {
 		int r, p;
 		Set<ICourse> courses;
 		String strCourse;
-
-		// Check if the ISolution already has a penalty value
-		// ** new/recombined solutions should not have old penalty values
-		/*
-		 * Code to be added
-		 */
 
 		// Get the problem instance to get the values related to it
 		currentInstance = solution.getProblemInstance();
@@ -67,7 +74,7 @@ public class EvaluateSoftConstrains {
 				strCourse = currentCode[p][r].getId();
 				// Assuming the value is null if no course is assigned
 				// the course should be contained in the curriculum
-				if ((strCourse != null) && courses.contains(strCourse)) {
+				if ((strCourse != null) && courses.contains(currentCode[p][r])) {
 					iNoOfStudents = currentCode[p][r].getNumberOfStudents();
 					currentRoom = currentInstance.getRoomByUniqueNumber(r);
 					iRoomCapacity = currentRoom.getCapacity();
@@ -76,6 +83,9 @@ public class EvaluateSoftConstrains {
 					if (iNoOfStudents > iRoomCapacity) {
 						iCost += (iNoOfStudents - iRoomCapacity);
 					}
+					// There are no more courses in the same period but
+					// different room
+					break;
 				}
 			}
 		}
@@ -119,12 +129,17 @@ public class EvaluateSoftConstrains {
 			ArrayCourse[i] = Course.toString();
 			iMinWorkingDays = Course.getMinWorkingDays();
 			iWorkingDays = 0;
-			boolean bDay = false;
+			boolean bDay = true;
 			for (p = 0; p < currentInstance.getNumberOfPeriods(); p++) {
 				// the course should count only once per day
 				if (p % iPeriodPerDay == 0) {
 					bDay = true;
 				}
+				// improve performance to break loop if already flag is false
+				else if (bDay == false) {
+					break;
+				}
+
 				for (r = 0; r < currentInstance.getNumberOfRooms(); r++) {
 					strCourse = currentCode[p][r].getId();
 					// Assuming the value is null if no course is assigned
@@ -139,6 +154,9 @@ public class EvaluateSoftConstrains {
 							iWorkingDays++;
 							bDay = false;
 						}
+						// There are no more courses in the same period but
+						// different room
+						break;
 					}
 				}
 			}
@@ -150,4 +168,64 @@ public class EvaluateSoftConstrains {
 		}
 		return iCost;
 	}
+
+	/**
+	 * Method to calculate the penalty on compactness
+	 * 
+	 * @param solution
+	 *            A solution instance is send for evaluation
+	 * @return iCost Returns the penalty value
+	 */
+	// Need one more parameter to make it curriculum specific
+	public int CostsOnCurriculumCompactness(ISolution solution,
+			ICurriculum curriculum) {
+		int iCost = 0;
+		int p, r, d, iPreviousRoom;
+		int iPreviousPeriod;
+		Set<ICourse> courses;
+		String strCourse;
+
+		currentInstance = solution.getProblemInstance();
+		currentCode = solution.getCoding();
+		courses = curriculum.getCourses();
+
+		// Initial value of day and period
+		d = 1;
+		p = 0;
+		// Make the looping for each day
+		while (d < currentInstance.getNumberOfDays()) {
+			iPreviousPeriod = -1;
+			iPreviousRoom = -1;
+			for (; p < currentInstance.getPeriodsPerDay() * d; p++) {
+				for (r = 0; r < currentInstance.getNumberOfRooms(); r++) {
+					strCourse = currentCode[p][r].getId();
+					// Assuming the value is null if no course is assigned
+					// the course should be contained in the curriculum
+					if ((strCourse != null)
+							&& courses.contains(currentCode[p][r])) {
+						if ((iPreviousPeriod == -1) && (iPreviousRoom == -1)) {
+							iPreviousPeriod = p;
+							iPreviousRoom = r;
+						}
+						// there should not be another course of same curriculum
+						// in different room in the same period
+						break;
+					}
+				}
+				// Check if not new day
+				// if (p % currentInstance.getPeriodsPerDay()!= 0) {
+				if ((iPreviousPeriod == -1) && (iPreviousRoom == -1)) {
+					// Check if the previous period course is of the same
+					// curriculum
+					// if (!courses.contains(currentCode[p - 1][iPreviousRoom]))
+					// {
+					if (iPreviousPeriod != (p - 1)) {
+						iCost += 2;
+					}
+				}
+			}
+		}
+		return iCost;
+	}
+
 }
