@@ -23,6 +23,10 @@ public final class ServiceLocator {
 
 	private IWriterService writerService;
 
+	private IGeneratorService generatorService;
+
+	private IValidatorService validatorService;
+
 	private ServiceLocator() {
 		// Singleton constructor.
 	}
@@ -48,9 +52,22 @@ public final class ServiceLocator {
 		return solutionTableService;
 	}
 
+	public IGeneratorService getGeneratorService() {
+		if (generatorService == null) {
+			throw new RuntimeException("Generator service not available.");
+		}
+		return generatorService;
+	}
+
+	public IValidatorService getValidatorService() {
+		if (validatorService == null) {
+			throw new RuntimeException("Validator service not available.");
+		}
+		return validatorService;
+	}
+
 	public void setSolutionTableService(
 			ISolutionTableService solutionTableService) {
-
 		this.solutionTableService = solutionTableService;
 	}
 
@@ -60,6 +77,14 @@ public final class ServiceLocator {
 
 	public void setReaderService(IReaderService readerService) {
 		this.readerService = readerService;
+	}
+
+	public void setGeneratorService(IGeneratorService generatorService) {
+		this.generatorService = generatorService;
+	}
+
+	public void setValidatorService(IValidatorService validatorService) {
+		this.validatorService = validatorService;
 	}
 
 	@Override

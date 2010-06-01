@@ -9,7 +9,7 @@ import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
-import de.hft.timetabling.common.IValidator;
+import de.hft.timetabling.services.IValidatorService;
 
 /**
  * This class is a utility class to check whether solutions are valid, i.e. that
@@ -22,7 +22,7 @@ import de.hft.timetabling.common.IValidator;
  * 
  * @author Matthias Ruszala
  */
-public final class ValidatorImpl implements IValidator {
+public final class ValidatorImpl implements IValidatorService {
 
 	/**
 	 * Evaluates if a solution violates any hard constraints.

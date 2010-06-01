@@ -9,10 +9,10 @@ import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
-import de.hft.timetabling.common.IGenerator;
 import de.hft.timetabling.common.IProblemInstance;
+import de.hft.timetabling.services.IGeneratorService;
 
-public class Generator implements IGenerator {
+public class Generator implements IGeneratorService {
 
 	/*
 	 * variable for private use of the implementor

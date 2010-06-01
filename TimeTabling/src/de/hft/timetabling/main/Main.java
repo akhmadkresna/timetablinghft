@@ -9,12 +9,14 @@ import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.IRoom;
 import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.generator.Generator;
+import de.hft.timetabling.generator.Generator2;
 import de.hft.timetabling.generator.NoFeasibleSolutionFoundException;
 import de.hft.timetabling.reader.Reader;
 import de.hft.timetabling.services.IReaderService;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.ServiceLocator;
 import de.hft.timetabling.services.SolutionTable;
+import de.hft.timetabling.util.ValidatorImpl;
 import de.hft.timetabling.writer.Writer;
 
 /**
@@ -49,6 +51,8 @@ public final class Main {
 		serviceLocator.setReaderService(new Reader());
 		serviceLocator.setSolutionTableService(new SolutionTable());
 		serviceLocator.setWriterService(new Writer());
+		serviceLocator.setGeneratorService(new Generator2());
+		serviceLocator.setValidatorService(new ValidatorImpl());
 	}
 
 	/**

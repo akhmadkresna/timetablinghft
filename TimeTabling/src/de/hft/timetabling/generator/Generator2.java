@@ -9,10 +9,10 @@ import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
-import de.hft.timetabling.common.IGenerator;
 import de.hft.timetabling.common.IProblemInstance;
+import de.hft.timetabling.services.IGeneratorService;
 
-public class Generator2 implements IGenerator {
+public class Generator2 implements IGeneratorService {
 
 	private final int MAX_ITERATIONS = 20;
 
@@ -130,9 +130,9 @@ class SessionObject {
 
 			List<Integer> remainingSlots = new ArrayList<Integer>();
 
-			for (int t : slots) {
-				if (period != getPeriodForSlot(t)) {
-					remainingSlots.add(t);
+			for (int slot : slots) {
+				if (period != getPeriodForSlot(slot)) {
+					remainingSlots.add(slot);
 				}
 			}
 			availableSlots.put(course, remainingSlots);
