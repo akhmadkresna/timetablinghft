@@ -7,8 +7,12 @@ import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.IRoom;
+import de.hft.timetabling.common.ISolution;
+import de.hft.timetabling.generator.Generator;
+import de.hft.timetabling.generator.NoFeasibleSolutionFoundException;
 import de.hft.timetabling.reader.Reader;
 import de.hft.timetabling.services.IReaderService;
+import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.ServiceLocator;
 import de.hft.timetabling.services.SolutionTable;
 import de.hft.timetabling.writer.Writer;
@@ -23,9 +27,15 @@ public final class Main {
 	public static void main(String[] args) {
 		setUpServices();
 
+		/*
+		 * try { exampleUsage(); } catch (IOException e) { e.printStackTrace();
+		 * }
+		 */
+
 		try {
-			exampleUsage();
+			TestRun();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -101,6 +111,41 @@ public final class Main {
 				System.out.print("\n");
 			}
 		}
+	}
+
+	/**
+	 * Method to create a solutionTable, generate solutions and insert them into
+	 * the Solution Table
+	 * 
+	 * @throws IOException
+	 * 
+	 * @author Roy
+	 * 
+	 */
+	private static void TestRun() throws IOException {
+		// initial service call and instance instantiation
+		IReaderService readerService = ServiceLocator.getInstance()
+				.getReaderService();
+		IProblemInstance problemInstance = readerService
+				.readInstance("comp01.ctt");
+
+		// declare the generator
+		Generator g = new Generator();
+		ISolution solution;
+		ISolutionTableService solutionTable;
+		ICourse course[][] = null;
+
+		// Call the generator
+		try {
+			course = g.generateFeasibleSolution(problemInstance);
+		} catch (NoFeasibleSolutionFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Create the solutionTable, getting issue here.
+		solutionTable.createNewSolution(course, problemInstance);
+
 	}
 
 }
