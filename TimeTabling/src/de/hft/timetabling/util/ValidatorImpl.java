@@ -27,13 +27,18 @@ public final class ValidatorImpl implements IValidator {
 	/**
 	 * Evaluates if a solution violates any hard constraints.
 	 */
-	@Override
 	public boolean solutionValid(ISolution sol) {
-		ICourse[][] schedule = sol.getCoding();
+		ICourse[][] coding = sol.getCoding();
 
-		return noUnavailabilityViolations(schedule, sol.getProblemInstance())
-				&& noCurriculaOverlap(schedule) && noTeacherOverlap(schedule)
-				&& allCoursesHeld(schedule, sol.getProblemInstance());
+		return noUnavailabilityViolations(coding, sol.getProblemInstance())
+				&& noCurriculaOverlap(coding) && noTeacherOverlap(coding)
+				&& allCoursesHeld(coding, sol.getProblemInstance());
+	}
+
+	public boolean solutionValid(IProblemInstance instance, ICourse[][] coding) {
+		return noUnavailabilityViolations(coding, instance)
+				&& noCurriculaOverlap(coding) && noTeacherOverlap(coding)
+				&& allCoursesHeld(coding, instance);
 	}
 
 	/*
