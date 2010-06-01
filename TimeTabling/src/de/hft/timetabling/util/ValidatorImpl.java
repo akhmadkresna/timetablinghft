@@ -27,7 +27,7 @@ public final class ValidatorImpl implements IValidatorService {
 	/**
 	 * Evaluates if a solution violates any hard constraints.
 	 */
-	public boolean solutionValid(ISolution sol) {
+	public boolean isValidSolution(ISolution sol) {
 		ICourse[][] coding = sol.getCoding();
 
 		return noUnavailabilityViolations(coding, sol.getProblemInstance())
@@ -35,7 +35,7 @@ public final class ValidatorImpl implements IValidatorService {
 				&& allCoursesHeld(coding, sol.getProblemInstance());
 	}
 
-	public boolean solutionValid(IProblemInstance instance, ICourse[][] coding) {
+	public boolean isValidSolution(IProblemInstance instance, ICourse[][] coding) {
 		return noUnavailabilityViolations(coding, instance)
 				&& noCurriculaOverlap(coding) && noTeacherOverlap(coding)
 				&& allCoursesHeld(coding, instance);

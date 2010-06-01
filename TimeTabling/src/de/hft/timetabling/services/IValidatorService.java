@@ -6,7 +6,7 @@ import de.hft.timetabling.common.ISolution;
 
 public interface IValidatorService {
 
-	boolean solutionValid(ISolution sol);
+	boolean isValidSolution(ISolution sol);
 
-	boolean solutionValid(IProblemInstance instance, ICourse[][] coding);
+	boolean isValidSolution(IProblemInstance instance, ICourse[][] coding);
 }

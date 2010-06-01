@@ -36,7 +36,7 @@ public class CrazyGenetist implements IGenetist {
 								.getId());
 						bestSolution.getCoding()[i][j] = otherSolution
 								.getCoding()[i][j];
-						if (!vi.solutionValid(bestSolution)) {
+						if (!vi.isValidSolution(bestSolution)) {
 							bestSolution.getCoding()[i][j] = oldBestSolution[i][j];
 						} else {
 							savingList.add(bestSolution.getCoding()[position

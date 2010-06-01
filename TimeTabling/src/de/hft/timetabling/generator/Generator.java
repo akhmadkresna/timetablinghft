@@ -12,7 +12,7 @@ import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.services.IGeneratorService;
 
-public class Generator implements IGeneratorService {
+class Generator implements IGeneratorService {
 
 	/*
 	 * variable for private use of the implementor

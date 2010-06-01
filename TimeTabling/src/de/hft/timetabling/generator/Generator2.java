@@ -12,7 +12,7 @@ import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.services.IGeneratorService;
 
-public class Generator2 implements IGeneratorService {
+public final class Generator2 implements IGeneratorService {
 
 	private final int MAX_ITERATIONS = 20;
 
@@ -93,7 +93,7 @@ class SessionObject {
 
 	private boolean calculateSlots = true;
 
-	private List<ICourse> priorityList = new ArrayList<ICourse>();
+	private final List<ICourse> priorityList = new ArrayList<ICourse>();
 
 	public SessionObject(IProblemInstance instance) {
 		this.instance = instance;
@@ -113,6 +113,11 @@ class SessionObject {
 
 		ICourse critical = priorityList.get(0);
 		priorityList.remove(0);
+
+		if (priorityList.isEmpty()) {
+			calculateSlots = true;
+		}
+
 		return critical;
 	}
 
@@ -193,7 +198,7 @@ class SessionObject {
 		addMissingCourses(courses);
 		generatePriorityList();
 
-		// calculateSlots = false;
+		calculateSlots = false;
 	}
 
 	private int getPeriodForSlot(int slot) {

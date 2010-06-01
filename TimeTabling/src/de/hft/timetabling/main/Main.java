@@ -8,10 +8,10 @@ import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.IRoom;
 import de.hft.timetabling.common.ISolution;
-import de.hft.timetabling.generator.Generator;
 import de.hft.timetabling.generator.Generator2;
 import de.hft.timetabling.generator.NoFeasibleSolutionFoundException;
 import de.hft.timetabling.reader.Reader;
+import de.hft.timetabling.services.IGeneratorService;
 import de.hft.timetabling.services.IReaderService;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.ServiceLocator;
@@ -134,9 +134,11 @@ public final class Main {
 				.readInstance("comp01.ctt");
 
 		// declare the generator
-		Generator g = new Generator();
+		IGeneratorService g = ServiceLocator.getInstance()
+				.getGeneratorService();
 		ISolution solution;
-		ISolutionTableService solutionTable;
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
 		ICourse course[][] = null;
 
 		// Call the generator
