@@ -9,9 +9,10 @@ import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
+import de.hft.timetabling.common.IGenerator;
 import de.hft.timetabling.common.IProblemInstance;
 
-public class Generator {
+public class Generator implements IGenerator {
 
 	/*
 	 * variable for private use of the implementor
@@ -21,7 +22,7 @@ public class Generator {
 	private boolean assignedCourse = true;
 	private boolean solutionFound = false;
 
-	private final IProblemInstance instance;
+	private IProblemInstance instance;
 
 	private Map<ICourse, List<Integer>> availableSlots = new HashMap<ICourse, List<Integer>>();
 	private Map<ICourse, Integer> availablePeriods = new HashMap<ICourse, Integer>();
@@ -29,26 +30,21 @@ public class Generator {
 	private List<Set<ICurriculum>> curriculaInPeriod;
 	private List<Set<String>> teachersInPeriod;
 
-	private final int periods;
-	private final int slots;
+	private int periods;
+	private int slots;
 
-	public Generator(IProblemInstance instance) {
+	public ICourse[][] generateFeasibleSolution(IProblemInstance instance)
+			throws NoFeasibleSolutionFoundException {
+		System.out.println("Instance " + instanceCount++ + ": "
+				+ instance.getName());
+
 		this.instance = instance;
 		periods = instance.getNumberOfDays() * instance.getPeriodsPerDay();
 		slots = periods * instance.getNumberOfRooms();
 
 		resetInternalMemory();
-	}
 
-	public ICourse[][] generateFeasibileSolution()
-			throws NoFeasibleSolutionFoundException {
-		return generateFeasibileSolution(25);
-	}
-
-	public ICourse[][] generateFeasibileSolution(int maxIter)
-			throws NoFeasibleSolutionFoundException {
-		System.out.println("Instance " + instanceCount++ + ": "
-				+ instance.getName());
+		int maxIter = 25;
 		int currentIter = 0;
 
 		ICourse[] schedule = new ICourse[slots];

@@ -35,8 +35,8 @@ public class Generator2 implements IGenerator {
 
 			do {
 				prioterized.addAll(unassigned);
-				unassigned = new HashSet<ICourse>();
-				nonPrioterized = new HashSet<ICourse>();
+				unassigned.clear();
+				nonPrioterized.clear();
 				nonPrioterized.addAll(instance.getCourses());
 				nonPrioterized.removeAll(prioterized);
 
@@ -107,41 +107,8 @@ class SessionObject {
 	}
 
 	public ICourse getMostCriticalEvent(Set<ICourse> courses) {
-
 		if (calculateSlots) {
-			reset(courses);
-
-			for (ICourse course : courses) {
-
-				int i = 0;
-
-				while (i < schedule.length) {
-					int period = getPeriodForSlot(i);
-
-					if (slotInvalid(course, period)) {
-						i += instance.getNumberOfRooms();
-					} else {
-						int endPeriod = i + instance.getNumberOfRooms();
-
-						while (i < endPeriod) {
-							if (schedule[i] == null) {
-								availableSlots.get(course).add(i);
-							}
-
-							i++;
-						}
-
-						int periodCount = availablePeriodsCount.get(course);
-						periodCount++;
-						availablePeriodsCount.put(course, periodCount);
-					}
-				}
-			}
-
-			addMissingCourses(courses);
-			generatePriorityList();
-
-			// slotsAssigned = false;
+			calculateSlots(courses);
 		}
 
 		ICourse critical = priorityList.get(0);
@@ -193,6 +160,42 @@ class SessionObject {
 		return availablePeriodsCount.get(course);
 	}
 
+	private void calculateSlots(Set<ICourse> courses) {
+		reset(courses);
+
+		for (ICourse course : courses) {
+
+			int i = 0;
+
+			while (i < schedule.length) {
+				int period = getPeriodForSlot(i);
+
+				if (slotInvalid(course, period)) {
+					i += instance.getNumberOfRooms();
+				} else {
+					int endPeriod = i + instance.getNumberOfRooms();
+
+					while (i < endPeriod) {
+						if (schedule[i] == null) {
+							availableSlots.get(course).add(i);
+						}
+
+						i++;
+					}
+
+					int periodCount = availablePeriodsCount.get(course);
+					periodCount++;
+					availablePeriodsCount.put(course, periodCount);
+				}
+			}
+		}
+
+		addMissingCourses(courses);
+		generatePriorityList();
+
+		// calculateSlots = false;
+	}
+
 	private int getPeriodForSlot(int slot) {
 		return slot / instance.getNumberOfRooms();
 	}
@@ -213,10 +216,10 @@ class SessionObject {
 	}
 
 	private boolean allRoomsOccupied(int period) {
-		int slot = period * instance.getNumberOfRooms();
-		int periodEnd = slot + instance.getNumberOfRooms();
+		int periodStart = period * instance.getNumberOfRooms();
+		int periodEnd = periodStart + instance.getNumberOfRooms();
 
-		for (int i = slot; i < periodEnd; i++) {
+		for (int i = periodStart; i < periodEnd; i++) {
 			if (schedule[i] == null) {
 				return false;
 			}
@@ -229,7 +232,6 @@ class SessionObject {
 		for (ICourse course : courses) {
 			if (!availablePeriodsCount.keySet().contains(course)) {
 				availablePeriodsCount.put(course, 0);
-				availableSlots.put(course, new ArrayList<Integer>());
 			}
 		}
 	}
