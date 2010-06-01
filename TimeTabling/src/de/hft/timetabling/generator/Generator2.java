@@ -34,10 +34,6 @@ public class Generator2 implements IGenerator {
 			Set<ICourse> unassigned = new HashSet<ICourse>();
 
 			do {
-
-				System.out.println("Iteration: " + iterations + " Loop: "
-						+ loops);
-
 				prioterized.addAll(unassigned);
 				unassigned = new HashSet<ICourse>();
 				nonPrioterized = new HashSet<ICourse>();
