@@ -170,20 +170,22 @@ public class EvaluateSoftConstrains {
 	}
 
 	/**
-	 * Method to calculate the penalty on compactness
+	 * Method to calculate the penalty on curriculum compactness and room
+	 * stability
 	 * 
 	 * @param solution
 	 *            A solution instance is send for evaluation
-	 * @return iCost Returns the penalty value
+	 * @return iCost Returns the penalty value of both soft constrains
 	 */
 	// Need one more parameter to make it curriculum specific
-	public int CostsOnCurriculumCompactness(ISolution solution,
+	public int CostsOnCurriculumCompactnessAndRoomStability(ISolution solution,
 			ICurriculum curriculum) {
 		int iCost = 0;
 		int p, r, d, iPreviousRoom;
 		int iPreviousPeriod;
 		Set<ICourse> courses;
 		String strCourse;
+		IRoom previousRoom;
 
 		currentInstance = solution.getProblemInstance();
 		currentCode = solution.getCoding();
@@ -221,6 +223,13 @@ public class EvaluateSoftConstrains {
 					// {
 					if (iPreviousPeriod != (p - 1)) {
 						iCost += 2;
+					}
+					// Penalty for Room
+					currentRoom = currentInstance.getRoomByUniqueNumber(r);
+					previousRoom = currentInstance
+							.getRoomByUniqueNumber(iPreviousRoom);
+					if (currentRoom.getId() != previousRoom.getId()) {
+						iCost++;
 					}
 				}
 			}
