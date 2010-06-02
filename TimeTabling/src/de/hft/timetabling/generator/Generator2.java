@@ -18,8 +18,7 @@ public final class Generator2 implements IGeneratorService {
 
 	private final int MAX_LOOPS = 10;
 
-	public final ICourse[][] generateFeasibleSolution(
-			final IProblemInstance instance)
+	public ICourse[][] generateFeasibleSolution(final IProblemInstance instance)
 			throws NoFeasibleSolutionFoundException {
 
 		int iterations = 0;
@@ -56,7 +55,7 @@ public final class Generator2 implements IGeneratorService {
 		throw new NoFeasibleSolutionFoundException();
 	}
 
-	private final Set<ICourse> assignCourses(final SessionObject session,
+	private Set<ICourse> assignCourses(final SessionObject session,
 			final Set<ICourse> courses) {
 
 		Set<ICourse> unassigned = new HashSet<ICourse>();
