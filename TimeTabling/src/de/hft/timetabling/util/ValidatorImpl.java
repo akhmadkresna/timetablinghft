@@ -27,7 +27,7 @@ public final class ValidatorImpl implements IValidatorService {
 	/**
 	 * Evaluates if a solution violates any hard constraints.
 	 */
-	public boolean isValidSolution(ISolution sol) {
+	public boolean isValidSolution(final ISolution sol) {
 		ICourse[][] coding = sol.getCoding();
 
 		return noUnavailabilityViolations(coding, sol.getProblemInstance())
@@ -35,7 +35,8 @@ public final class ValidatorImpl implements IValidatorService {
 				&& allCoursesHeld(coding, sol.getProblemInstance());
 	}
 
-	public boolean isValidSolution(IProblemInstance instance, ICourse[][] coding) {
+	public boolean isValidSolution(final IProblemInstance instance,
+			final ICourse[][] coding) {
 		return noUnavailabilityViolations(coding, instance)
 				&& noCurriculaOverlap(coding) && noTeacherOverlap(coding)
 				&& allCoursesHeld(coding, instance);
@@ -45,7 +46,7 @@ public final class ValidatorImpl implements IValidatorService {
 	 * Checks whether courses which belong to the same curriculum in the same
 	 * period.
 	 */
-	private boolean noCurriculaOverlap(ICourse[][] coding) {
+	private boolean noCurriculaOverlap(final ICourse[][] coding) {
 		for (int i = 0; i < coding.length; i++) {
 			boolean firstCourse = true;
 			Set<ICurriculum> curriculaInPeriod = new HashSet<ICurriculum>();
@@ -76,7 +77,7 @@ public final class ValidatorImpl implements IValidatorService {
 	/*
 	 * Checks whether a techer gives more than one lecture in the same period.
 	 */
-	private boolean noTeacherOverlap(ICourse[][] coding) {
+	private boolean noTeacherOverlap(final ICourse[][] coding) {
 		Set<String> teachersInPeriod;
 
 		for (int i = 0; i < coding.length; i++) {
@@ -102,7 +103,8 @@ public final class ValidatorImpl implements IValidatorService {
 	/*
 	 * Checks whether all courses are held the designated amount of times.
 	 */
-	private boolean allCoursesHeld(ICourse[][] coding, IProblemInstance inst) {
+	private boolean allCoursesHeld(final ICourse[][] coding,
+			final IProblemInstance inst) {
 		Map<ICourse, Integer> courseCount = new HashMap<ICourse, Integer>();
 
 		for (int i = 0; i < coding.length; i++) {
@@ -152,8 +154,8 @@ public final class ValidatorImpl implements IValidatorService {
 	 * Checks whether there is an assignment of a course to a period which
 	 * violates unavailability violations.
 	 */
-	private boolean noUnavailabilityViolations(ICourse[][] coding,
-			IProblemInstance inst) {
+	private boolean noUnavailabilityViolations(final ICourse[][] coding,
+			final IProblemInstance inst) {
 
 		for (int i = 0; i < coding.length; i++) {
 			for (int j = 0; j < coding[i].length; j++) {

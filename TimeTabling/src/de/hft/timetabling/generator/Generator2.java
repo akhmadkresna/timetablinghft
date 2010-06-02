@@ -18,7 +18,8 @@ public final class Generator2 implements IGeneratorService {
 
 	private final int MAX_LOOPS = 10;
 
-	public ICourse[][] generateFeasibleSolution(IProblemInstance instance)
+	public final ICourse[][] generateFeasibleSolution(
+			final IProblemInstance instance)
 			throws NoFeasibleSolutionFoundException {
 
 		int iterations = 0;
@@ -55,8 +56,8 @@ public final class Generator2 implements IGeneratorService {
 		throw new NoFeasibleSolutionFoundException();
 	}
 
-	private Set<ICourse> assignCourses(SessionObject session,
-			Set<ICourse> courses) {
+	private final Set<ICourse> assignCourses(final SessionObject session,
+			final Set<ICourse> courses) {
 
 		Set<ICourse> unassigned = new HashSet<ICourse>();
 
@@ -95,7 +96,7 @@ class SessionObject {
 
 	private final List<ICourse> priorityList = new ArrayList<ICourse>();
 
-	public SessionObject(IProblemInstance instance) {
+	public SessionObject(final IProblemInstance instance) {
 		this.instance = instance;
 		int slots = instance.getNumberOfPeriods() * instance.getNumberOfRooms();
 		schedule = new ICourse[slots];
@@ -106,7 +107,7 @@ class SessionObject {
 		}
 	}
 
-	public ICourse getMostCriticalEvent(Set<ICourse> courses) {
+	public ICourse getMostCriticalEvent(final Set<ICourse> courses) {
 		if (calculateSlots) {
 			calculateSlots(courses);
 		}
@@ -121,7 +122,7 @@ class SessionObject {
 		return critical;
 	}
 
-	public void assignRandomViableSlots(ICourse course) {
+	public void assignRandomViableSlots(final ICourse course) {
 		for (int i = 0; i < course.getNumberOfLectures(); i++) {
 
 			List<Integer> slots = availableSlots.get(course);
@@ -161,11 +162,11 @@ class SessionObject {
 		return coding;
 	}
 
-	public int getPeriodCount(ICourse course) {
+	public int getPeriodCount(final ICourse course) {
 		return availablePeriodsCount.get(course);
 	}
 
-	private void calculateSlots(Set<ICourse> courses) {
+	private void calculateSlots(final Set<ICourse> courses) {
 		reset(courses);
 
 		for (ICourse course : courses) {
@@ -178,9 +179,9 @@ class SessionObject {
 				if (slotInvalid(course, period)) {
 					i += instance.getNumberOfRooms();
 				} else {
-					int endPeriod = i + instance.getNumberOfRooms();
+					int periodEnd = i + instance.getNumberOfRooms();
 
-					while (i < endPeriod) {
+					while (i < periodEnd) {
 						if (schedule[i] == null) {
 							availableSlots.get(course).add(i);
 						}
@@ -201,7 +202,7 @@ class SessionObject {
 		calculateSlots = false;
 	}
 
-	private int getPeriodForSlot(int slot) {
+	private int getPeriodForSlot(final int slot) {
 		return slot / instance.getNumberOfRooms();
 	}
 
@@ -216,11 +217,12 @@ class SessionObject {
 				|| allRoomsOccupied(period);
 	}
 
-	private boolean violatesUnavailabilityConstraints(ICourse course, int period) {
+	private boolean violatesUnavailabilityConstraints(final ICourse course,
+			final int period) {
 		return instance.getUnavailabilityConstraints(course).contains(period);
 	}
 
-	private boolean allRoomsOccupied(int period) {
+	private boolean allRoomsOccupied(final int period) {
 		int periodStart = period * instance.getNumberOfRooms();
 		int periodEnd = periodStart + instance.getNumberOfRooms();
 
@@ -233,7 +235,7 @@ class SessionObject {
 		return true;
 	}
 
-	private void addMissingCourses(Set<ICourse> courses) {
+	private void addMissingCourses(final Set<ICourse> courses) {
 		for (ICourse course : courses) {
 			if (!availablePeriodsCount.keySet().contains(course)) {
 				availablePeriodsCount.put(course, 0);
@@ -268,7 +270,7 @@ class SessionObject {
 		}
 	}
 
-	private void reset(Set<ICourse> courses) {
+	private void reset(final Set<ICourse> courses) {
 		priorityList.clear();
 		priorityList.addAll(courses);
 		availableSlots.clear();
