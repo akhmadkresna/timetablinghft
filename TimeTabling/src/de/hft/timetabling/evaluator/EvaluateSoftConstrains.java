@@ -1,5 +1,6 @@
 package de.hft.timetabling.evaluator;
 
+import java.util.Iterator;
 import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
@@ -23,7 +24,7 @@ public class EvaluateSoftConstrains {
 
 	// Check if the ISolution already has a penalty value in the ISolutionTable
 	// and then do validation
-	// ** new/recombined solutions should not have old penalty values
+	// ** new/recombined solutions should not have old penalty values (-1)
 	/*
 	 * Code to be added
 	 */
@@ -53,7 +54,6 @@ public class EvaluateSoftConstrains {
 		int iNoOfStudents, iRoomCapacity;
 		int r, p;
 		Set<ICourse> courses;
-		String strCourse;
 
 		// Get the problem instance to get the values related to it
 		currentInstance = solution.getProblemInstance();
@@ -71,10 +71,10 @@ public class EvaluateSoftConstrains {
 
 		for (p = 0; p < currentInstance.getNumberOfPeriods(); p++) {
 			for (r = 0; r < currentInstance.getNumberOfRooms(); r++) {
-				strCourse = currentCode[p][r].getId();
 				// Assuming the value is null if no course is assigned
 				// the course should be contained in the curriculum
-				if ((strCourse != null) && courses.contains(currentCode[p][r])) {
+				if ((currentCode[p][r] != null)
+						&& courses.contains(currentCode[p][r])) {
 					iNoOfStudents = currentCode[p][r].getNumberOfStudents();
 					currentRoom = currentInstance.getRoomByUniqueNumber(r);
 					iRoomCapacity = currentRoom.getCapacity();
@@ -103,20 +103,21 @@ public class EvaluateSoftConstrains {
 	// Need one more parameter to make it curriculum specific
 	public int CostsOnMinWorkingDays(ISolution solution, ICurriculum curriculum) {
 		int iCost = 0;
-		int p, r, iNumberOfCourses, iWorkingDays;
+		int p, r, iWorkingDays;
 		int iMinWorkingDays, iPeriodPerDay;
 		Set<ICourse> courses;
-		String strCourse;
-		String ArrayCourse[];
+		// String ArrayCourse[];
 		ICourse Course;
+		Iterator<ICourse> it;
 
 		currentInstance = solution.getProblemInstance();
 		currentCode = solution.getCoding();
 		courses = curriculum.getCourses();
 
 		iPeriodPerDay = currentInstance.getPeriodsPerDay();
-		iNumberOfCourses = curriculum.getNumberOfCourses();
-		ArrayCourse = new String[iNumberOfCourses];
+		// iNumberOfCourses = curriculum.getNumberOfCourses();
+		// System.out.println("The number of course:" + iNumberOfCourses);
+		// ArrayCourse = new String[iNumberOfCourses];
 		// curriculum.containsCourse(courses);
 		/*
 		 * do { int i = 0; ArrayCourse[i] =
@@ -124,9 +125,14 @@ public class EvaluateSoftConstrains {
 		 * (courses.iterator().hasNext());
 		 */
 
-		for (int i = 0; i < iNumberOfCourses; i++) {
-			Course = courses.iterator().next();
-			ArrayCourse[i] = Course.toString();
+		// To convert set to array
+		// String[] array = courses.toArray(new String[courses.size()]);
+
+		// Use iterator to parse through set
+		it = courses.iterator();
+		while (it.hasNext()) {
+			Course = it.next();
+			// ArrayCourse[i] = Course.toString();
 			iMinWorkingDays = Course.getMinWorkingDays();
 			iWorkingDays = 0;
 			boolean bDay = true;
@@ -135,16 +141,20 @@ public class EvaluateSoftConstrains {
 				if (p % iPeriodPerDay == 0) {
 					bDay = true;
 				}
-				// improve performance to break loop if already flag is false
+				// improve performance: jump to the next day
+				// continue with loop, subtract 1 as loop increments p value by
+				// 1 resulting the flag to true at next loop
 				else if (bDay == false) {
-					break;
+					p += (iPeriodPerDay - (p % iPeriodPerDay)) - 1;
+					// bDay = true;
+					continue;
 				}
 
 				for (r = 0; r < currentInstance.getNumberOfRooms(); r++) {
-					strCourse = currentCode[p][r].getId();
 					// Assuming the value is null if no course is assigned
-					// the course should be contained in the curriculum
-					if ((strCourse != null) && (ArrayCourse[i] == strCourse)) {
+					// the course should be equal to the course
+					if ((currentCode[p][r] != null)
+							&& (currentCode[p][r] == Course)) {
 
 						// iMinWorkingDays =
 						// currentCode[p][r].getMinWorkingDays();
