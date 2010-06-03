@@ -1,15 +1,20 @@
 package de.hft.timetabling.main;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.IRoom;
+import de.hft.timetabling.common.ISolution;
+import de.hft.timetabling.evaluator.EvaluateSoftConstrains;
 import de.hft.timetabling.generator.Generator2;
+import de.hft.timetabling.generator.NoFeasibleSolutionFoundException;
 import de.hft.timetabling.reader.Reader;
 import de.hft.timetabling.services.IReaderService;
+import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.ServiceLocator;
 import de.hft.timetabling.services.SolutionTable;
 import de.hft.timetabling.util.ValidatorImpl;
@@ -31,10 +36,13 @@ public final class Main {
 			e.printStackTrace();
 		}
 
-		/*
-		 * try { TestRun(); } catch (IOException e) { // TODO Auto-generated
-		 * catch block e.printStackTrace(); }
-		 */
+		try {
+			TestRun();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -122,23 +130,55 @@ public final class Main {
 	 * 
 	 */
 
-	/*
-	 * private static void TestRun() throws IOException { // initial service
-	 * call and instance instantiation IReaderService readerService =
-	 * ServiceLocator.getInstance() .getReaderService(); IProblemInstance
-	 * problemInstance = readerService .readInstance("comp01.ctt");
-	 * 
-	 * // declare the generator Generator g = new Generator(); ISolution
-	 * solution; ISolutionTableService solutionTable; ICourse course[][] = null;
-	 * 
-	 * // Call the generator try { course =
-	 * g.generateFeasibleSolution(problemInstance); } catch
-	 * (NoFeasibleSolutionFoundException e) { // TODO Auto-generated catch block
-	 * e.printStackTrace(); }
-	 * 
-	 * // Create the solutionTable, getting issue here.
-	 * solutionTable.createNewSolution(course, problemInstance);
-	 * 
-	 * }
-	 */
+	private static void TestRun() throws IOException { // initial service
+		// call and instance instantiation
+		IReaderService readerService = ServiceLocator.getInstance()
+				.getReaderService();
+		IProblemInstance problemInstance = readerService
+				.readInstance("comp01.ctt");
+
+		// declare the generator
+		Generator2 g = new Generator2();
+		ISolution solution;
+		ISolutionTableService solutionTable;
+		ICourse course[][] = null;
+
+		// declare evaluator
+		EvaluateSoftConstrains eval = new EvaluateSoftConstrains();
+		Set<ICurriculum> currentCurriculumSet;
+		ICurriculum currentCurricula;
+		int iCost = 0;
+
+		currentCurriculumSet = problemInstance.getCurricula();
+
+		// Call the generator
+		try {
+			course = g.generateFeasibleSolution(problemInstance);
+		} catch (NoFeasibleSolutionFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Create the solutionTable, getting issue here.
+		// solutionTable.createNewSolution(course, problemInstance);
+		solutionTable = ServiceLocator.getInstance().getSolutionTableService();
+		solution = solutionTable.createNewSolution(course, problemInstance);
+		solutionTable.putSolution(0, solution);
+		solutionTable.putSolution(1, solution);
+
+		// solutionTable.
+		// call the eval for each curriculum
+		Iterator<ICurriculum> it = currentCurriculumSet.iterator();
+		while (it.hasNext()) {
+			currentCurricula = it.next();
+			// iCost =
+			// eval.CostsOnRoomCapacity(solutionTable.getSolution(0),currentCurricula);
+			iCost = eval.CostsOnMinWorkingDays(solutionTable.getSolution(0),
+					currentCurricula);
+			solutionTable.voteForSolution(0, iCost);
+		}
+		iCost = solutionTable.getPenaltySumForSolution(0);
+		System.out.println(iCost);
+	}
+
 }
