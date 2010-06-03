@@ -194,8 +194,8 @@ public class EvaluateSoftConstrains {
 		int p, r, d, iPreviousRoom;
 		int iPreviousPeriod;
 		Set<ICourse> courses;
-		String strCourse;
-		IRoom previousRoom;
+		// String strCourse;
+		// IRoom previousRoom;
 
 		currentInstance = solution.getProblemInstance();
 		currentCode = solution.getCoding();
@@ -210,39 +210,56 @@ public class EvaluateSoftConstrains {
 			iPreviousRoom = -1;
 			for (; p < currentInstance.getPeriodsPerDay() * d; p++) {
 				for (r = 0; r < currentInstance.getNumberOfRooms(); r++) {
-					strCourse = currentCode[p][r].getId();
+					// strCourse = currentCode[p][r].getId();
 					// Assuming the value is null if no course is assigned
 					// the course should be contained in the curriculum
-					if ((strCourse != null)
+					if ((currentCode[p][r] != null)
 							&& courses.contains(currentCode[p][r])) {
 						if ((iPreviousPeriod == -1) && (iPreviousRoom == -1)) {
 							iPreviousPeriod = p;
 							iPreviousRoom = r;
+							// there should not be another course of same
+							// curriculum in different room in the same period
+							// it should also not go with next if statement in
+							// first run
+							break;
 						}
-						// there should not be another course of same curriculum
-						// in different room in the same period
+
+						// Check if not new day
+						// if (p % currentInstance.getPeriodsPerDay()!= 0) {
+						if ((iPreviousPeriod != -1) && (iPreviousRoom != -1)) {
+							// Check if the previous period course is of the
+							// same
+							// curriculum
+							// if (!courses.contains(currentCode[p -
+							// 1][iPreviousRoom]))
+							// {
+							if (iPreviousPeriod != (p - 1)) {
+								iCost += 2;
+							}
+							// Penalty for Room
+							// currentRoom =
+							// currentInstance.getRoomByUniqueNumber(r);
+							// previousRoom =
+							// currentInstance.getRoomByUniqueNumber(iPreviousRoom);
+							// if (currentRoom.getId() != previousRoom.getId())
+							// {
+							if (r != iPreviousRoom) {
+								iCost++;
+							}
+							// Assign the new previous Room and Period values
+							iPreviousRoom = r;
+							iPreviousPeriod = p;
+						}
+						// there should not be another course of same
+						// curriculum in different room in the same period
 						break;
 					}
 				}
-				// Check if not new day
-				// if (p % currentInstance.getPeriodsPerDay()!= 0) {
-				if ((iPreviousPeriod == -1) && (iPreviousRoom == -1)) {
-					// Check if the previous period course is of the same
-					// curriculum
-					// if (!courses.contains(currentCode[p - 1][iPreviousRoom]))
-					// {
-					if (iPreviousPeriod != (p - 1)) {
-						iCost += 2;
-					}
-					// Penalty for Room
-					currentRoom = currentInstance.getRoomByUniqueNumber(r);
-					previousRoom = currentInstance
-							.getRoomByUniqueNumber(iPreviousRoom);
-					if (currentRoom.getId() != previousRoom.getId()) {
-						iCost++;
-					}
-				}
+
 			}
+			// Increment to next day
+			d++;
 		}
 		return iCost;
 	}
