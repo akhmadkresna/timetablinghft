@@ -4,7 +4,7 @@ package de.hft.timetabling.common;
  * This class contains method that other parts will call for the evaluation
  * part.
  * 
- * @author SteffenKremer
+ * @author Steffen
  * 
  */
 public interface IEvaluator {
@@ -15,5 +15,5 @@ public interface IEvaluator {
 	 * 
 	 * @param solution
 	 */
-	void HandInSolution(ISolution solution);
+	void handInSolution(ISolution solution);
 }

@@ -12,6 +12,7 @@ import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.evaluator.EvaluateSoftConstrains;
 import de.hft.timetabling.generator.Generator2;
 import de.hft.timetabling.generator.NoFeasibleSolutionFoundException;
+import de.hft.timetabling.genetist.CrazyGenetist;
 import de.hft.timetabling.reader.Reader;
 import de.hft.timetabling.services.IReaderService;
 import de.hft.timetabling.services.ISolutionTableService;
@@ -203,6 +204,12 @@ public final class Main {
 		System.out.println("Penalty for solution 0: " + iCost);
 		iCost = solutionTable.getPenaltySumForSolution(1);
 		System.out.println("Penalty for solution 1: " + iCost);
+
+		// Test CrazyGenetist
+
+		CrazyGenetist cg = new CrazyGenetist();
+		// --> EvaluatorInput
+		cg.startRecombination(solutionTable);
 
 	}
 

@@ -27,7 +27,7 @@ public interface ISolution {
 	 * Method to get the numbers of recombinations.
 	 * 
 	 * @return number of recombinations
-	 * @author SteffenKremer
+	 * @author Steffen
 	 */
 	int getRecombinationCount();
 
@@ -35,14 +35,14 @@ public interface ISolution {
 	 * Set the number of recombinations
 	 * 
 	 * @param nrOfRecombinations
-	 * @author SteffenKremer
+	 * @author Steffen
 	 */
 	void setRecombinationCount(int nrOfRecombinations);
 
 	/**
 	 * Method to increase the number of recombinations.
 	 * 
-	 * @author SteffenKremer
+	 * @author Steffen
 	 */
 	void increaseRecombinationCount();
 
