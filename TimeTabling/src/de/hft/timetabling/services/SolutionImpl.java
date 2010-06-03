@@ -21,6 +21,8 @@ final class SolutionImpl implements ISolution {
 
 	private final IProblemInstance problemInstance;
 
+	private int recombinations = 0;
+
 	SolutionImpl(ICourse[][] coding, IProblemInstance problemInstance) {
 		this.coding = coding;
 		this.problemInstance = problemInstance;
@@ -39,6 +41,21 @@ final class SolutionImpl implements ISolution {
 	@Override
 	public String toString() {
 		return "Solution: " + coding.toString();
+	}
+
+	@Override
+	public int getRecombinationCount() {
+		return recombinations;
+	}
+
+	@Override
+	public void increaseRecombinationCount() {
+		recombinations++;
+	}
+
+	@Override
+	public void setRecombinationCount(int nrOfRecombinations) {
+		recombinations = nrOfRecombinations;
 	}
 
 }

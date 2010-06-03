@@ -38,6 +38,9 @@ public class CrazyGenetist implements IGenetist {
 					otherSolution));
 		}
 
+		bestSolution.increaseRecombinationCount();
+		otherSolution.increaseRecombinationCount();
+
 		return back;
 
 	}
@@ -97,8 +100,11 @@ public class CrazyGenetist implements IGenetist {
 			}
 		}
 
-		return this.solution.createNewSolution(courses, solution
-				.getProblemInstance());
+		ISolution newSolution = this.solution.createNewSolution(courses,
+				solution.getProblemInstance());
+		newSolution.setRecombinationCount(solution.getRecombinationCount() + 1);
+
+		return newSolution;
 	}
 
 	private ISolution recombindation1(ISolution bestSolution,

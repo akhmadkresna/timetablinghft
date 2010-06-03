@@ -23,4 +23,27 @@ public interface ISolution {
 	 */
 	IProblemInstance getProblemInstance();
 
+	/**
+	 * Method to get the numbers of recombinations.
+	 * 
+	 * @return number of recombinations
+	 * @author SteffenKremer
+	 */
+	int getRecombinationCount();
+
+	/**
+	 * Set the number of recombinations
+	 * 
+	 * @param nrOfRecombinations
+	 * @author SteffenKremer
+	 */
+	void setRecombinationCount(int nrOfRecombinations);
+
+	/**
+	 * Method to increase the number of recombinations.
+	 * 
+	 * @author SteffenKremer
+	 */
+	void increaseRecombinationCount();
+
 }
