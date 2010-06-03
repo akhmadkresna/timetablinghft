@@ -12,7 +12,6 @@ import de.hft.timetabling.common.IGenetist;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.services.ISolutionTableService;
-import de.hft.timetabling.util.ValidatorImpl;
 
 public class CrazyGenetist implements IGenetist {
 
@@ -23,24 +22,39 @@ public class CrazyGenetist implements IGenetist {
 	public ISolution startRecombination(ISolutionTableService solution) {
 		setSolution(solution);
 
-		int n = (int) (ISolutionTableService.TABLE_SIZE - 1 * Math.random()) + 2;
+		ISolution back = null;
 
-		ISolution bestSolution = solution.getBestSolution();
-		ISolution otherSolution = solution.getSolution(n);
+		if (solution.getActualSolutionTableCount() > 1) {
+			ISolution otherSolution = null;
+			ISolution bestSolution = null;
+			while ((otherSolution == null) || (bestSolution == null)
+					|| bestSolution.equals(otherSolution)) {
+				System.out.println("Trying to find solution to work with ...");
+				int n = (int) (solution.getActualSolutionTableCount() * Math
+						.random());
 
-		ISolution back;
+				bestSolution = solution.getBestSolution();
+				otherSolution = solution.getSolution(n);
 
-		if (Math.random() < probability) {
-			back = mutateRoomStability(recombindation1(bestSolution,
-					otherSolution));
-		} else {
-			back = mutateRoomStability(recombindation2(bestSolution,
-					otherSolution));
+				System.out.println("... found " + n + " ...");
+			}
+			System.out.println(" ... take it!");
+			if (Math.random() < probability) {
+				try {
+					back = mutateRoomStability(recombindation1(bestSolution,
+							otherSolution));
+				} catch (NoFeasibleRecombinationFoundException ex) {
+					back = mutateRoomStability(recombindation2(bestSolution,
+							otherSolution));
+				}
+			} else {
+				back = mutateRoomStability(recombindation2(bestSolution,
+						otherSolution));
+			}
+
+			bestSolution.increaseRecombinationCount();
+			otherSolution.increaseRecombinationCount();
 		}
-
-		bestSolution.increaseRecombinationCount();
-		otherSolution.increaseRecombinationCount();
-
 		return back;
 
 	}
@@ -54,7 +68,7 @@ public class CrazyGenetist implements IGenetist {
 	}
 
 	private ISolution mutateRoomStability(ISolution solution) {
-
+		System.out.println("Starting mutation ...");
 		IProblemInstance pi = solution.getProblemInstance();
 		ICourse[][] courses = solution.getCoding();
 		int roomY = 0, periodX = 0;
@@ -63,18 +77,23 @@ public class CrazyGenetist implements IGenetist {
 		while (myCurriculum == null) {
 			roomY = (int) (pi.getRooms().size() * Math.random());
 			periodX = (int) (pi.getNumberOfPeriods() * Math.random());
-
+			System.out.println("... trying to find curriculum [" + periodX
+					+ "][" + roomY + "] ...");
 			if (courses[periodX][roomY] != null) {
 				Set<ICurriculum> cur = courses[periodX][roomY].getCurricula();
-				int curriculumNr = (int) (cur.size() * Math.random());
 
-				ICurriculum[] curr = (ICurriculum[]) cur.toArray();
-				myCurriculum = curr[curriculumNr];
+				for (ICurriculum asd : cur) {
+					System.out.println("### " + asd.getId());
+				}
+
+				String curriculumNr = String.format("q%03d",
+						(int) (cur.size() * Math.random()));
+
+				myCurriculum = getCurriculumOutOfSet(cur, curriculumNr);
 			}
 		}
-		// course[!][] --> course.length
-		// course[][!] --> course[i].length
 
+		System.out.println("... mutate ...");
 		for (int i = 0; i < courses.length; i++) {
 			if (i != periodX) {
 
@@ -83,10 +102,10 @@ public class CrazyGenetist implements IGenetist {
 					if (selectedCourse != null) {
 
 						Set<ICurriculum> tmpCur = selectedCourse.getCurricula();
-						ICurriculum[] tmpCurr = (ICurriculum[]) tmpCur
-								.toArray();
-						for (int k = 0; k < tmpCurr.length; k++) {
-							if (tmpCurr[k].getId().equals(myCurriculum.getId())) {
+
+						for (ICurriculum iCurriculum : tmpCur) {
+							if (iCurriculum.getId()
+									.equals(myCurriculum.getId())) {
 
 								courses[i][j] = courses[i][roomY];
 								courses[i][roomY] = selectedCourse;
@@ -103,17 +122,18 @@ public class CrazyGenetist implements IGenetist {
 		ISolution newSolution = this.solution.createNewSolution(courses,
 				solution.getProblemInstance());
 		newSolution.setRecombinationCount(solution.getRecombinationCount() + 1);
-
+		System.out.println("... mutation done.");
 		return newSolution;
 	}
 
 	private ISolution recombindation1(ISolution bestSolution,
-			ISolution otherSolution) {
-
+			ISolution otherSolution)
+			throws NoFeasibleRecombinationFoundException {
+		System.out.println("Start recombnination 1 process ...");
 		ValidatorImpl vi = new ValidatorImpl();
+		int iterationCount = 0;
 
 		do {
-
 			IProblemInstance pi1 = bestSolution.getProblemInstance();
 			int periodX1 = (int) (pi1.getNumberOfPeriods() * Math.random());
 
@@ -136,7 +156,7 @@ public class CrazyGenetist implements IGenetist {
 			Iterator<ICourse> ite = notInList.iterator();
 
 			for (int i = 0; i < bestSolution.getCoding().length; i++) {
-				for (int j = 0; j < bestSolution.getCoding().length; j++) {
+				for (int j = 0; j < bestSolution.getCoding()[i].length; j++) {
 					if (doubleInList.contains(bestSolution.getCoding()[i][j])) {
 						bestSolution.getCoding()[i][j] = null;
 					} else if (bestSolution.getCoding()[i][j] == null) {
@@ -146,8 +166,16 @@ public class CrazyGenetist implements IGenetist {
 					}
 				}
 			}
-		} while (!vi.isValidSolution(bestSolution));
 
+			if (iterationCount > 1000) {
+				throw new NoFeasibleRecombinationFoundException(
+						"Recombination 1 was not successful.");
+			}
+
+			System.out.println("... recombindation1: did " + iterationCount++
+					+ " iteration ...");
+		} while (!vi.isValidSolution(bestSolution));
+		System.out.println("... done with recombination 1 process.");
 		return bestSolution;
 
 	}
@@ -162,11 +190,13 @@ public class CrazyGenetist implements IGenetist {
 
 	private ISolution recombindation2(ISolution bestSolution,
 			ISolution otherSolution) {
+		System.out.println("Start recombnination 2 process ...");
 		ICourse[][] oldBestSolution;
 		ValidatorImpl vi = new ValidatorImpl();
 		Set<ICourse> savingList = new HashSet<ICourse>();
 		for (int i = 0; i < bestSolution.getCoding().length; i++) {
-			for (int j = 0; j < bestSolution.getCoding()[j].length; j++) {
+			for (int j = 0; j < bestSolution.getCoding()[i].length; j++) {
+				System.out.println("... course[" + i + "][" + j + "]");
 				if (bestSolution.getCoding()[i][j] == null) {
 					oldBestSolution = bestSolution.getCoding();
 					if (otherSolution.getCoding()[i][j] != null) {
@@ -206,6 +236,11 @@ public class CrazyGenetist implements IGenetist {
 				}
 			}
 		}
+		System.out.println("... done with recombindation 2 process. ("
+				+ checkForNullCourse(bestSolution) + ")");
+		if (checkForNullCourse(bestSolution)) {
+			System.out.println("ALL NULL");
+		}
 		return bestSolution;
 	}
 
@@ -215,8 +250,8 @@ public class CrazyGenetist implements IGenetist {
 		Map<ICourse, CoursePosition> positions = new HashMap<ICourse, CoursePosition>();
 
 		for (int i = 0; i < course.length; i++) {
-			for (int j = 0; j < course[j].length; j++) {
-				if (course[i][j].getId().equals(id)) {
+			for (int j = 0; j < course[i].length; j++) {
+				if ((course[i][j] != null) && course[i][j].getId().equals(id)) {
 					positions.put(course[i][j], new CoursePosition(i, j));
 				}
 			}
@@ -231,4 +266,32 @@ public class CrazyGenetist implements IGenetist {
 	public void setProbability(double probability) {
 		this.probability = probability;
 	}
+
+	public ICurriculum getCurriculumOutOfSet(Set<ICurriculum> set,
+			ICurriculum searchedOne) {
+		return getCurriculumOutOfSet(set, searchedOne.getId());
+	}
+
+	public ICurriculum getCurriculumOutOfSet(Set<ICurriculum> set,
+			String searchedOneId) {
+		for (ICurriculum iCurriculum : set) {
+			if (iCurriculum.getId().equals(searchedOneId)) {
+				return iCurriculum;
+			}
+		}
+		return null;
+	}
+
+	private boolean checkForNullCourse(ISolution solution) {
+		ICourse[][] course = solution.getCoding();
+		for (int i = 0; i < course.length; i++) {
+			for (int j = 0; j < course[i].length; j++) {
+				if (course[i][j] != null) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 }

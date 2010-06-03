@@ -140,4 +140,11 @@ public interface ISolutionTableService {
 	 */
 	int getBestSolutionPenaltySum();
 
+	/**
+	 * Method to get back the actual number of solutions.
+	 * 
+	 * @author Steffen
+	 * @return number of solutions
+	 */
+	int getActualSolutionTableCount();
 }

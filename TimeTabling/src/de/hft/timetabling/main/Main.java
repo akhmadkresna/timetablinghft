@@ -13,12 +13,12 @@ import de.hft.timetabling.evaluator.EvaluateSoftConstrains;
 import de.hft.timetabling.generator.Generator2;
 import de.hft.timetabling.generator.NoFeasibleSolutionFoundException;
 import de.hft.timetabling.genetist.CrazyGenetist;
+import de.hft.timetabling.genetist.ValidatorImpl;
 import de.hft.timetabling.reader.Reader;
 import de.hft.timetabling.services.IReaderService;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.ServiceLocator;
 import de.hft.timetabling.services.SolutionTable;
-import de.hft.timetabling.util.ValidatorImpl;
 import de.hft.timetabling.writer.Writer;
 
 /**
@@ -209,8 +209,11 @@ public final class Main {
 
 		CrazyGenetist cg = new CrazyGenetist();
 		// --> EvaluatorInput
-		cg.startRecombination(solutionTable);
+		for (int i = 0; i < 1000; i++) {
+			System.out.println("Test " + i);
+			cg.startRecombination(solutionTable);
 
+		}
 	}
 
 }

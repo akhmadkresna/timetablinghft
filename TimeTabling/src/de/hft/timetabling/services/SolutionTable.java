@@ -187,4 +187,9 @@ public final class SolutionTable implements ISolutionTableService {
 
 	}
 
+	@Override
+	public int getActualSolutionTableCount() {
+		return solutionTable.size();
+	}
+
 }

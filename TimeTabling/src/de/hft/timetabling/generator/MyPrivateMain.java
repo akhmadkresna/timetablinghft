@@ -4,13 +4,13 @@ import java.io.IOException;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
+import de.hft.timetabling.genetist.ValidatorImpl;
 import de.hft.timetabling.reader.Reader;
 import de.hft.timetabling.services.IGeneratorService;
 import de.hft.timetabling.services.IReaderService;
 import de.hft.timetabling.services.IValidatorService;
 import de.hft.timetabling.services.ServiceLocator;
 import de.hft.timetabling.services.SolutionTable;
-import de.hft.timetabling.util.ValidatorImpl;
 import de.hft.timetabling.writer.Writer;
 
 /**

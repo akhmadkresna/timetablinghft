@@ -1,4 +1,4 @@
-package de.hft.timetabling.util;
+package de.hft.timetabling.genetist;
 
 import java.util.HashMap;
 import java.util.HashSet;
