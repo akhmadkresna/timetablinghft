@@ -150,10 +150,8 @@ public final class Main {
 		int iCost = 0;
 
 		currentCurriculumSet = problemInstance.getCurricula();
-
 		// Create the solutionTable and instantiate it
 		solutionTable = ServiceLocator.getInstance().getSolutionTableService();
-		solution = solutionTable.createNewSolution(course, problemInstance);
 
 		// Call the generator
 		try {
@@ -162,6 +160,8 @@ public final class Main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		solution = solutionTable.createNewSolution(course, problemInstance);
 
 		// Create the solutionTable, getting issue here.
 		// solutionTable.createNewSolution(course, problemInstance);
@@ -174,6 +174,8 @@ public final class Main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		solution = solutionTable.createNewSolution(course, problemInstance);
 		solutionTable.putSolution(1, solution);
 
 		// solutionTable.
