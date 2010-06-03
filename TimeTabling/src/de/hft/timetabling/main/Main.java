@@ -151,6 +151,10 @@ public final class Main {
 
 		currentCurriculumSet = problemInstance.getCurricula();
 
+		// Create the solutionTable and instantiate it
+		solutionTable = ServiceLocator.getInstance().getSolutionTableService();
+		solution = solutionTable.createNewSolution(course, problemInstance);
+
 		// Call the generator
 		try {
 			course = g.generateFeasibleSolution(problemInstance);
@@ -161,9 +165,15 @@ public final class Main {
 
 		// Create the solutionTable, getting issue here.
 		// solutionTable.createNewSolution(course, problemInstance);
-		solutionTable = ServiceLocator.getInstance().getSolutionTableService();
-		solution = solutionTable.createNewSolution(course, problemInstance);
 		solutionTable.putSolution(0, solution);
+
+		// Call the generator
+		try {
+			course = g.generateFeasibleSolution(problemInstance);
+		} catch (NoFeasibleSolutionFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		solutionTable.putSolution(1, solution);
 
 		// solutionTable.
@@ -171,14 +181,27 @@ public final class Main {
 		Iterator<ICurriculum> it = currentCurriculumSet.iterator();
 		while (it.hasNext()) {
 			currentCurricula = it.next();
-			// iCost =
-			// eval.CostsOnRoomCapacity(solutionTable.getSolution(0),currentCurricula);
-			iCost = eval.CostsOnMinWorkingDays(solutionTable.getSolution(0),
+			// Penalty calculation for first solution
+			iCost = 0;
+			iCost += eval.CostsOnRoomCapacity(solutionTable.getSolution(0),
+					currentCurricula);
+			iCost += eval.CostsOnMinWorkingDays(solutionTable.getSolution(0),
 					currentCurricula);
 			solutionTable.voteForSolution(0, iCost);
+
+			// Penalty calculation for second solution
+			iCost = 0;
+			iCost += eval.CostsOnRoomCapacity(solutionTable.getSolution(1),
+					currentCurricula);
+			iCost += eval.CostsOnMinWorkingDays(solutionTable.getSolution(1),
+					currentCurricula);
+			solutionTable.voteForSolution(1, iCost);
 		}
 		iCost = solutionTable.getPenaltySumForSolution(0);
-		System.out.println(iCost);
+		System.out.println("Penalty for solution 0: " + iCost);
+		iCost = solutionTable.getPenaltySumForSolution(1);
+		System.out.println("Penalty for solution 1: " + iCost);
+
 	}
 
 }
