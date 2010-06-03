@@ -15,5 +15,5 @@ public interface IEvaluator {
 	 * 
 	 * @param solution
 	 */
-	void handInSolution(ISolution solution);
+	void HandInSolution(ISolution solution);
 }
