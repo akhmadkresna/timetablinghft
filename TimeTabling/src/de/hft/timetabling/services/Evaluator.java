@@ -15,7 +15,7 @@ public final class Evaluator implements IEvaluator {
 	 * to each solution.
 	 */
 	@Override
-	public void HandInSolution(ISolution solution) {
+	public void handInSolution(ISolution solution) {
 
 		int iTableSize;
 		// Create the solutionTable and instantiate it
