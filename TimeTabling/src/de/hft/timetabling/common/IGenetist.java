@@ -18,6 +18,6 @@ public interface IGenetist {
 	 * @param solution
 	 *            SolutionTable to recombine
 	 */
-	void startRecombination(ISolutionTableService solution);
+	ISolution startRecombination(ISolutionTableService solution);
 
 }
