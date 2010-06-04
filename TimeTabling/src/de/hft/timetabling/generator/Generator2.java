@@ -10,7 +10,10 @@ import java.util.Set;
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
+import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.services.IGeneratorService;
+import de.hft.timetabling.services.ISolutionTableService;
+import de.hft.timetabling.services.ServiceLocator;
 
 /**
  * This class generates feasible solutions for all problem instances from the
@@ -45,7 +48,7 @@ public final class Generator2 implements IGeneratorService {
 	 *             when no solution can be found within the set amount of
 	 *             iterations
 	 */
-	public ICourse[][] generateFeasibleSolution(final IProblemInstance instance)
+	private ICourse[][] generateFeasibleSolution(final IProblemInstance instance)
 			throws NoFeasibleSolutionFoundException {
 
 		int iterations = 0;
@@ -119,6 +122,23 @@ public final class Generator2 implements IGeneratorService {
 		}
 
 		return unassigned;
+	}
+
+	@Override
+	public void fillSolutionTable(IProblemInstance problemInstance)
+			throws NoFeasibleSolutionFoundException {
+
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+		for (int i = 0; i < ISolutionTableService.TABLE_SIZE; i++) {
+			ISolution solution = solutionTable.getSolution(i);
+			if (solution == null) {
+				ICourse[][] coding = generateFeasibleSolution(problemInstance);
+				solution = solutionTable.createNewSolution(coding,
+						problemInstance);
+				solutionTable.putSolution(i, solution);
+			}
+		}
 	}
 }
 
@@ -469,7 +489,6 @@ class SessionObject {
 	 *            and periods will be calculated
 	 */
 	private void reset(final Set<ICourse> courses) {
-
 		priorityList.clear();
 		priorityList.addAll(courses);
 		availableSlots.clear();
@@ -480,4 +499,5 @@ class SessionObject {
 			availablePeriodsCount.put(course, 0);
 		}
 	}
+
 }

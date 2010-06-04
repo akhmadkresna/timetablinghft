@@ -8,8 +8,9 @@ import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.IRoom;
 import de.hft.timetabling.common.ISolution;
+import de.hft.timetabling.services.IEvaluatorService;
 
-public class EvaluateSoftConstrains {
+public class Evaluator implements IEvaluatorService {
 
 	/**
 	 * Evaluate the soft constrains for each curriculum and store the penalty
@@ -18,7 +19,7 @@ public class EvaluateSoftConstrains {
 	 * @author Roy
 	 */
 
-	public EvaluateSoftConstrains() {
+	public Evaluator() {
 		// constructor
 	}
 
@@ -262,6 +263,12 @@ public class EvaluateSoftConstrains {
 			d++;
 		}
 		return iCost;
+	}
+
+	@Override
+	public void voteForSolutions() {
+		// TODO Please implement this method
+
 	}
 
 }

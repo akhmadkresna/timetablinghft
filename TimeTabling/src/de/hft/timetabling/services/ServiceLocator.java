@@ -27,6 +27,10 @@ public final class ServiceLocator {
 
 	private IValidatorService validatorService;
 
+	private ICrazyGenetistService crazyGenetistService;
+
+	private IEvaluatorService evaluatorService;
+
 	private ServiceLocator() {
 		// Singleton constructor.
 	}
@@ -66,6 +70,20 @@ public final class ServiceLocator {
 		return validatorService;
 	}
 
+	public ICrazyGenetistService getCrazyGenetistService() {
+		if (crazyGenetistService == null) {
+			throw new RuntimeException("Crazy genetist service not available.");
+		}
+		return crazyGenetistService;
+	}
+
+	public IEvaluatorService getEvaluatorService() {
+		if (evaluatorService == null) {
+			throw new RuntimeException("Evaluator service not available.");
+		}
+		return evaluatorService;
+	}
+
 	public void setSolutionTableService(
 			ISolutionTableService solutionTableService) {
 		this.solutionTableService = solutionTableService;
@@ -85,6 +103,15 @@ public final class ServiceLocator {
 
 	public void setValidatorService(IValidatorService validatorService) {
 		this.validatorService = validatorService;
+	}
+
+	public void setCrazyGenetistService(
+			ICrazyGenetistService crazyGenetistService) {
+		this.crazyGenetistService = crazyGenetistService;
+	}
+
+	public void setEvaluatorService(IEvaluatorService evaluatorService) {
+		this.evaluatorService = evaluatorService;
 	}
 
 	@Override

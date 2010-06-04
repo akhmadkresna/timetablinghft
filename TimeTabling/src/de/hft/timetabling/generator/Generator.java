@@ -12,6 +12,7 @@ import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.services.IGeneratorService;
 
+// TODO Can this class be deleted because it is out dated?
 class Generator implements IGeneratorService {
 
 	/*
@@ -305,5 +306,13 @@ class Generator implements IGeneratorService {
 		}
 
 		return finalSchedule;
+	}
+
+	@Override
+	public void fillSolutionTable(IProblemInstance problemInstance)
+			throws NoFeasibleSolutionFoundException {
+
+		// TODO I think this class is out dated and does no longer need to
+		// exist?
 	}
 }

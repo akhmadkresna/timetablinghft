@@ -1,14 +1,8 @@
 package de.hft.timetabling.generator;
 
-import java.io.IOException;
-
-import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.genetist.ValidatorImpl;
 import de.hft.timetabling.reader.Reader;
-import de.hft.timetabling.services.IGeneratorService;
-import de.hft.timetabling.services.IReaderService;
-import de.hft.timetabling.services.IValidatorService;
 import de.hft.timetabling.services.ServiceLocator;
 import de.hft.timetabling.services.SolutionTable;
 import de.hft.timetabling.writer.Writer;
@@ -23,11 +17,7 @@ public final class MyPrivateMain {
 	public static void main(String[] args) {
 		setUpServices();
 
-		try {
-			exampleUsage();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		exampleUsage();
 	}
 
 	/**
@@ -46,23 +36,24 @@ public final class MyPrivateMain {
 	/**
 	 * Small test to show how the {@link IProblemInstance} API works.
 	 */
-	private static void exampleUsage() throws IOException {
-		IReaderService readerService = ServiceLocator.getInstance()
-				.getReaderService();
-		IProblemInstance problemInstance = readerService
-				.readInstance("comp05.ctt");
-
-		IGeneratorService gen = ServiceLocator.getInstance()
-				.getGeneratorService();
-		IValidatorService val = ServiceLocator.getInstance()
-				.getValidatorService();
-
-		try {
-			ICourse[][] coding = gen.generateFeasibleSolution(problemInstance);
-			System.out.println(val.isValidSolution(problemInstance, coding));
-		} catch (NoFeasibleSolutionFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	private static void exampleUsage() {
+		// TODO Doesn't work any longer like this (interface changed).
+		// IReaderService readerService = ServiceLocator.getInstance()
+		// .getReaderService();
+		// IProblemInstance problemInstance = readerService
+		// .readInstance("comp05.ctt");
+		//
+		// IGeneratorService gen = ServiceLocator.getInstance()
+		// .getGeneratorService();
+		// IValidatorService val = ServiceLocator.getInstance()
+		// .getValidatorService();
+		//
+		// try {
+		// ICourse[][] coding = gen.generateFeasibleSolution(problemInstance);
+		// System.out.println(val.isValidSolution(problemInstance, coding));
+		// } catch (NoFeasibleSolutionFoundException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 	}
 }

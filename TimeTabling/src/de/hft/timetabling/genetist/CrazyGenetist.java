@@ -8,18 +8,20 @@ import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
-import de.hft.timetabling.common.IGenetist;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
+import de.hft.timetabling.services.ICrazyGenetistService;
 import de.hft.timetabling.services.ISolutionTableService;
 
-public class CrazyGenetist implements IGenetist {
+public class CrazyGenetist implements ICrazyGenetistService {
 
 	private ISolutionTableService solution;
+
 	private double probability = 0.5;
 
 	@Override
-	public ISolution startRecombination(ISolutionTableService solution) {
+	public ISolution recombineAndMutate() {
+		// TODO Please rewrite as a solution is no longer passed as a parameter.
 		setSolution(solution);
 
 		ISolution back = null;

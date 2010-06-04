@@ -159,6 +159,36 @@ public final class SolutionTable implements ISolutionTableService {
 		return "Solution Table";
 	}
 
+	@Override
+	public int getActualSolutionTableCount() {
+		return solutionTable.size();
+	}
+
+	@Override
+	public ISolution getWorstSolution() {
+		if (solutionTable.size() <= 0) {
+			throw new RuntimeException(
+					"There are currently no solutions in the solution table.");
+		}
+
+		SolutionVote worstSolutionVote = null;
+		for (Integer solutionNumber : solutionTable.keySet()) {
+			SolutionVote solutionVote = solutionTable.get(solutionNumber);
+			if (worstSolutionVote == null) {
+				worstSolutionVote = solutionVote;
+				continue;
+			}
+			if (worstSolutionVote.getPenaltySum() > solutionVote
+					.getPenaltySum()) {
+				worstSolutionVote = solutionVote;
+			}
+		}
+		if (worstSolutionVote == null) {
+			throw new RuntimeException();
+		}
+		return worstSolutionVote.getSolution();
+	}
+
 	/**
 	 * Used to associate a given solution with a penalty sum.
 	 */
@@ -185,11 +215,6 @@ public final class SolutionTable implements ISolutionTableService {
 			this.penaltySum = penaltySum;
 		}
 
-	}
-
-	@Override
-	public int getActualSolutionTableCount() {
-		return solutionTable.size();
 	}
 
 }

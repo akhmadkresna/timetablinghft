@@ -61,7 +61,7 @@ public interface ISolutionTableService {
 
 	/**
 	 * Returns the solution that's currently located at the given solution table
-	 * number or <tt>null</tt> if there is not yet any solution stored at the
+	 * number or <tt>null</tt> if there is currently no solution stored at the
 	 * given solution number.
 	 * 
 	 * @param solutionNumber
@@ -147,4 +147,13 @@ public interface ISolutionTableService {
 	 * @return number of solutions
 	 */
 	int getActualSolutionTableCount();
+
+	/**
+	 * Returns the current worst solution.
+	 * 
+	 * @throws RuntimeException
+	 *             If there are no solutions in the table which should never
+	 *             happen.
+	 */
+	ISolution getWorstSolution();
 }
