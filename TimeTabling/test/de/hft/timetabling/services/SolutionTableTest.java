@@ -148,4 +148,19 @@ public class SolutionTableTest extends AbstractServicesTest {
 		assertEquals("Solution Table", solutionTable.toString());
 	}
 
+	public void testReplaceWorstSolution() {
+		ISolutionTableService newSolutionTable = new SolutionTable();
+		ISolution newSolution = newSolutionTable.createNewSolution(
+				new ICourse[instance.getNumberOfPeriods()][instance
+						.getNumberOfRooms()], instance);
+		newSolutionTable.replaceWorstSolution(newSolution);
+		assertEquals(newSolution, newSolutionTable.getSolution(0));
+
+		solutionTable.voteForSolution(0, 100);
+		solutionTable.voteForSolution(1, 200);
+		solutionTable.voteForSolution(2, 300);
+
+		solutionTable.replaceWorstSolution(newSolution);
+		assertEquals(newSolution, solutionTable.getSolution(2));
+	}
 }

@@ -176,7 +176,7 @@ public final class SolutionTable implements ISolutionTableService {
 				worstSolutionVote = solutionVote;
 				continue;
 			}
-			if (worstSolutionVote.getPenaltySum() > solutionVote
+			if (solutionVote.getPenaltySum() > worstSolutionVote
 					.getPenaltySum()) {
 				worstSolutionVote = solutionVote;
 				worstSolutionNumber = solutionNumber;
