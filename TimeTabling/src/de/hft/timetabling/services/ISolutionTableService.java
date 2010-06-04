@@ -101,7 +101,8 @@ public interface ISolutionTableService {
 	void voteForSolution(int solutionNumber, int penaltyPoints);
 
 	/**
-	 * Returns the sum of penalty points for the given solution.
+	 * Returns the sum of penalty points for the given solution. Returns -1 if
+	 * the solution wasn't voted yet.
 	 * 
 	 * @param solution
 	 *            The solution to retrieve the penalty points for.
@@ -114,7 +115,7 @@ public interface ISolutionTableService {
 
 	/**
 	 * Returns the sum of penalty points for the solution identified by the
-	 * given solution number.
+	 * given solution number. Returns -1 if the solution wasn't voted yet.
 	 * 
 	 * @param solutionNumber
 	 *            The solution number identifying the solution to obtain the
@@ -149,11 +150,12 @@ public interface ISolutionTableService {
 	int getActualSolutionTableCount();
 
 	/**
-	 * Returns the current worst solution.
+	 * Replaces the current worst solution with the provided one. If there are
+	 * currently no solutions at all in the table, the solution will be put into
+	 * the first slot.
 	 * 
-	 * @throws RuntimeException
-	 *             If there are no solutions in the table which should never
-	 *             happen.
+	 * @param newSolution
+	 *            The new solution with which to replace the worst one.
 	 */
-	ISolution getWorstSolution();
+	void replaceWorstSolution(ISolution newSolution);
 }
