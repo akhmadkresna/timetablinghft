@@ -110,7 +110,7 @@ public final class Generator2 implements IGeneratorService {
 		while (!courses.isEmpty()) {
 
 			ICourse critical = session.getMostCriticalEvent(courses);
-			int periods = session.getAvailablePeriodCount(critical);
+			int periods = session.getAvailablePeriodsCount(critical);
 
 			if (periods >= critical.getNumberOfLectures()) {
 				session.assignRandomViableSlots(critical);
@@ -146,7 +146,7 @@ public final class Generator2 implements IGeneratorService {
  * This internal class is used during construction of a feasible solution. It
  * stores all necessary information needed during the construction of *one*
  * feasible solution and offers methods required by the construction algorithm.
- * Objects of this class are discarded after each failed attemt to construct a
+ * Objects of this class are discarded after each failed attempt to construct a
  * feasible solution.
  * 
  * @author Matthias Ruszala
@@ -215,7 +215,8 @@ class SessionObject {
 
 	/**
 	 * This method assigns random slots in the schedule to the given course with
-	 * respect to the minimal number of lectures for the course.
+	 * respect to the minimal number of lectures for the course. This method
+	 * does not check whether there are sufficiently free periods available.
 	 * 
 	 * @param course
 	 *            the course which will be assigned to slots
@@ -296,7 +297,7 @@ class SessionObject {
 	 *            the course for which the available periods are queried
 	 * @return the number of available periods for the given course
 	 */
-	public int getAvailablePeriodCount(final ICourse course) {
+	public int getAvailablePeriodsCount(final ICourse course) {
 		return availablePeriodsCount.get(course);
 	}
 
