@@ -165,28 +165,29 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
-	public ISolution getWorstSolution() {
-		if (solutionTable.size() <= 0) {
-			throw new RuntimeException(
-					"There are currently no solutions in the solution table.");
-		}
-
+	public void replaceWorstSolution(ISolution newSolution) {
+		Integer worstSolutionNumber = -1;
 		SolutionVote worstSolutionVote = null;
+
 		for (Integer solutionNumber : solutionTable.keySet()) {
 			SolutionVote solutionVote = solutionTable.get(solutionNumber);
-			if (worstSolutionVote == null) {
+			if ((worstSolutionNumber == -1) || (worstSolutionVote == null)) {
+				worstSolutionNumber = solutionNumber;
 				worstSolutionVote = solutionVote;
 				continue;
 			}
 			if (worstSolutionVote.getPenaltySum() > solutionVote
 					.getPenaltySum()) {
 				worstSolutionVote = solutionVote;
+				worstSolutionNumber = solutionNumber;
 			}
 		}
-		if (worstSolutionVote == null) {
-			throw new RuntimeException();
+
+		if (worstSolutionNumber == -1) {
+			worstSolutionNumber = 0;
 		}
-		return worstSolutionVote.getSolution();
+		solutionTable.put(worstSolutionNumber,
+				new SolutionVote(newSolution, -1));
 	}
 
 	/**
