@@ -1,6 +1,5 @@
 package de.hft.timetabling.services;
 
-import de.hft.timetabling.common.ISolution;
 
 /**
  * Interface of the genetist.
@@ -16,6 +15,6 @@ public interface ICrazyGenetistService {
 	 * @author SteffenKremer
 	 * 
 	 */
-	ISolution recombineAndMutate();
+	void recombineAndMutate();
 
 }

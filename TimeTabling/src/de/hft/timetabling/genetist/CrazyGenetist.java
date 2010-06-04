@@ -39,7 +39,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 * Solutions that are recombined and mutated are choosen randomly.
 	 */
 	@Override
-	public ISolution recombineAndMutate() {
+	public void recombineAndMutate() {
 
 		int noFeasibleRecombinationFoundExceptionCounter = 0;
 
@@ -95,7 +95,9 @@ public class CrazyGenetist implements ICrazyGenetistService {
 		System.out.println("Crazy Genetist is done. (Created "
 				+ noFeasibleRecombinationFoundExceptionCounter
 				+ " non feasible Solution with recombination1)");
-		return back;
+
+		// Hand in solution
+		getSolution().replaceWorstSolution(back);
 
 	}
 
