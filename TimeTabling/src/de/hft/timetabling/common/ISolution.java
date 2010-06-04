@@ -46,4 +46,12 @@ public interface ISolution {
 	 */
 	void increaseRecombinationCount();
 
+	/**
+	 * Method to clone a solution
+	 * 
+	 * @return colne of a ISolution
+	 * @author Steffen
+	 */
+	ISolution clone();
+
 }

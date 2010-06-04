@@ -48,4 +48,5 @@ public interface ICourse {
 	 */
 	IProblemInstance getProblemInstance();
 
+	ICourse clone();
 }

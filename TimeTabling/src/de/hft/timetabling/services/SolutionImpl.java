@@ -58,4 +58,10 @@ final class SolutionImpl implements ISolution {
 		recombinations = nrOfRecombinations;
 	}
 
+	@Override
+	public ISolution clone() {
+		ISolution object = new SolutionImpl(getCoding().clone(),
+				getProblemInstance());
+		return object;
+	}
 }

@@ -42,13 +42,15 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			}
 			System.out.println(" ... take it!");
 			if (Math.random() < probability) {
+
 				try {
 					back = mutateRoomStability(recombindation1(bestSolution,
 							otherSolution));
-				} catch (NoFeasibleRecombinationFoundException ex) {
+				} catch (NoFeasibleRecombinationFoundException e) {
 					back = mutateRoomStability(recombindation2(bestSolution,
 							otherSolution));
 				}
+
 			} else {
 				back = mutateRoomStability(recombindation2(bestSolution,
 						otherSolution));
@@ -97,18 +99,21 @@ public class CrazyGenetist implements ICrazyGenetistService {
 
 		System.out.println("... mutate ...");
 		for (int i = 0; i < courses.length; i++) {
+			System.out.println("#######1");
 			if (i != periodX) {
-
+				System.out.println("#######2");
 				for (int j = 0; j < courses[i].length; j++) {
+					System.out.println("#######3");
 					ICourse selectedCourse = courses[i][j];
 					if (selectedCourse != null) {
-
+						System.out.println("#######4");
 						Set<ICurriculum> tmpCur = selectedCourse.getCurricula();
 
 						for (ICurriculum iCurriculum : tmpCur) {
+							System.out.println("#######5");
 							if (iCurriculum.getId()
 									.equals(myCurriculum.getId())) {
-
+								System.out.println("#######6");
 								courses[i][j] = courses[i][roomY];
 								courses[i][roomY] = selectedCourse;
 								// No check neccessary because we only changed
@@ -135,35 +140,48 @@ public class CrazyGenetist implements ICrazyGenetistService {
 		ValidatorImpl vi = new ValidatorImpl();
 		int iterationCount = 0;
 
+		ISolution newSolution = null;
+
 		do {
-			IProblemInstance pi1 = bestSolution.getProblemInstance();
+
+			newSolution = bestSolution.clone();
+			System.out.println(newSolution.toString());
+			IProblemInstance pi1 = newSolution.getProblemInstance();
 			int periodX1 = (int) (pi1.getNumberOfPeriods() * Math.random());
 
 			IProblemInstance pi2 = otherSolution.getProblemInstance();
 			int periodX2 = (int) (pi2.getNumberOfPeriods() * Math.random());
 
-			ICourse[] oldCourses = bestSolution.getCoding()[periodX1];
+			ICourse[] oldCourses = newSolution.getCoding()[periodX1];
 			ICourse[] newCourses = otherSolution.getCoding()[periodX2];
-			bestSolution.getCoding()[periodX1] = otherSolution.getCoding()[periodX2];
-
+			newSolution.getCoding()[periodX1] = otherSolution.getCoding()[periodX2];
 			Set<ICourse> oldCourseSet = getCourseSet(oldCourses);
 			Set<ICourse> newCourseSet = getCourseSet(newCourses);
 
-			Set<ICourse> doubleInList = newCourseSet;
-			doubleInList.removeAll(oldCourseSet);
+			/*
+			 * By the way you get an error here: It is a known bug by
+			 * Eclipse/Java. Please go to Preferences > Java > Compiler >
+			 * References/Warnings > Generic Types > Unchecked Generic type
+			 * operation and set it to "Warning".
+			 */
+			Set<ICourse> doubleInList = ((Set<ICourse>) ((HashSet<ICourse>) newCourseSet)
+					.clone());
+			doubleInList.retainAll(oldCourseSet);
 
-			Set<ICourse> notInList = oldCourseSet;
+			Set<ICourse> notInList = ((Set<ICourse>) ((HashSet<ICourse>) oldCourseSet)
+					.clone());
 			notInList.removeAll(newCourseSet);
 
 			Iterator<ICourse> ite = notInList.iterator();
+			// Here is something wrong!
 
-			for (int i = 0; i < bestSolution.getCoding().length; i++) {
-				for (int j = 0; j < bestSolution.getCoding()[i].length; j++) {
-					if (doubleInList.contains(bestSolution.getCoding()[i][j])) {
-						bestSolution.getCoding()[i][j] = null;
-					} else if (bestSolution.getCoding()[i][j] == null) {
+			for (int i = 0; i < newSolution.getCoding().length; i++) {
+				for (int j = 0; j < newSolution.getCoding()[i].length; j++) {
+					if (doubleInList.contains(newSolution.getCoding()[i][j])) {
+						newSolution.getCoding()[i][j] = null;
+					} else if (newSolution.getCoding()[i][j] == null) {
 						if (ite.hasNext()) {
-							bestSolution.getCoding()[i][j] = ite.next();
+							newSolution.getCoding()[i][j] = ite.next();
 						}
 					}
 				}
@@ -174,11 +192,22 @@ public class CrazyGenetist implements ICrazyGenetistService {
 						"Recombination 1 was not successful.");
 			}
 
+			if (iterationCount > 100) {
+				throw new NoFeasibleRecombinationFoundException(
+						"Recombination 1 was not successful.");
+			}
+
 			System.out.println("... recombindation1: did " + iterationCount++
 					+ " iteration ...");
-		} while (!vi.isValidSolution(bestSolution));
+
+			if (checkForNullCourse(newSolution)) {
+				System.out.println("only null available");
+				System.exit(0);
+			}
+
+		} while (!vi.isValidSolution(newSolution));
 		System.out.println("... done with recombination 1 process.");
-		return bestSolution;
+		return newSolution;
 
 	}
 
@@ -202,7 +231,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 				if (bestSolution.getCoding()[i][j] == null) {
 					oldBestSolution = bestSolution.getCoding();
 					if (otherSolution.getCoding()[i][j] != null) {
-
 						bestSolution.getCoding()[i][j] = otherSolution
 								.getCoding()[i][j];
 						if (!vi.isValidSolution(bestSolution)) {
