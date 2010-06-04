@@ -12,6 +12,8 @@ import de.hft.timetabling.writer.Writer;
  * 
  * @author Alexander Weickmann
  */
+// TODO Instead of creating a new class, you can just add a main method to the
+// class you want to test (this is the way it's normally done)
 public final class MyPrivateMain {
 
 	public static void main(String[] args) {
