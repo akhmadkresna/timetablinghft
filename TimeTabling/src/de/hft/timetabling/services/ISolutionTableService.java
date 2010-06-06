@@ -162,19 +162,6 @@ public interface ISolutionTableService {
 	 */
 	void replaceWorstSolution(ISolution newSolution);
 
-	/*
-	 * Allows to add penalty for the given solution.
-	 * 
-	 * @author Roy //Changed function name and implementation
-	 * 
-	 * @param solution The solution to vote for.
-	 * 
-	 * @param penaltyPoints The number of penalty points to give.
-	 * 
-	 * @throws RuntimeException If the given solution is not currently stored in
-	 * the solution table.
-	 */
-
 	/**
 	 * Allows to add fairness for the given solution.
 	 * 
