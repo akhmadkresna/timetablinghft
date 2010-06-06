@@ -175,4 +175,19 @@ public interface ISolutionTableService {
 	 * 
 	 */
 	void addFairnessToSolution(ISolution solution, int fairness);
+
+	/**
+	 * Allows to add fairness for the given solution.
+	 * 
+	 * @author Roy
+	 * 
+	 * @param solutionNumber
+	 *            The solution number of the solution to vote for.
+	 * 
+	 * @param fairness
+	 *            The number related to fairness. It is a type of penalty point.
+	 * 
+	 */
+	void addFairnessToSolution(int solutionNumber, int fairness);
+
 }

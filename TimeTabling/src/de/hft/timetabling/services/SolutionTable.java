@@ -209,6 +209,8 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	/**
+	 * Add the fairness to the solution
+	 * 
 	 * @author Roy
 	 */
 	@Override
@@ -221,13 +223,23 @@ public final class SolutionTable implements ISolutionTableService {
 		}
 		iFairness = fairness;
 		solutionVote.setFairness(iFairness);
-		// commenting to move to different function
-		// why update each time and not compare to current best solution?
+		// compare with only the best solution
 		if (bestSolution == null) {
 			bestSolution = new SolutionVote(solution, iPenalty, iFairness);
 		} else {
 			updateBestSolution(solutionVote);
 		}
+	}
+
+	/**
+	 * Add the fairness to the solution using solution number
+	 * 
+	 * @author Roy
+	 */
+	@Override
+	public void addFairnessToSolution(int solutionNumber, int fairness) {
+		checkSolutionNumber(solutionNumber);
+		addFairnessToSolution(getSolution(solutionNumber), fairness);
 	}
 
 	/**
