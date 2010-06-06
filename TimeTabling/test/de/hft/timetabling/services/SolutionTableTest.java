@@ -115,6 +115,9 @@ public class SolutionTableTest extends AbstractServicesTest {
 		solutionTable.addPenaltyToSolution(1, 500);
 		solutionTable.addPenaltyToSolution(0, 400);
 
+		solutionTable.addFairnessToSolution(0, 50);
+		solutionTable.addFairnessToSolution(1, 30);
+
 		ISolution expectedBestSolution = solutionTable.getSolution(1);
 		assertEquals(expectedBestSolution, solutionTable.getBestSolution());
 
@@ -124,6 +127,7 @@ public class SolutionTableTest extends AbstractServicesTest {
 		assertEquals(expectedBestSolution, solutionTable.getBestSolution());
 
 		solutionTable.addPenaltyToSolution(5, 100);
+		solutionTable.addFairnessToSolution(5, 40);
 		expectedBestSolution = solutionTable.getSolution(5);
 		assertEquals(expectedBestSolution, solutionTable.getBestSolution());
 	}
@@ -140,6 +144,9 @@ public class SolutionTableTest extends AbstractServicesTest {
 		solutionTable.addPenaltyToSolution(0, 200);
 		solutionTable.addPenaltyToSolution(1, 500);
 		solutionTable.addPenaltyToSolution(0, 400);
+
+		solutionTable.addFairnessToSolution(0, 50);
+		solutionTable.addFairnessToSolution(1, 30);
 
 		assertEquals(500, solutionTable.getBestSolutionPenaltySum());
 	}

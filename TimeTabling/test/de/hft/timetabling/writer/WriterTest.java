@@ -67,6 +67,7 @@ public class WriterTest extends TestCase {
 		ISolution solution = solutionTable.createNewSolution(coding, instance);
 		solutionTable.putSolution(0, solution);
 		solutionTable.addPenaltyToSolution(0, 1000);
+		solutionTable.addFairnessToSolution(0, 200);
 	}
 
 	public void testOutputBestSolution() throws IOException {
