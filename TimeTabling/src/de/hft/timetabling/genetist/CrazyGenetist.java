@@ -1,9 +1,7 @@
 package de.hft.timetabling.genetist;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
@@ -41,8 +39,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	@Override
 	public void recombineAndMutate() {
 
-		int noFeasibleRecombinationFoundExceptionCounter = 0;
-
 		ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
 		setSolution(serviceLocator.getSolutionTableService());
@@ -59,6 +55,9 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			while ((otherSolution == null) || (basicSolution == null)
 					|| basicSolution.equals(otherSolution)) {
 				System.out.println("Trying to find solution to work with ...");
+
+				// --> if (Math.random() < probability)
+
 				int n1 = (int) (solution.getActualSolutionTableCount() * Math
 						.random());
 				int n2 = (int) (solution.getActualSolutionTableCount() * Math
@@ -69,36 +68,23 @@ public class CrazyGenetist implements ICrazyGenetistService {
 				System.out.println("... found " + n1 + ", " + n2 + " ...");
 			}
 			System.out.println(" ... take it!");
-			if (Math.random() < probability) {
-				// If Recombination 1 doesn't produce a feasible solution take
-				// algorithm recombination2 one.
-				try {
-					back = mutateRoomStability(recombindation1(basicSolution,
-							otherSolution));
-				} catch (NoFeasibleRecombinationFoundException e) {
-					System.out
-							.println("[Caught NoFeasibleRecombinationFoundException]");
-					noFeasibleRecombinationFoundExceptionCounter++;
-					back = mutateRoomStability(recombindation2(basicSolution,
-							otherSolution));
-				}
 
-			} else {
-				back = mutateRoomStability(recombindation2(basicSolution,
-						otherSolution));
-			}
+			back = mutateRoomStability(recombindation2(basicSolution,
+					otherSolution));
 
 			basicSolution.increaseRecombinationCount();
 			otherSolution.increaseRecombinationCount();
 
 		}
-		System.out.println("Crazy Genetist is done. (Created "
-				+ noFeasibleRecombinationFoundExceptionCounter
-				+ " non feasible Solution with recombination1)");
+		System.out.println("Crazy Genetist is done.");
 
 		// Hand in solution
-		getSolution().replaceWorstSolution(back);
-
+		if ((back != null) && new ValidatorImpl().isValidSolution(back)) {
+			System.out.println("### Solution valid!!");
+			getSolution().replaceWorstSolution(back);
+		} else {
+			System.out.println("### Solution not valid!!");
+		}
 	}
 
 	/**
@@ -180,97 +166,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	}
 
 	/**
-	 * Algorithm 1 that recombines two solutions.
-	 * 
-	 * @param solution1
-	 *            Basic solution for recombination
-	 * @param solution2
-	 *            Other solutions where ICourses are put of.
-	 * @return recombied solution
-	 * @throws NoFeasibleRecombinationFoundException
-	 */
-	private ISolution recombindation1(ISolution solution1, ISolution solution2)
-			throws NoFeasibleRecombinationFoundException {
-		System.out.println("Start recombnination 1 process ...");
-		ValidatorImpl vi = new ValidatorImpl();
-		int iterationCount = 0;
-
-		ISolution newSolution = null;
-
-		do {
-
-			newSolution = solution1.clone();
-			IProblemInstance pi1 = newSolution.getProblemInstance();
-			int periodX1 = (int) (pi1.getNumberOfPeriods() * Math.random());
-
-			IProblemInstance pi2 = solution2.getProblemInstance();
-			int periodX2 = (int) (pi2.getNumberOfPeriods() * Math.random());
-
-			ICourse[] oldCourses = newSolution.getCoding()[periodX1];
-			ICourse[] newCourses = solution2.getCoding()[periodX2];
-			newSolution.getCoding()[periodX1] = solution2.getCoding()[periodX2];
-			Set<ICourse> oldCourseSet = getCourseSet(oldCourses);
-			Set<ICourse> newCourseSet = getCourseSet(newCourses);
-
-			/*
-			 * By the way you get an error here: It is a known bug by
-			 * Eclipse/Java. Please go to Preferences > Java > Compiler >
-			 * References/Warnings > Generic Types > Unchecked Generic type
-			 * operation and set it to "Warning".
-			 */
-			Set<ICourse> doubleInList = ((Set<ICourse>) ((HashSet<ICourse>) newCourseSet)
-					.clone());
-			doubleInList.retainAll(oldCourseSet);
-
-			Set<ICourse> notInList = ((Set<ICourse>) ((HashSet<ICourse>) oldCourseSet)
-					.clone());
-			notInList.removeAll(newCourseSet);
-
-			Iterator<ICourse> ite = notInList.iterator();
-			// Here is something wrong!
-
-			for (int i = 0; i < newSolution.getCoding().length; i++) {
-				for (int j = 0; j < newSolution.getCoding()[i].length; j++) {
-					if (doubleInList.contains(newSolution.getCoding()[i][j])) {
-						newSolution.getCoding()[i][j] = null;
-					} else if (newSolution.getCoding()[i][j] == null) {
-						if (ite.hasNext()) {
-							newSolution.getCoding()[i][j] = ite.next();
-						}
-					}
-				}
-			}
-
-			if (iterationCount++ > 100) {
-				throw new NoFeasibleRecombinationFoundException(
-						"Recombination 1 was not successful.");
-			}
-
-			// System.out.println("... recombindation1: did " + iterationCount +
-			// " iteration ...");
-
-		} while (!vi.isValidSolution(newSolution));
-		System.out.println("... done with recombination 1 process.");
-		return newSolution;
-
-	}
-
-	/**
-	 * Method for changing a ICourse[] to a Set<ICourse>
-	 * 
-	 * @param courses
-	 *            Array of ICourses
-	 * @return Set<ICourse>
-	 */
-	private Set<ICourse> getCourseSet(ICourse[] courses) {
-		Set<ICourse> back = new HashSet<ICourse>();
-		for (int i = 0; i < courses.length; i++) {
-			back.add(courses[i]);
-		}
-		return back;
-	}
-
-	/**
 	 * Algorithm 2 that recombines two solutions.
 	 * 
 	 * @param solution1
@@ -281,82 +176,187 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 */
 	private ISolution recombindation2(ISolution solution1, ISolution solution2) {
 		System.out.println("Start recombnination 2 process ...");
-		ICourse[][] oldBestSolution;
-		ValidatorImpl vi = new ValidatorImpl();
-		Set<ICourse> savingList = new HashSet<ICourse>();
+		// ICourse[][] oldBestSolution;
+		// ValidatorImpl vi = new ValidatorImpl();
+		// Set<ICourse> savingList = new HashSet<ICourse>();
 		ISolution newSolution = solution1.clone();
+
 		for (int i = 0; i < newSolution.getCoding().length; i++) {
 			for (int j = 0; j < newSolution.getCoding()[i].length; j++) {
-				// System.out.println("... course[" + i + "][" + j + "] ...");
-				if (newSolution.getCoding()[i][j] == null) {
-					oldBestSolution = newSolution.getCoding();
-					if (solution2.getCoding()[i][j] != null) {
+
+				// Fill gap
+				if ((newSolution.getCoding()[i][j] == null)
+						&& (solution2.getCoding()[i][j] != null)) {
+					if (!existsSameCurriculumInPeriod(newSolution, solution2
+							.getCoding()[i][j], i)
+							&& !existsSameTeacherInPeriod(newSolution,
+									solution2.getCoding()[i][j], i)) {
+						CoursePosition cp1 = getCoursePositionRandomly(getPositionOfCourse(
+								newSolution, solution2.getCoding()[i][j]));
+
+						newSolution.getCoding()[cp1.getX()][cp1.getY()] = null;
+
 						newSolution.getCoding()[i][j] = solution2.getCoding()[i][j];
-						if (!vi.isValidSolution(newSolution)) {
-							newSolution.getCoding()[i][j] = oldBestSolution[i][j];
-						} else {
-							Map<ICourse, CoursePosition> courseCountNew = countLectures(
-									newSolution.getCoding(), solution2
-											.getCoding()[i][j].getId());
-							int expectedSize = solution2.getCoding()[i][j]
-									.getNumberOfLectures();
-							if (courseCountNew.size() >= expectedSize) {// Gab
-								// and
-								// lectures
 
-								Iterator<CoursePosition> iter = courseCountNew
-										.values().iterator();
+					} else if (existsSameCurriculumInPeriod(newSolution,
+							solution2.getCoding()[i][j], i)
+							&& existsSameTeacherInPeriod(newSolution, solution2
+									.getCoding()[i][j], i)) {
 
-								while (iter.hasNext()) {
-									CoursePosition me = iter.next();
-									int tmpX = me.getX();
-									int tmpY = me.getY();
-									if ((tmpX != i) && (tmpY != j)) {
+						CoursePosition cp1 = getCoursePositionRandomly(getPositionOfCourse(
+								newSolution, solution2.getCoding()[i][j]));
+						CoursePosition cp2 = getIfSameCurriculumAndSameTeacher(
+								newSolution, solution2.getCoding()[i][j], i);
+						if (cp2 != null) {
 
-										savingList
-												.add(newSolution.getCoding()[tmpX][tmpY]);
-										newSolution.getCoding()[tmpX][tmpY] = null;
-										solution2.getCoding()[i][j] = null;
-									}
-								}
-							}
+							newSolution.getCoding()[cp1.getX()][cp1.getY()] = newSolution
+									.getCoding()[cp2.getX()][cp2.getY()];
+
+							newSolution.getCoding()[i][j] = solution2
+									.getCoding()[i][j];
+							newSolution.getCoding()[cp2.getX()][cp2.getY()] = null;
+
 						}
 					}
 				}
 			}
 		}
+
 		System.out.println("... done with recombindation 2 process. ("
 				+ !checkForNullCourse(newSolution) + ")");
-		if (checkForNullCourse(newSolution)) {
-			System.out.println("ALL NULL");
-		}
 		return newSolution;
 	}
 
 	/**
-	 * Method for getting a map out of ICourses and their position in a
-	 * ISolution.
+	 * Method that returns a set of CoursePositions where a course is find in
+	 * the coding of courses.
 	 * 
+	 * @param courses
+	 *            Solution that should be looked at.
 	 * @param course
-	 *            ICourse[][] that should be searched in
-	 * @param id
-	 *            of course that should be looked for
-	 * @return Map which contains the ICourse element and the position where it
-	 *         was found.
+	 *            Searched course
+	 * @return Set of the position of found courses
 	 */
-	private Map<ICourse, CoursePosition> countLectures(ICourse[][] course,
-			String id) {
-
-		Map<ICourse, CoursePosition> positions = new HashMap<ICourse, CoursePosition>();
-
-		for (int i = 0; i < course.length; i++) {
-			for (int j = 0; j < course[i].length; j++) {
-				if ((course[i][j] != null) && course[i][j].getId().equals(id)) {
-					positions.put(course[i][j], new CoursePosition(i, j));
+	private Set<CoursePosition> getPositionOfCourse(ISolution courses,
+			ICourse course) {
+		Set<CoursePosition> positions = new HashSet<CoursePosition>();
+		for (int i = 0; i < courses.getCoding().length; i++) {
+			for (int j = 0; j < courses.getCoding()[i].length; j++) {
+				if (courses.getCoding()[i][j] != null) {
+					if (courses.getCoding()[i][j].getId()
+							.equals(course.getId())) {
+						positions.add(new CoursePosition(i, j));
+					}
 				}
 			}
 		}
 		return positions;
+	}
+
+	/**
+	 * Method to get a Position out of a set of positions randomly.
+	 * 
+	 * @param set
+	 *            Set of CoursePositions
+	 * @return randomly selected CoursePosition
+	 */
+	private CoursePosition getCoursePositionRandomly(Set<CoursePosition> set) {
+		int n = (int) (set.size() * Math.random());
+		Iterator<CoursePosition> iter = set.iterator();
+		for (int i = 0; iter.hasNext(); i++) {
+			CoursePosition o = iter.next();
+			if (i == n) {
+				return o;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Method return a Course position of a course that can be found in a
+	 * specific period and has the same curriculum and teacher as the input
+	 * course
+	 * 
+	 * @param courses
+	 *            Solution that should be analysed.
+	 * @param givenCourse
+	 *            Course that should be found.
+	 * @param period
+	 *            period in which that course should be
+	 * @return Position of found course
+	 */
+	private CoursePosition getIfSameCurriculumAndSameTeacher(ISolution courses,
+			ICourse givenCourse, int period) {
+		for (int i = 0; i < courses.getCoding()[period].length; i++) {
+			if ((courses.getCoding()[period][i] != null)
+					&& courses.getCoding()[period][i].getTeacher().equals(
+							givenCourse.getTeacher())) {
+				Set<ICurriculum> tmpCur = courses.getCoding()[period][i]
+						.getCurricula();
+
+				if ((tmpCur.size() == givenCourse.getCurricula().size())
+						&& tmpCur.containsAll(givenCourse.getCurricula())) {
+					return new CoursePosition(period, i);
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Checks if there is a curriculum in the same period
+	 * 
+	 * @param courses
+	 *            Solution that should be analysed.
+	 * @param givenCourse
+	 *            Course that should be found.
+	 * @param period
+	 *            period in which that course should be
+	 * @return true if there is a course of the same curriculum in the same
+	 *         period
+	 */
+	private boolean existsSameCurriculumInPeriod(ISolution courses,
+			ICourse givenCourse, int period) {
+		Set<ICurriculum> givenCourseCurriculum = givenCourse.getCurricula();
+
+		for (int i = 0; i < courses.getCoding()[period].length; i++) {
+
+			if (courses.getCoding()[period][i] != null) {
+				Iterator<ICurriculum> iter = courses.getCoding()[period][i]
+						.getCurricula().iterator();
+				while (iter.hasNext()) {
+					ICurriculum coursename = iter.next();
+					if (givenCourseCurriculum.contains(coursename)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Method to check if there is a techaer holding a course in the same period
+	 * 
+	 * @param courses
+	 *            Solution that should be analysed.
+	 * @param givenCourse
+	 *            Course that should be found.
+	 * @param period
+	 *            period in which that course should be
+	 * @return true if in the same period is a course tought by the same teacher
+	 *         as givenCourse
+	 */
+	private boolean existsSameTeacherInPeriod(ISolution courses,
+			ICourse givenCourse, int period) {
+		for (int i = 0; i < courses.getCoding()[period].length; i++) {
+			if ((courses.getCoding()[period][i] != null)
+					&& courses.getCoding()[period][i].getTeacher().equals(
+							givenCourse.getTeacher())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

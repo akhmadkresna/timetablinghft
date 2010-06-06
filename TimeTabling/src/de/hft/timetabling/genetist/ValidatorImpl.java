@@ -60,6 +60,8 @@ public final class ValidatorImpl implements IValidatorService {
 						intersection.retainAll(course.getCurricula());
 
 						if (intersection.size() > 0) {
+							System.out.println("CHECK:--noCurriculaOverlap("
+									+ course.getId() + ")");
 							return false;
 						}
 
@@ -84,6 +86,8 @@ public final class ValidatorImpl implements IValidatorService {
 
 				if (course != null) {
 					if (teachersInPeriod.contains(course.getTeacher())) {
+						System.out.println("CHECK:---noTeacherOverlap("
+								+ course.getId() + ")");
 						return false;
 					}
 
@@ -131,6 +135,8 @@ public final class ValidatorImpl implements IValidatorService {
 		difference.removeAll(courseCount.keySet());
 
 		if (difference.size() > 0) {
+			System.out
+					.println("CHECK:---allCoursesHeld1(difference.size() > 0)");
 			return false;
 		}
 
@@ -139,6 +145,8 @@ public final class ValidatorImpl implements IValidatorService {
 		 */
 		for (ICourse course : inst.getCourses()) {
 			if (courseCount.get(course) < course.getNumberOfLectures()) {
+				System.out.println("CHECK:---allCoursesHeld2(" + course.getId()
+						+ ")");
 				return false;
 			}
 		}
@@ -160,11 +168,13 @@ public final class ValidatorImpl implements IValidatorService {
 				if ((course != null)
 						&& inst.getUnavailabilityConstraints(course)
 								.contains(i)) {
-
+					System.out.println("CHECK:---noUnavailabilityViolations"
+							+ course.getId() + ")");
 					return false;
 				}
 			}
 		}
 		return true;
 	}
+
 }
