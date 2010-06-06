@@ -91,7 +91,7 @@ public final class Main {
 			generator.fillSolutionTable(instance);
 
 			IEvaluatorService evaluator = locator.getEvaluatorService();
-			evaluator.voteForSolutions();
+			evaluator.EvaluateSolutions();
 
 			ICrazyGenetistService genetist = locator.getCrazyGenetistService();
 			genetist.recombineAndMutate();

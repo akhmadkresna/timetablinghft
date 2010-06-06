@@ -9,6 +9,8 @@ import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.IRoom;
 import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.services.IEvaluatorService;
+import de.hft.timetabling.services.ISolutionTableService;
+import de.hft.timetabling.services.ServiceLocator;
 
 public class Evaluator implements IEvaluatorService {
 
@@ -38,19 +40,19 @@ public class Evaluator implements IEvaluatorService {
 	private IProblemInstance currentInstance;
 	private ICourse[][] currentCode;
 	private IRoom currentRoom;
+	private ISolutionTableService solutionTable;
 
 	// private ICourse currentCourseDetails;
 
 	/**
-	 * This method calculates the penalty in Room Capacity
+	 * This method calculates the penalty in Room Capacity. Needs to be based on
+	 * curriculum to have separate penalty points for each
 	 * 
 	 * @param solution
 	 *            A solution instance is send for evaluation
 	 * @return iCost Returns the penalty value
 	 */
-
-	// needs to be based on curriculum to have separate penalty points for each
-	public int CostsOnRoomCapacity(ISolution solution, ICurriculum curriculum) {
+	private int CostsOnRoomCapacity(ISolution solution, ICurriculum curriculum) {
 		int iCost = 0;
 		int iNoOfStudents, iRoomCapacity;
 		int r, p;
@@ -95,14 +97,14 @@ public class Evaluator implements IEvaluatorService {
 	}
 
 	/**
-	 * Method to calculate the penalty on min working days
+	 * Method to calculate the penalty on min working days Need one more
+	 * parameter to make it curriculum specific
 	 * 
 	 * @param solution
 	 *            A solution instance is send for evaluation
 	 * @return iCost Returns the penalty value
 	 */
-	// Need one more parameter to make it curriculum specific
-	public int CostsOnMinWorkingDays(ISolution solution, ICurriculum curriculum) {
+	private int CostsOnMinWorkingDays(ISolution solution, ICurriculum curriculum) {
 		int iCost = 0;
 		int p, r, iWorkingDays;
 		int iMinWorkingDays, iPeriodPerDay;
@@ -182,15 +184,14 @@ public class Evaluator implements IEvaluatorService {
 
 	/**
 	 * Method to calculate the penalty on curriculum compactness and room
-	 * stability
+	 * stability Need one more parameter to make it curriculum specific
 	 * 
 	 * @param solution
 	 *            A solution instance is send for evaluation
 	 * @return iCost Returns the penalty value of both soft constrains
 	 */
-	// Need one more parameter to make it curriculum specific
-	public int CostsOnCurriculumCompactnessAndRoomStability(ISolution solution,
-			ICurriculum curriculum) {
+	private int CostsOnCurriculumCompactnessAndRoomStability(
+			ISolution solution, ICurriculum curriculum) {
 		int iCost = 0;
 		int p, r, d, iPreviousRoom;
 		int iPreviousPeriod;
@@ -265,10 +266,105 @@ public class Evaluator implements IEvaluatorService {
 		return iCost;
 	}
 
+	/**
+	 * This method is called from the interface to start evaluation
+	 * 
+	 */
 	@Override
-	public void voteForSolutions() {
-		// TODO Please implement this method
+	public void EvaluateSolutions() {
+		ServiceLocator serviceLocator = ServiceLocator.getInstance();
+		int iCost = 0;
 
+		solutionTable = serviceLocator.getSolutionTableService();
+
+		callSoftConstrainEvalutors(solutionTable);
+
+		iCost = solutionTable.getPenaltySumForSolution(0);
+		System.out.println("Penalty for solution 0: " + iCost);
+		iCost = solutionTable.getPenaltySumForSolution(1);
+		System.out.println("Penalty for solution 1: " + iCost);
 	}
 
+	/**
+	 * Call the individual soft constrain evaluators for each solution
+	 * 
+	 * @param solutionTable
+	 *            The solutionTable from which solution are taken
+	 * 
+	 */
+	private void callSoftConstrainEvalutors(ISolutionTableService solutionTable) {
+		Set<ICurriculum> currentCurriculumSet;
+		ICurriculum currentCurricula;
+		ISolution solutionCode;
+		int iCost = 0, numberOfCurriculum, iFairness;
+		int[] curriculumCosts = null;
+
+		int size = solutionTable.getActualSolutionTableCount();
+
+		for (int i = 0; i < size; i++) {
+			solutionCode = solutionTable.getSolution(i);
+			if (solutionCode != null) {
+				currentInstance = solutionCode.getProblemInstance();
+				currentCode = solutionCode.getCoding();
+				currentCurriculumSet = currentInstance.getCurricula();
+				numberOfCurriculum = currentInstance.getNumberOfCurricula();
+				curriculumCosts = new int[numberOfCurriculum];
+				Iterator<ICurriculum> it = currentCurriculumSet.iterator();
+				int c = 0;
+				// Iterate through each curriculum
+				while (it.hasNext()) {
+					currentCurricula = it.next();
+					// Penalty calculation for given solution
+					iCost = 0;
+					iCost += CostsOnRoomCapacity(solutionCode, currentCurricula);
+					iCost += CostsOnMinWorkingDays(solutionCode,
+							currentCurricula);
+					iCost += CostsOnCurriculumCompactnessAndRoomStability(
+							solutionCode, currentCurricula);
+					solutionTable.addPenaltyToSolution(solutionCode, iCost);
+					curriculumCosts[c] = iCost;
+					c++;
+				}
+
+				// call fairness method
+				iFairness = evaluateFairness(curriculumCosts,
+						numberOfCurriculum);
+				solutionTable.addFairnessToSolution(solutionCode, iFairness);
+			}
+		}
+	}
+
+	/**
+	 * Calculates the fairness based on the max, min and avg value of Penalty
+	 * for the curriculum. The lower the difference, the better the solution.
+	 * 
+	 * @param curriculumCosts
+	 *            The integer array with the penalty for each curriculum
+	 * @param numberOfCurriculum
+	 *            Used to find the avg of the Penalties
+	 */
+	private int evaluateFairness(int[] curriculumCosts, int numberOfCurriculum) {
+		int iFairnessCost = 0;
+		int maxPenalty = -1, minPenalty = -1, avgPenalty = -1, penaltySum = 0;
+
+		// initial value to compare with
+		maxPenalty = curriculumCosts[0];
+		minPenalty = curriculumCosts[0];
+		for (int i = 1; i < numberOfCurriculum; i++) {
+			// Take max value, min value, and average value... and compare
+			if (curriculumCosts[i] > maxPenalty) {
+				maxPenalty = curriculumCosts[i];
+			}
+			if (curriculumCosts[i] < minPenalty) {
+				minPenalty = curriculumCosts[i];
+			}
+			penaltySum += curriculumCosts[i];
+		}
+		avgPenalty = penaltySum / numberOfCurriculum;
+
+		iFairnessCost += maxPenalty - avgPenalty;
+		iFairnessCost += avgPenalty - minPenalty;
+
+		return iFairnessCost;
+	}
 }
