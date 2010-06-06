@@ -66,7 +66,7 @@ public class WriterTest extends TestCase {
 		ServiceLocator.getInstance().setSolutionTableService(solutionTable);
 		ISolution solution = solutionTable.createNewSolution(coding, instance);
 		solutionTable.putSolution(0, solution);
-		solutionTable.voteForSolution(0, 1000);
+		solutionTable.addPenaltyToSolution(0, 1000);
 	}
 
 	public void testOutputBestSolution() throws IOException {

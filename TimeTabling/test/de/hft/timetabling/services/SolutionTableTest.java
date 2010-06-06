@@ -83,14 +83,14 @@ public class SolutionTableTest extends AbstractServicesTest {
 
 	public void testVoteForSolution() {
 		try {
-			solutionTable.voteForSolution(ISolutionTableService.TABLE_SIZE + 1,
-					100);
+			solutionTable.addPenaltyToSolution(
+					ISolutionTableService.TABLE_SIZE + 1, 100);
 			fail();
 		} catch (IndexOutOfBoundsException e) {
 			// Expected exception (solution number out of range).
 		}
 
-		solutionTable.voteForSolution(5, 200);
+		solutionTable.addPenaltyToSolution(5, 200);
 		assertEquals(200, solutionTable.getPenaltySumForSolution(5));
 	}
 
@@ -103,7 +103,7 @@ public class SolutionTableTest extends AbstractServicesTest {
 			// Expected exception (solution number out of range).
 		}
 
-		solutionTable.voteForSolution(5, 200);
+		solutionTable.addPenaltyToSolution(5, 200);
 		assertEquals(200, solutionTable.getPenaltySumForSolution(5));
 	}
 
@@ -111,9 +111,9 @@ public class SolutionTableTest extends AbstractServicesTest {
 		ISolutionTableService newSolutionTable = new SolutionTable();
 		assertNull(newSolutionTable.getBestSolution());
 
-		solutionTable.voteForSolution(0, 200);
-		solutionTable.voteForSolution(1, 500);
-		solutionTable.voteForSolution(0, 400);
+		solutionTable.addPenaltyToSolution(0, 200);
+		solutionTable.addPenaltyToSolution(1, 500);
+		solutionTable.addPenaltyToSolution(0, 400);
 
 		ISolution expectedBestSolution = solutionTable.getSolution(1);
 		assertEquals(expectedBestSolution, solutionTable.getBestSolution());
@@ -123,7 +123,7 @@ public class SolutionTableTest extends AbstractServicesTest {
 						.getNumberOfRooms()], instance));
 		assertEquals(expectedBestSolution, solutionTable.getBestSolution());
 
-		solutionTable.voteForSolution(5, 100);
+		solutionTable.addPenaltyToSolution(5, 100);
 		expectedBestSolution = solutionTable.getSolution(5);
 		assertEquals(expectedBestSolution, solutionTable.getBestSolution());
 	}
@@ -137,9 +137,9 @@ public class SolutionTableTest extends AbstractServicesTest {
 			// Expected exception.
 		}
 
-		solutionTable.voteForSolution(0, 200);
-		solutionTable.voteForSolution(1, 500);
-		solutionTable.voteForSolution(0, 400);
+		solutionTable.addPenaltyToSolution(0, 200);
+		solutionTable.addPenaltyToSolution(1, 500);
+		solutionTable.addPenaltyToSolution(0, 400);
 
 		assertEquals(500, solutionTable.getBestSolutionPenaltySum());
 	}
@@ -156,9 +156,9 @@ public class SolutionTableTest extends AbstractServicesTest {
 		newSolutionTable.replaceWorstSolution(newSolution);
 		assertEquals(newSolution, newSolutionTable.getSolution(0));
 
-		solutionTable.voteForSolution(0, 100);
-		solutionTable.voteForSolution(1, 200);
-		solutionTable.voteForSolution(2, 300);
+		solutionTable.addPenaltyToSolution(0, 100);
+		solutionTable.addPenaltyToSolution(1, 200);
+		solutionTable.addPenaltyToSolution(2, 300);
 
 		solutionTable.replaceWorstSolution(newSolution);
 		assertEquals(newSolution, solutionTable.getSolution(2));
