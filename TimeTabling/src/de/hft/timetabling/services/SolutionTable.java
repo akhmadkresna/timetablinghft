@@ -59,11 +59,11 @@ public final class SolutionTable implements ISolutionTableService {
 	@Override
 	public void putSolution(int solutionNumber, ISolution solution) {
 		checkSolutionNumber(solutionNumber);
-		solutionTable.put(solutionNumber, new SolutionVote(solution, -1));
+		solutionTable.put(solutionNumber, new SolutionVote(solution, -1, -1));
 	}
 
 	@Override
-	public void voteForSolution(ISolution solution, int penaltyPoints) {
+	public void addPenaltyToSolution(ISolution solution, int penaltyPoints) {
 		SolutionVote solutionVote = getSolutionVoteForSolution(solution);
 		int penaltySum = solutionVote.getPenaltySum();
 		if (penaltySum == -1) {
@@ -71,38 +71,56 @@ public final class SolutionTable implements ISolutionTableService {
 		}
 		penaltySum += penaltyPoints;
 		solutionVote.setPenaltySum(penaltySum);
-
-		if (bestSolution == null) {
-			bestSolution = new SolutionVote(solution, penaltySum);
-		} else {
-			updateBestSolution();
-		}
+		// commenting to move to different function
+		// why update each time and not compare to current best solution?
+		// adding of penalty is a summation meaning the bestSolution cannot be
+		// obtained from here
+		// if (bestSolution == null) {
+		// bestSolution = new SolutionVote(solution, penaltySum);
+		// } else {
+		// updateBestSolution();
+		// }
 	}
 
-	private void updateBestSolution() {
-		SolutionVote bestSoFar = null;
-		for (Integer solutionNumber : solutionTable.keySet()) {
-			SolutionVote currentSolutionVote = solutionTable
-					.get(solutionNumber);
-			int currentPenaltySum = currentSolutionVote.getPenaltySum();
-			if (currentPenaltySum == -1) {
-				continue;
-			}
-			if (bestSoFar == null) {
-				bestSoFar = currentSolutionVote;
-				continue;
-			}
-			if (currentPenaltySum < bestSoFar.getPenaltySum()) {
-				bestSoFar = currentSolutionVote;
+	/**
+	 * @author Roy
+	 * 
+	 *         Changed to compare the new solution with BestSolution
+	 * 
+	 * @param currentSolution
+	 *            Passing current solution to which fairness was added.
+	 */
+	private void updateBestSolution(SolutionVote currentSolution) {
+		SolutionVote bestSoFar = bestSolution;
+		int bestFairness = bestSoFar.getFairness();
+		int bestPenalty = bestSoFar.getPenaltySum();
+		int currentFairness = currentSolution.getFairness();
+		int currentPenaltySum = currentSolution.getPenaltySum();
+		/*
+		 * for (Integer solutionNumber : solutionTable.keySet()) { SolutionVote
+		 * currentSolutionVote = solutionTable .get(solutionNumber); int
+		 * currentPenaltySum = currentSolutionVote.getPenaltySum(); if
+		 * (currentPenaltySum == -1) { continue; } if (bestSoFar == null) {
+		 * bestSoFar = currentSolutionVote; continue; } if (currentPenaltySum <
+		 * bestSoFar.getPenaltySum()) { bestSoFar = currentSolutionVote; } }
+		 */
+		// Check the new solution Penalty with best one
+		if (currentPenaltySum < bestPenalty) {
+			bestSoFar = currentSolution;
+		} else if (currentPenaltySum == bestPenalty) {
+			// Check Fairness of the solutions of penalty points are same
+			if (currentFairness < bestFairness) {
+				bestSoFar = currentSolution;
 			}
 		}
+
 		bestSolution = bestSoFar;
 	}
 
 	@Override
-	public void voteForSolution(int solutionNumber, int penaltyPoints) {
+	public void addPenaltyToSolution(int solutionNumber, int penaltyPoints) {
 		checkSolutionNumber(solutionNumber);
-		voteForSolution(getSolution(solutionNumber), penaltyPoints);
+		addPenaltyToSolution(getSolution(solutionNumber), penaltyPoints);
 	}
 
 	@Override
@@ -186,8 +204,30 @@ public final class SolutionTable implements ISolutionTableService {
 		if (worstSolutionNumber == -1) {
 			worstSolutionNumber = 0;
 		}
-		solutionTable.put(worstSolutionNumber,
-				new SolutionVote(newSolution, -1));
+		solutionTable.put(worstSolutionNumber, new SolutionVote(newSolution,
+				-1, -1));
+	}
+
+	/**
+	 * @author Roy
+	 */
+	@Override
+	public void addFairnessToSolution(ISolution solution, int fairness) {
+		SolutionVote solutionVote = getSolutionVoteForSolution(solution);
+		int iFairness = solutionVote.getFairness();
+		int iPenalty = solutionVote.getPenaltySum();
+		if (iFairness == -1) {
+			iFairness++;
+		}
+		iFairness = fairness;
+		solutionVote.setFairness(iFairness);
+		// commenting to move to different function
+		// why update each time and not compare to current best solution?
+		if (bestSolution == null) {
+			bestSolution = new SolutionVote(solution, iPenalty, iFairness);
+		} else {
+			updateBestSolution(solutionVote);
+		}
 	}
 
 	/**
@@ -199,9 +239,12 @@ public final class SolutionTable implements ISolutionTableService {
 
 		private int penaltySum;
 
-		public SolutionVote(ISolution solution, int penaltySum) {
+		private int fairness;
+
+		public SolutionVote(ISolution solution, int penaltySum, int fairness) {
 			this.solution = solution;
 			this.penaltySum = penaltySum;
+			this.fairness = fairness;
 		}
 
 		public ISolution getSolution() {
@@ -214,6 +257,14 @@ public final class SolutionTable implements ISolutionTableService {
 
 		public void setPenaltySum(int penaltySum) {
 			this.penaltySum = penaltySum;
+		}
+
+		public int getFairness() {
+			return fairness;
+		}
+
+		public void setFairness(int fairness) {
+			this.fairness = fairness;
 		}
 
 	}

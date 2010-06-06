@@ -74,8 +74,9 @@ public interface ISolutionTableService {
 	ISolution getSolution(int solutionNumber);
 
 	/**
-	 * Allows to vote for the given solution.
+	 * Allows to add penalty for the given solution.
 	 * 
+	 * @author Roy //Changed function name and implementation
 	 * @param solution
 	 *            The solution to vote for.
 	 * @param penaltyPoints
@@ -85,10 +86,12 @@ public interface ISolutionTableService {
 	 *             If the given solution is not currently stored in the solution
 	 *             table.
 	 */
-	void voteForSolution(ISolution solution, int penaltyPoints);
+	void addPenaltyToSolution(ISolution solution, int penaltyPoints);
 
 	/**
 	 * Allows to vote for the solution located at the specified solution number.
+	 * 
+	 * @author Roy //Changed the function name for better understanding
 	 * 
 	 * @param solutionNumber
 	 *            The solution number identifying the solution to vote for.
@@ -98,7 +101,7 @@ public interface ISolutionTableService {
 	 * @throws IndexOutOfBoundsException
 	 *             If the given solution number is not inside the allowed range.
 	 */
-	void voteForSolution(int solutionNumber, int penaltyPoints);
+	void addPenaltyToSolution(int solutionNumber, int penaltyPoints);
 
 	/**
 	 * Returns the sum of penalty points for the given solution. Returns -1 if
@@ -158,4 +161,31 @@ public interface ISolutionTableService {
 	 *            The new solution with which to replace the worst one.
 	 */
 	void replaceWorstSolution(ISolution newSolution);
+
+	/*
+	 * Allows to add penalty for the given solution.
+	 * 
+	 * @author Roy //Changed function name and implementation
+	 * 
+	 * @param solution The solution to vote for.
+	 * 
+	 * @param penaltyPoints The number of penalty points to give.
+	 * 
+	 * @throws RuntimeException If the given solution is not currently stored in
+	 * the solution table.
+	 */
+
+	/**
+	 * Allows to add fairness for the given solution.
+	 * 
+	 * @author Roy
+	 * 
+	 * @param solution
+	 *            The solution to vote for.
+	 * 
+	 * @param fairness
+	 *            The number related to fairness. It is a type of penalty point.
+	 * 
+	 */
+	void addFairnessToSolution(ISolution solution, int fairness);
 }
