@@ -450,7 +450,7 @@ class SessionObject {
 	/**
 	 * This method sorts the priority list in accordance to the amount of
 	 * available slots. The course with the least amount of available slots is
-	 * storend in the first (i.e. 0) position.
+	 * stored in the first (i.e. 0) position.
 	 */
 	private void sortPriorityList() {
 		// TODO better performing sorting algorithm than Bubblesort
