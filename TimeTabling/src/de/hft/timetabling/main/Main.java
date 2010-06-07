@@ -88,7 +88,7 @@ public final class Main {
 
 		for (int i = 0; i < ITERATIONS; i++) {
 			System.out.println("");
-			System.out.println("------ ITERATION " + i + 1 + " ------");
+			System.out.println("------ ITERATION " + i + " ------");
 
 			// Fills empty slots in the solution table.
 			IGeneratorService generator = locator.getGeneratorService();
@@ -104,8 +104,20 @@ public final class Main {
 					.getSolutionTableService();
 			System.out.println("----------------------------");
 			System.out.println("-- Best solution penalty: "
-					+ solutionTable.getBestSolutionPenaltySum());
+					+ solutionTable.getBestSolutionPenaltySum()
+					+ "and it\'s Fairness: "
+					+ solutionTable.getBestSolutionFairness());
+			System.out.println("-- Fairest solution penalty: "
+					+ solutionTable.getFairestSolutionPenalty()
+					+ "and it\'s Fairness: "
+					+ solutionTable.getFairestSolutionFairness());
 			System.out.println("");
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		IWriterService writer = locator.getWriterService();
