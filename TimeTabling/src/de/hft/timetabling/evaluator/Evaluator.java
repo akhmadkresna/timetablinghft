@@ -80,8 +80,6 @@ public class Evaluator implements IEvaluatorService {
 						&& courses.contains(currentCode[p][r])) {
 					iNoOfStudents = currentCode[p][r].getNumberOfStudents();
 
-					// TODO next line cannot work yet, needs mapping of period /
-					// room to unique room number
 					currentRoom = currentInstance.getRoomByUniqueNumber(r);
 					iRoomCapacity = currentRoom.getCapacity();
 
