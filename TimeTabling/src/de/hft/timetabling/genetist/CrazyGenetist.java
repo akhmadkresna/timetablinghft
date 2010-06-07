@@ -66,7 +66,23 @@ public class CrazyGenetist implements ICrazyGenetistService {
 				basicSolution = solution.getSolution(n1);
 				otherSolution = solution.getSolution(n2);
 
-				System.out.print(" found " + n1 + ", " + n2 + " ...\n");
+				System.out.print(" found " + n1 + "(" + basicSolution + "), "
+						+ n2 + "(" + otherSolution + ") ...\n");
+
+				/*
+				 * //for debugging reasons if ((otherSolution == null)) {
+				 * System.out.println("otherSolution is null"); } if
+				 * ((basicSolution == null)) {
+				 * System.out.println("basicSolution is null"); } if
+				 * (((basicSolution != null) && (otherSolution != null)) &&
+				 * basicSolution.equals(otherSolution)) {
+				 * System.out.println("solutions are equal!:");
+				 * System.out.println("Basic solution:\n" + CrazyGenetistUtility
+				 * .coursesToStringId(basicSolution .getCoding()));
+				 * System.out.println("Other solution:\n" + CrazyGenetistUtility
+				 * .coursesToStringId(otherSolution .getCoding()));
+				 * System.exit(0); }
+				 */
 			}
 			System.out.println("CG: Taking these solutions.");
 
@@ -80,7 +96,8 @@ public class CrazyGenetist implements ICrazyGenetistService {
 
 		// Hand in solution
 		if ((back != null) && new ValidatorImpl().isValidSolution(back)) {
-			System.out.println("CG: Valid solution found.");
+			System.out.println("CG: Valid solution found. (" + back.toString()
+					+ ")");
 			getSolution().replaceWorstSolution(back);
 		} else {
 			System.out.println("CG: No valid solution found.");
