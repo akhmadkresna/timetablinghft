@@ -1,5 +1,7 @@
 package de.hft.timetabling.services;
 
+import java.util.Arrays;
+
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
@@ -64,4 +66,40 @@ final class SolutionImpl implements ISolution {
 				getProblemInstance());
 		return object;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(coding);
+		result = prime * result
+				+ ((problemInstance == null) ? 0 : problemInstance.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		SolutionImpl other = (SolutionImpl) obj;
+		if (!Arrays.equals(coding, other.coding)) {
+			return false;
+		}
+		if (problemInstance == null) {
+			if (other.problemInstance != null) {
+				return false;
+			}
+		} else if (!problemInstance.equals(other.problemInstance)) {
+			return false;
+		}
+		return true;
+	}
+
 }
