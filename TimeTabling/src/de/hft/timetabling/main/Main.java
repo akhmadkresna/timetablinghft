@@ -87,6 +87,9 @@ public final class Main {
 		IProblemInstance instance = reader.readInstance(fileName);
 
 		for (int i = 0; i < ITERATIONS; i++) {
+			System.out.println("");
+			System.out.println("------ ITERATION " + i + 1 + " ------");
+
 			// Fills empty slots in the solution table.
 			IGeneratorService generator = locator.getGeneratorService();
 			generator.fillSolutionTable(instance);
@@ -99,8 +102,10 @@ public final class Main {
 
 			ISolutionTableService solutionTable = locator
 					.getSolutionTableService();
-			System.out.println("### Main: Best solution penalty: "
+			System.out.println("----------------------------");
+			System.out.println("-- Best solution penalty: "
 					+ solutionTable.getBestSolutionPenaltySum());
+			System.out.println("");
 		}
 
 		IWriterService writer = locator.getWriterService();

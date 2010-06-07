@@ -278,16 +278,8 @@ public class Evaluator implements IEvaluatorService {
 	@Override
 	public void EvaluateSolutions() {
 		ServiceLocator serviceLocator = ServiceLocator.getInstance();
-		int iCost = 0;
-
 		solutionTable = serviceLocator.getSolutionTableService();
-
 		callSoftConstrainEvalutors(solutionTable);
-
-		iCost = solutionTable.getPenaltySumForSolution(0);
-		System.out.println("Penalty for solution 0: " + iCost);
-		iCost = solutionTable.getPenaltySumForSolution(1);
-		System.out.println("Penalty for solution 1: " + iCost);
 	}
 
 	/**

@@ -54,7 +54,8 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			// Choosing solutions that until they are not null and different
 			while ((otherSolution == null) || (basicSolution == null)
 					|| basicSolution.equals(otherSolution)) {
-				System.out.println("Trying to find solution to work with ...");
+				System.out
+						.print("CG: Trying to find solution to work with ...");
 
 				// --> if (Math.random() < probability)
 
@@ -65,9 +66,9 @@ public class CrazyGenetist implements ICrazyGenetistService {
 				basicSolution = solution.getSolution(n1);
 				otherSolution = solution.getSolution(n2);
 
-				System.out.println("... found " + n1 + ", " + n2 + " ...");
+				System.out.print(" found " + n1 + ", " + n2 + " ...\n");
 			}
-			System.out.println(" ... take it!");
+			System.out.println("CG: Taking these solutions.");
 
 			back = mutateRoomStability(recombindation2(basicSolution,
 					otherSolution));
@@ -76,14 +77,13 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			otherSolution.increaseRecombinationCount();
 
 		}
-		System.out.println("Crazy Genetist is done.");
 
 		// Hand in solution
 		if ((back != null) && new ValidatorImpl().isValidSolution(back)) {
-			System.out.println("### Solution valid!!");
+			System.out.println("CG: Valid solution found.");
 			getSolution().replaceWorstSolution(back);
 		} else {
-			System.out.println("### Solution not valid!!");
+			System.out.println("CG: No valid solution found.");
 		}
 	}
 
@@ -114,7 +114,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 * @return mutated solution
 	 */
 	private ISolution mutateRoomStability(ISolution solution) {
-		System.out.println("Starting mutation ...");
+		System.out.print("CG: Starting mutation ...");
 		IProblemInstance pi = solution.getProblemInstance();
 		ICourse[][] courses = solution.getCoding();
 		int roomY = 0, periodX = 0;
@@ -135,7 +135,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			}
 		}
 
-		System.out.println("... mutate ...");
 		for (int i = 0; i < courses.length; i++) {
 			if (i != periodX) {
 				for (int j = 0; j < courses[i].length; j++) {
@@ -161,7 +160,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 		ISolution newSolution = this.solution.createNewSolution(courses,
 				solution.getProblemInstance());
 		newSolution.setRecombinationCount(solution.getRecombinationCount() + 1);
-		System.out.println("... mutation done.");
+		System.out.print(" done.\n");
 		return newSolution;
 	}
 
@@ -175,7 +174,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 * @return recombied solution
 	 */
 	private ISolution recombindation2(ISolution solution1, ISolution solution2) {
-		System.out.println("Start recombnination 2 process ...");
+		System.out.print("CG: Start recombnination 2 process ...");
 		// ICourse[][] oldBestSolution;
 		// ValidatorImpl vi = new ValidatorImpl();
 		// Set<ICourse> savingList = new HashSet<ICourse>();
@@ -222,8 +221,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			}
 		}
 
-		System.out.println("... done with recombindation 2 process. ("
-				+ !checkForNullCourse(newSolution) + ")");
+		System.out.print(" done (" + !checkForNullCourse(newSolution) + ").\n");
 		return newSolution;
 	}
 

@@ -79,6 +79,6 @@ public final class Writer implements IWriterService {
 
 		bufferedWriter.close();
 
-		System.out.print("... success.\n");
+		System.out.print(" ... success.\n");
 	}
 }

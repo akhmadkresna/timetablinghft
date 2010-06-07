@@ -35,7 +35,7 @@ public final class Reader implements IReaderService {
 		List<String> lines = readFile("instances/" + fileName);
 		ProblemInstanceImpl instance = parseGeneralInformation(lines, fileName);
 		parseContents(lines, instance);
-		System.out.print("... success.\n");
+		System.out.print(" ... success.\n");
 		return instance;
 	}
 

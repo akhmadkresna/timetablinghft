@@ -96,14 +96,7 @@ public final class SolutionTable implements ISolutionTableService {
 		int bestPenalty = bestSoFar.getPenaltySum();
 		int currentFairness = currentSolution.getFairness();
 		int currentPenaltySum = currentSolution.getPenaltySum();
-		/*
-		 * for (Integer solutionNumber : solutionTable.keySet()) { SolutionVote
-		 * currentSolutionVote = solutionTable .get(solutionNumber); int
-		 * currentPenaltySum = currentSolutionVote.getPenaltySum(); if
-		 * (currentPenaltySum == -1) { continue; } if (bestSoFar == null) {
-		 * bestSoFar = currentSolutionVote; continue; } if (currentPenaltySum <
-		 * bestSoFar.getPenaltySum()) { bestSoFar = currentSolutionVote; } }
-		 */
+
 		// Check the new solution Penalty with best one
 		if (currentPenaltySum < bestPenalty) {
 			bestSoFar = currentSolution;
@@ -114,8 +107,12 @@ public final class SolutionTable implements ISolutionTableService {
 			}
 		}
 
-		// TODO Needs to be copied instead of just reference
-		bestSolution = bestSoFar;
+		/*
+		 * Needs to be copied instead of only passing the reference because the
+		 * solution is still in the table and might undergo changes.
+		 */
+		bestSolution = new SolutionVote(bestSoFar.getSolution().clone(),
+				bestSoFar.getPenaltySum(), bestSoFar.getFairness());
 	}
 
 	@Override
