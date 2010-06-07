@@ -13,6 +13,7 @@ import de.hft.timetabling.services.ICrazyGenetistService;
 import de.hft.timetabling.services.IEvaluatorService;
 import de.hft.timetabling.services.IGeneratorService;
 import de.hft.timetabling.services.IReaderService;
+import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.IWriterService;
 import de.hft.timetabling.services.ServiceLocator;
 import de.hft.timetabling.services.SolutionTable;
@@ -95,6 +96,10 @@ public final class Main {
 
 			ICrazyGenetistService genetist = locator.getCrazyGenetistService();
 			genetist.recombineAndMutate();
+
+			ISolutionTableService solutionTable = locator
+					.getSolutionTableService();
+			solutionTable.resetEvaluation();
 		}
 
 		IWriterService writer = locator.getWriterService();

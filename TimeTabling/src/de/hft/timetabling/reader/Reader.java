@@ -30,10 +30,12 @@ public final class Reader implements IReaderService {
 
 	@Override
 	public IProblemInstance readInstance(String fileName) throws IOException {
+		System.out.print("READER: Reading input file " + fileName);
 		reset();
 		List<String> lines = readFile("instances/" + fileName);
 		ProblemInstanceImpl instance = parseGeneralInformation(lines, fileName);
 		parseContents(lines, instance);
+		System.out.print("... success.\n");
 		return instance;
 	}
 

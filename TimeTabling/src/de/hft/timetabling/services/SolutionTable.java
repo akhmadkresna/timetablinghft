@@ -59,7 +59,7 @@ public final class SolutionTable implements ISolutionTableService {
 	@Override
 	public void putSolution(int solutionNumber, ISolution solution) {
 		checkSolutionNumber(solutionNumber);
-		solutionTable.put(solutionNumber, new SolutionVote(solution, -1, -1));
+		solutionTable.put(solutionNumber, new SolutionVote(solution));
 	}
 
 	@Override
@@ -132,6 +132,16 @@ public final class SolutionTable implements ISolutionTableService {
 	@Override
 	public int getPenaltySumForSolution(ISolution solution) {
 		return getSolutionVoteForSolution(solution).getPenaltySum();
+	}
+
+	@Override
+	public int getFairnessForSolution(int solutionNumber) {
+		return getFairnessForSolution(getSolution(solutionNumber));
+	}
+
+	@Override
+	public int getFairnessForSolution(ISolution solution) {
+		return getSolutionVoteForSolution(solution).getFairness();
 	}
 
 	/**
@@ -242,6 +252,14 @@ public final class SolutionTable implements ISolutionTableService {
 		addFairnessToSolution(getSolution(solutionNumber), fairness);
 	}
 
+	@Override
+	public void resetEvaluation() {
+		for (Integer solutionNumber : solutionTable.keySet()) {
+			SolutionVote solutionVote = solutionTable.get(solutionNumber);
+			solutionVote.reset();
+		}
+	}
+
 	/**
 	 * Used to associate a given solution with a penalty sum.
 	 */
@@ -252,6 +270,10 @@ public final class SolutionTable implements ISolutionTableService {
 		private int penaltySum;
 
 		private int fairness;
+
+		public SolutionVote(ISolution solution) {
+			this(solution, -1, -1);
+		}
 
 		public SolutionVote(ISolution solution, int penaltySum, int fairness) {
 			this.solution = solution;
@@ -277,6 +299,11 @@ public final class SolutionTable implements ISolutionTableService {
 
 		public void setFairness(int fairness) {
 			this.fairness = fairness;
+		}
+
+		public void reset() {
+			penaltySum = -1;
+			fairness = -1;
 		}
 
 	}

@@ -170,4 +170,17 @@ public class SolutionTableTest extends AbstractServicesTest {
 		solutionTable.replaceWorstSolution(newSolution);
 		assertEquals(newSolution, solutionTable.getSolution(2));
 	}
+
+	public void testResetEvaluation() {
+		for (int i = 0; i < ISolutionTableService.TABLE_SIZE; i++) {
+			solutionTable.addPenaltyToSolution(i, 100 + i);
+			solutionTable.addFairnessToSolution(i, i);
+		}
+		solutionTable.resetEvaluation();
+		for (int i = 0; i < ISolutionTableService.TABLE_SIZE; i++) {
+			assertEquals(-1, solutionTable.getPenaltySumForSolution(i));
+			assertEquals(-1, solutionTable.getFairnessForSolution(i));
+		}
+	}
+
 }

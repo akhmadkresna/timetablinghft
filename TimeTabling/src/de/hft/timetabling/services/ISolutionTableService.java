@@ -105,7 +105,7 @@ public interface ISolutionTableService {
 
 	/**
 	 * Returns the sum of penalty points for the given solution. Returns -1 if
-	 * the solution wasn't voted yet.
+	 * the solution wasn't evaluated yet.
 	 * 
 	 * @param solution
 	 *            The solution to retrieve the penalty points for.
@@ -118,7 +118,7 @@ public interface ISolutionTableService {
 
 	/**
 	 * Returns the sum of penalty points for the solution identified by the
-	 * given solution number. Returns -1 if the solution wasn't voted yet.
+	 * given solution number. Returns -1 if the solution wasn't evaluated yet.
 	 * 
 	 * @param solutionNumber
 	 *            The solution number identifying the solution to obtain the
@@ -128,6 +128,31 @@ public interface ISolutionTableService {
 	 *             If the given solution number is not inside the allowed range.
 	 */
 	int getPenaltySumForSolution(int solutionNumber);
+
+	/**
+	 * Returns the fairness for the solution identified by the given solution
+	 * number. Returns -1 if the solution wasn't evaluated yet.
+	 * 
+	 * @param solutionNumber
+	 *            The solution number identifying the solution to obtain the
+	 *            fairness for.
+	 * 
+	 * @throws IndexOutOfBoundsException
+	 *             If the given solution number is not inside the allowed range.
+	 */
+	int getFairnessForSolution(int solutionNumber);
+
+	/**
+	 * Returns the fairness for the given solution.
+	 * 
+	 * @param solution
+	 *            The solution to retrieve the fairness for.
+	 * 
+	 * @throws RuntimeException
+	 *             If the given solution is not currently stored in the solution
+	 *             table.
+	 */
+	int getFairnessForSolution(ISolution solution);
 
 	/**
 	 * Returns the best solution so far or <tt>null</tt> if no best solution is
@@ -189,5 +214,11 @@ public interface ISolutionTableService {
 	 * 
 	 */
 	void addFairnessToSolution(int solutionNumber, int fairness);
+
+	/**
+	 * Resets the solution table. The solutions will still be the same after
+	 * this call but every assigned penalty and fairness value is reset.
+	 */
+	void resetEvaluation();
 
 }

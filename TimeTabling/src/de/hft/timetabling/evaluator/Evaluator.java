@@ -79,13 +79,18 @@ public class Evaluator implements IEvaluatorService {
 				if ((currentCode[p][r] != null)
 						&& courses.contains(currentCode[p][r])) {
 					iNoOfStudents = currentCode[p][r].getNumberOfStudents();
+
+					// TODO next line cannot work yet, needs mapping of period /
+					// room to unique room number
 					currentRoom = currentInstance.getRoomByUniqueNumber(r);
 					iRoomCapacity = currentRoom.getCapacity();
+
 					// Each student above the capacity counts as 1 point of
 					// penalty
 					if (iNoOfStudents > iRoomCapacity) {
 						iCost += (iNoOfStudents - iRoomCapacity);
 					}
+
 					// There are no more courses in the same period but
 					// different room
 					break;
