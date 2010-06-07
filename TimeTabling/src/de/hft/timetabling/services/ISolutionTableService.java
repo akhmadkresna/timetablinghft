@@ -215,4 +215,35 @@ public interface ISolutionTableService {
 	 */
 	void addFairnessToSolution(int solutionNumber, int fairness);
 
+	/**
+	 * Returns the fairest solution so far or <tt>null</tt> if no fair solution
+	 * is available yet. The fairest solution will always be the solution with
+	 * the fewest fairness points.
+	 */
+	ISolution getFairestSolution();
+
+	/**
+	 * Returns the penalty points of the Fairest solution.
+	 * 
+	 * @throws RuntimeException
+	 *             If there is no best solution available yet.
+	 */
+	int getFairestSolutionPenalty();
+
+	/**
+	 * Returns the fairness points of the Fairest solution.
+	 * 
+	 * @throws RuntimeException
+	 *             If there is no best solution available yet.
+	 */
+	int getFairestSolutionFairness();
+
+	/**
+	 * Returns the fairness points of the Best solution.
+	 * 
+	 * @throws RuntimeException
+	 *             If there is no best solution available yet.
+	 */
+	int getBestSolutionFairness();
+
 }

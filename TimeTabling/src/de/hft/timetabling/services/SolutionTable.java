@@ -22,7 +22,9 @@ public final class SolutionTable implements ISolutionTableService {
 	 */
 	private final Map<Integer, SolutionVote> solutionTable;
 
-	private SolutionVote bestSolution;
+	private SolutionVote bestPenaltySolution;
+
+	private SolutionVote bestFairnessSolution;
 
 	public SolutionTable() {
 		solutionTable = new HashMap<Integer, SolutionVote>();
@@ -91,7 +93,7 @@ public final class SolutionTable implements ISolutionTableService {
 	 *            Passing current solution to which fairness was added.
 	 */
 	private void updateBestSolution(SolutionVote currentSolution) {
-		SolutionVote bestSoFar = bestSolution;
+		SolutionVote bestSoFar = bestPenaltySolution;
 		int bestFairness = bestSoFar.getFairness();
 		int bestPenalty = bestSoFar.getPenaltySum();
 		int currentFairness = currentSolution.getFairness();
@@ -111,7 +113,7 @@ public final class SolutionTable implements ISolutionTableService {
 		 * Needs to be copied instead of only passing the reference because the
 		 * solution is still in the table and might undergo changes.
 		 */
-		bestSolution = new SolutionVote(bestSoFar.getSolution().clone(),
+		bestPenaltySolution = new SolutionVote(bestSoFar.getSolution().clone(),
 				bestSoFar.getPenaltySum(), bestSoFar.getFairness());
 	}
 
@@ -169,15 +171,16 @@ public final class SolutionTable implements ISolutionTableService {
 
 	@Override
 	public ISolution getBestSolution() {
-		return (bestSolution == null) ? null : bestSolution.getSolution();
+		return (bestPenaltySolution == null) ? null : bestPenaltySolution
+				.getSolution();
 	}
 
 	@Override
 	public int getBestSolutionPenaltySum() {
-		if (bestSolution == null) {
+		if (bestPenaltySolution == null) {
 			throw new RuntimeException("No best solution available yet.");
 		}
-		return bestSolution.getPenaltySum();
+		return bestPenaltySolution.getPenaltySum();
 	}
 
 	@Override
@@ -225,18 +228,61 @@ public final class SolutionTable implements ISolutionTableService {
 	public void addFairnessToSolution(ISolution solution, int fairness) {
 		SolutionVote solutionVote = getSolutionVoteForSolution(solution);
 		int iFairness = solutionVote.getFairness();
-		int iPenalty = solutionVote.getPenaltySum();
+
 		if (iFairness == -1) {
 			iFairness++;
 		}
 		iFairness = fairness;
 		solutionVote.setFairness(iFairness);
-		// compare with only the best solution
-		if (bestSolution == null) {
-			bestSolution = new SolutionVote(solution, iPenalty, iFairness);
+
+		// Call the method to update the best and fairest solutions
+		callMethodToFindBestandFairestSolutions(solution);
+
+	}
+
+	/**
+	 * Call the updateBestSolution and the updateFairestSolution methods
+	 * 
+	 * @param solution
+	 */
+	private void callMethodToFindBestandFairestSolutions(ISolution solution) {
+		SolutionVote solutionVote = getSolutionVoteForSolution(solution);
+		int iFairness = solutionVote.getFairness();
+		int iPenalty = solutionVote.getPenaltySum();
+		// set the current solution was the fairest if null
+		if (bestFairnessSolution == null) {
+			bestFairnessSolution = new SolutionVote(solution, iPenalty,
+					iFairness);
+		} else {
+			updateFairestSolution(solutionVote);
+		}
+		// set the current solution as best if null
+		if (bestPenaltySolution == null) {
+			bestPenaltySolution = new SolutionVote(solution, iPenalty,
+					iFairness);
 		} else {
 			updateBestSolution(solutionVote);
 		}
+	}
+
+	private void updateFairestSolution(SolutionVote currentSolution) {
+		SolutionVote fairestSoFar = bestFairnessSolution;
+		int bestFairness = fairestSoFar.getFairness();
+		int currentFairness = currentSolution.getFairness();
+
+		// Check the new solution fairness with best one
+		if (currentFairness < bestFairness) {
+			fairestSoFar = currentSolution;
+		}
+
+		/*
+		 * Needs to be copied instead of only passing the reference because the
+		 * solution is still in the table and might undergo changes.
+		 */
+		bestFairnessSolution = new SolutionVote(fairestSoFar.getSolution()
+				.clone(), fairestSoFar.getPenaltySum(), fairestSoFar
+				.getFairness());
+
 	}
 
 	/**
@@ -248,6 +294,36 @@ public final class SolutionTable implements ISolutionTableService {
 	public void addFairnessToSolution(int solutionNumber, int fairness) {
 		checkSolutionNumber(solutionNumber);
 		addFairnessToSolution(getSolution(solutionNumber), fairness);
+	}
+
+	@Override
+	public ISolution getFairestSolution() {
+		return (bestFairnessSolution == null) ? null : bestFairnessSolution
+				.getSolution();
+	}
+
+	@Override
+	public int getFairestSolutionPenalty() {
+		if (bestFairnessSolution == null) {
+			throw new RuntimeException("No best solution available yet.");
+		}
+		return bestFairnessSolution.getPenaltySum();
+	}
+
+	@Override
+	public int getFairestSolutionFairness() {
+		if (bestFairnessSolution == null) {
+			throw new RuntimeException("No best solution available yet.");
+		}
+		return bestFairnessSolution.getFairness();
+	}
+
+	@Override
+	public int getBestSolutionFairness() {
+		if (bestPenaltySolution == null) {
+			throw new RuntimeException("No best solution available yet.");
+		}
+		return bestPenaltySolution.getFairness();
 	}
 
 	/**
