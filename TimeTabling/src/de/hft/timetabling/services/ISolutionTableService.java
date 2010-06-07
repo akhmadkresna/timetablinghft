@@ -215,10 +215,4 @@ public interface ISolutionTableService {
 	 */
 	void addFairnessToSolution(int solutionNumber, int fairness);
 
-	/**
-	 * Resets the solution table. The solutions will still be the same after
-	 * this call but every assigned penalty and fairness value is reset.
-	 */
-	void resetEvaluation();
-
 }

@@ -99,7 +99,8 @@ public final class Main {
 
 			ISolutionTableService solutionTable = locator
 					.getSolutionTableService();
-			solutionTable.resetEvaluation();
+			System.out.println("### Main: Best solution penalty: "
+					+ solutionTable.getBestSolutionPenaltySum());
 		}
 
 		IWriterService writer = locator.getWriterService();

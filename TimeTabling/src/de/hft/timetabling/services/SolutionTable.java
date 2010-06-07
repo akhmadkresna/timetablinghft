@@ -114,6 +114,7 @@ public final class SolutionTable implements ISolutionTableService {
 			}
 		}
 
+		// TODO Needs to be copied instead of just reference
 		bestSolution = bestSoFar;
 	}
 
@@ -252,14 +253,6 @@ public final class SolutionTable implements ISolutionTableService {
 		addFairnessToSolution(getSolution(solutionNumber), fairness);
 	}
 
-	@Override
-	public void resetEvaluation() {
-		for (Integer solutionNumber : solutionTable.keySet()) {
-			SolutionVote solutionVote = solutionTable.get(solutionNumber);
-			solutionVote.reset();
-		}
-	}
-
 	/**
 	 * Used to associate a given solution with a penalty sum.
 	 */
@@ -299,11 +292,6 @@ public final class SolutionTable implements ISolutionTableService {
 
 		public void setFairness(int fairness) {
 			this.fairness = fairness;
-		}
-
-		public void reset() {
-			penaltySum = -1;
-			fairness = -1;
 		}
 
 	}
