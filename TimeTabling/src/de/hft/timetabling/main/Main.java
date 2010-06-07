@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.evaluator.Evaluator;
-import de.hft.timetabling.generator.Generator2;
+import de.hft.timetabling.generator.Generator;
 import de.hft.timetabling.generator.NoFeasibleSolutionFoundException;
 import de.hft.timetabling.genetist.CrazyGenetist;
 import de.hft.timetabling.genetist.ValidatorImpl;
@@ -70,7 +70,7 @@ public final class Main {
 		serviceLocator.setReaderService(new Reader());
 		serviceLocator.setSolutionTableService(new SolutionTable());
 		serviceLocator.setWriterService(new Writer());
-		serviceLocator.setGeneratorService(new Generator2());
+		serviceLocator.setGeneratorService(new Generator());
 		serviceLocator.setValidatorService(new ValidatorImpl());
 		serviceLocator.setCrazyGenetistService(new CrazyGenetist());
 		serviceLocator.setEvaluatorService(new Evaluator());
