@@ -52,7 +52,7 @@ public class Evaluator implements IEvaluatorService {
 	 *            A solution instance is send for evaluation
 	 * @return iCost Returns the penalty value
 	 */
-	private int CostsOnRoomCapacity(ISolution solution, ICurriculum curriculum) {
+	private int costsOnRoomCapacity(ISolution solution, ICurriculum curriculum) {
 		int iCost = 0;
 		int iNoOfStudents, iRoomCapacity;
 		int r, p;
@@ -107,7 +107,7 @@ public class Evaluator implements IEvaluatorService {
 	 *            A solution instance is send for evaluation
 	 * @return iCost Returns the penalty value
 	 */
-	private int CostsOnMinWorkingDays(ISolution solution, ICurriculum curriculum) {
+	private int costsOnMinWorkingDays(ISolution solution, ICurriculum curriculum) {
 		int iCost = 0;
 		int p, r, iWorkingDays;
 		int iMinWorkingDays, iPeriodPerDay;
@@ -193,7 +193,7 @@ public class Evaluator implements IEvaluatorService {
 	 *            A solution instance is send for evaluation
 	 * @return iCost Returns the penalty value of both soft constrains
 	 */
-	private int CostsOnCurriculumCompactnessAndRoomStability(
+	private int costsOnCurriculumCompactnessAndRoomStability(
 			ISolution solution, ICurriculum curriculum) {
 		int iCost = 0;
 		int p, r, d, iPreviousRoom;
@@ -274,7 +274,7 @@ public class Evaluator implements IEvaluatorService {
 	 * 
 	 */
 	@Override
-	public void EvaluateSolutions() {
+	public void evaluateSolutions() {
 		ServiceLocator serviceLocator = ServiceLocator.getInstance();
 		solutionTable = serviceLocator.getSolutionTableService();
 		callSoftConstrainEvalutors(solutionTable);
@@ -293,12 +293,16 @@ public class Evaluator implements IEvaluatorService {
 		ISolution solutionCode;
 		int iCost = 0, numberOfCurriculum, iFairness;
 		int[] curriculumCosts = null;
+		int currentPenalty;
 
 		int size = solutionTable.getActualSolutionTableCount();
 
 		for (int i = 0; i < size; i++) {
 			solutionCode = solutionTable.getSolution(i);
-			if (solutionCode != null) {
+			currentPenalty = solutionTable.getPenaltySumForSolution(i);
+			// Make sure there is a solution
+			// and that the solution has not been evaluated before
+			if ((solutionCode != null) && (currentPenalty == -1)) {
 				currentInstance = solutionCode.getProblemInstance();
 				currentCode = solutionCode.getCoding();
 				currentCurriculumSet = currentInstance.getCurricula();
@@ -311,10 +315,10 @@ public class Evaluator implements IEvaluatorService {
 					currentCurricula = it.next();
 					// Penalty calculation for given solution
 					iCost = 0;
-					iCost += CostsOnRoomCapacity(solutionCode, currentCurricula);
-					iCost += CostsOnMinWorkingDays(solutionCode,
+					iCost += costsOnRoomCapacity(solutionCode, currentCurricula);
+					iCost += costsOnMinWorkingDays(solutionCode,
 							currentCurricula);
-					iCost += CostsOnCurriculumCompactnessAndRoomStability(
+					iCost += costsOnCurriculumCompactnessAndRoomStability(
 							solutionCode, currentCurricula);
 					solutionTable.addPenaltyToSolution(solutionCode, iCost);
 					curriculumCosts[c] = iCost;
@@ -339,7 +343,7 @@ public class Evaluator implements IEvaluatorService {
 	 *            Used to find the avg of the Penalties
 	 */
 	private int evaluateFairness(int[] curriculumCosts, int numberOfCurriculum) {
-		int iFairnessCost = 0;
+		int iFairnessCost = 0, maxAvgDiff, minAvgDiff;
 		int maxPenalty = -1, minPenalty = -1, avgPenalty = -1, penaltySum = 0;
 
 		// initial value to compare with
@@ -355,10 +359,18 @@ public class Evaluator implements IEvaluatorService {
 			}
 			penaltySum += curriculumCosts[i];
 		}
-		avgPenalty = penaltySum / numberOfCurriculum;
+		avgPenalty = (penaltySum / numberOfCurriculum);
 
-		iFairnessCost += maxPenalty - avgPenalty;
-		iFairnessCost += avgPenalty - minPenalty;
+		maxAvgDiff = maxPenalty - avgPenalty;
+		minAvgDiff = avgPenalty - minPenalty;
+
+		if (maxAvgDiff >= minAvgDiff) {
+			// iFairnessCost = maxAvgDiff;
+			iFairnessCost = maxAvgDiff - minAvgDiff;
+		} else {
+			// iFairnessCost = minAvgDiff;
+			iFairnessCost = minAvgDiff - maxAvgDiff;
+		}
 
 		return iFairnessCost;
 	}
