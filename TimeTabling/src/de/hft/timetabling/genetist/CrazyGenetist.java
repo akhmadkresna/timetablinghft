@@ -43,9 +43,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 
 		setSolution(serviceLocator.getSolutionTableService());
 
-		// Solution that is given back afterwards.
-		ISolution back = null;
-
 		if (solution.getSize(false) > 1) {
 			// Solution that is used to pull values out of.
 			ISolution otherSolution = null;
@@ -94,15 +91,17 @@ public class CrazyGenetist implements ICrazyGenetistService {
 
 				ISolution recombinedSolution = recombindation2(basicSolution,
 						otherSolution);
-				back = mutateRoomStability(recombinedSolution);
+				recombinedSolution = mutateRoomStability(recombinedSolution);
 
 				basicSolution.increaseRecombinationCount();
 				otherSolution.increaseRecombinationCount();
 
 				// Hand in solution
-				if ((back != null) && new ValidatorImpl().isValidSolution(back)) {
+				if ((recombinedSolution != null)
+						&& new ValidatorImpl()
+								.isValidSolution(recombinedSolution)) {
 					getSolution().removeWorstSolution();
-					getSolution().addSolution(back);
+					getSolution().addSolution(recombinedSolution);
 					handedInSolution++;
 				} else {
 					System.out
