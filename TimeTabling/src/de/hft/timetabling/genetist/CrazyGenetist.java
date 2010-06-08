@@ -39,7 +39,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 */
 	@Override
 	public void recombineAndMutate() {
-
 		ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
 		setSolution(serviceLocator.getSolutionTableService());
@@ -54,8 +53,10 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			ISolution basicSolution = null;
 			// Choosing solutions that until they are not null and different
 			int handedInSolution = 0;
-			int iterationsRounds = ITERATIONS
-					* ISolutionTableService.TABLE_SIZE / 100;
+			int iterationsRounds = (ITERATIONS * ISolutionTableService.TABLE_SIZE) / 100;
+
+			System.out.print("CRAZY GENETIST: Starting to create "
+					+ iterationsRounds + " children (" + ITERATIONS + "%) ...");
 
 			// Make sure that it is executed at least once
 			if (iterationsRounds == 0) {
@@ -67,8 +68,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			for (int i = 0; handedInSolution < iterationsRounds; i++) {
 				while ((otherSolution == null) || (basicSolution == null)
 						|| basicSolution.equals(otherSolution)) {
-					System.out
-							.print("CG: Trying to find solution to work with ...");
 
 					// --> if (Math.random() < probability)
 
@@ -76,9 +75,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 					int n2 = (int) (solution.getSize(false) * Math.random());
 					basicSolution = solution.getSolution(n1);
 					otherSolution = solution.getSolution(n2);
-
-					System.out.print(" found " + n1 + "(" + basicSolution
-							+ "), " + n2 + "(" + otherSolution + ") ...\n");
 
 					/*
 					 * //for debugging reasons if ((otherSolution == null)) {
@@ -95,7 +91,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 					 * .getCoding())); System.exit(0); }
 					 */
 				}
-				System.out.println("CG: Taking these solutions.");
 
 				back = mutateRoomStability(recombindation2(basicSolution,
 						otherSolution));
@@ -105,16 +100,17 @@ public class CrazyGenetist implements ICrazyGenetistService {
 
 				// Hand in solution
 				if ((back != null) && new ValidatorImpl().isValidSolution(back)) {
-					System.out.println("CG: Valid solution found. ("
-							+ back.toString() + ")");
 					getSolution().removeWorstSolution();
 					getSolution().addSolution(back);
 					handedInSolution++;
 				} else {
-					System.out.println("CG: No valid solution found.");
+					System.out
+							.println("CRAZY GENETIST: No valid solution found.");
 					break;
 				}
 			}
+
+			System.out.print(" done.\n");
 		}
 	}
 
@@ -145,7 +141,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 * @return mutated solution
 	 */
 	private ISolution mutateRoomStability(ISolution solution) {
-		System.out.print("CG: Starting mutation ...");
 		IProblemInstance pi = solution.getProblemInstance();
 		ICourse[][] courses = solution.getCoding();
 		int roomY = 0, periodX = 0;
@@ -191,7 +186,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 		ISolution newSolution = this.solution.createNewSolution(courses,
 				solution.getProblemInstance());
 		newSolution.setRecombinationCount(solution.getRecombinationCount() + 1);
-		System.out.print(" done.\n");
 		return newSolution;
 	}
 
@@ -205,7 +199,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 * @return recombied solution
 	 */
 	private ISolution recombindation2(ISolution solution1, ISolution solution2) {
-		System.out.print("CG: Start recombnination 2 process ...");
 		// ICourse[][] oldBestSolution;
 		// ValidatorImpl vi = new ValidatorImpl();
 		// Set<ICourse> savingList = new HashSet<ICourse>();
@@ -252,7 +245,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			}
 		}
 
-		System.out.print(" done (" + !checkForNullCourse(newSolution) + ").\n");
 		return newSolution;
 	}
 
@@ -420,25 +412,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Method to check if one ISolution only contains of null elements
-	 * 
-	 * @param solution
-	 *            ISolution that should be analysed.
-	 * @return True if the whole timetable only consists of null elements.
-	 */
-	private boolean checkForNullCourse(ISolution solution) {
-		ICourse[][] course = solution.getCoding();
-		for (int i = 0; i < course.length; i++) {
-			for (int j = 0; j < course[i].length; j++) {
-				if (course[i][j] != null) {
-					return false;
-				}
-			}
-		}
-		return true;
 	}
 
 }
