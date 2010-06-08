@@ -28,6 +28,8 @@ final class CourseImpl implements ICourse {
 
 	private final IProblemInstance problemInstance;
 
+	private final Set<ICurriculum> curricula;
+
 	CourseImpl(String id, int minWorkingDays, int numberOfLectures,
 			int numberOfStudents, String teacher,
 			IProblemInstance problemInstance) {
@@ -38,6 +40,7 @@ final class CourseImpl implements ICourse {
 		this.numberOfStudents = numberOfStudents;
 		this.teacher = teacher;
 		this.problemInstance = problemInstance;
+		curricula = new LinkedHashSet<ICurriculum>();
 	}
 
 	@Override
@@ -72,10 +75,11 @@ final class CourseImpl implements ICourse {
 
 	@Override
 	public Set<ICurriculum> getCurricula() {
-		Set<ICurriculum> curricula = new LinkedHashSet<ICurriculum>();
-		for (ICurriculum curriculum : problemInstance.getCurricula()) {
-			if (curriculum.containsCourse(this)) {
-				curricula.add(curriculum);
+		if (curricula.isEmpty()) {
+			for (ICurriculum curriculum : problemInstance.getCurricula()) {
+				if (curriculum.containsCourse(this)) {
+					curricula.add(curriculum);
+				}
 			}
 		}
 		return curricula;
