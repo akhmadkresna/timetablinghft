@@ -17,12 +17,13 @@ public final class Eliminator implements IEliminatorService {
 	 */
 	@Override
 	public void eliminateSolutions() {
-		System.out.print("ELIMINATOR: Eliminating worst " + PERCENTAGE
-				+ "% of solutions ...");
-
 		ISolutionTableService solutionTable = ServiceLocator.getInstance()
 				.getSolutionTableService();
-		int nrSolutionToEliminate = (PERCENTAGE * solutionTable.getSize()) / 100;
+		int nrSolutionToEliminate = (PERCENTAGE * solutionTable.getSize(true)) / 100;
+
+		System.out.print("ELIMINATOR: Eliminating worst " + PERCENTAGE
+				+ "% of solutions (" + nrSolutionToEliminate + ") ...");
+
 		for (int i = 0; i < nrSolutionToEliminate; i++) {
 			solutionTable.removeWorstSolution();
 		}

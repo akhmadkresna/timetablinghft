@@ -47,7 +47,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 		// Solution that is given back afterwards.
 		ISolution back = null;
 
-		if (solution.getSize() > 1) {
+		if (solution.getSize(false) > 1) {
 			// Solution that is used to pull values out of.
 			ISolution otherSolution = null;
 			// Solution that is used as basic for recombination
@@ -72,8 +72,8 @@ public class CrazyGenetist implements ICrazyGenetistService {
 
 					// --> if (Math.random() < probability)
 
-					int n1 = (int) (solution.getSize() * Math.random());
-					int n2 = (int) (solution.getSize() * Math.random());
+					int n1 = (int) (solution.getSize(false) * Math.random());
+					int n2 = (int) (solution.getSize(false) * Math.random());
 					basicSolution = solution.getSolution(n1);
 					otherSolution = solution.getSolution(n2);
 

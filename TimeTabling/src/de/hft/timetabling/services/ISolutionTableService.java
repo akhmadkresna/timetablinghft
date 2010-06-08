@@ -96,14 +96,7 @@ public interface ISolutionTableService {
 	 */
 	void update();
 
-	/**
-	 * Method to get back the actual number of solutions currently stored in the
-	 * solution table.
-	 * 
-	 * @author Steffen
-	 * @return number of solutions
-	 */
-	int getSize();
+	int getSize(boolean includeNotVotedSolutions);
 
 	/**
 	 * Deletes the current worst solution.

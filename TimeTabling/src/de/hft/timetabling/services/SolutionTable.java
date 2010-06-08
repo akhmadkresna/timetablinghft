@@ -28,6 +28,14 @@ public final class SolutionTable implements ISolutionTableService {
 
 	private int currentNotVotedCount;
 
+	/**
+	 * When voting, a solution moves from the not voted list to the real
+	 * solution table. To assure that further indexes of calls to
+	 * voteForSolution(int, int, int) are correct, it must be kept track how
+	 * often voting has occurred in this iteration.
+	 */
+	private int voteIndexModification;
+
 	public SolutionTable() {
 		solutionTable = new TreeSet<WeightedSolution>();
 		notVotedTable = new ArrayList<ISolution>(
@@ -57,7 +65,7 @@ public final class SolutionTable implements ISolutionTableService {
 
 	@Override
 	public void addSolution(ISolution solution) {
-		if (getSize() == ISolutionTableService.TABLE_SIZE) {
+		if (getSize(true) == ISolutionTableService.TABLE_SIZE) {
 			throw new RuntimeException(
 					"Insertion of solution failed because the solution table is full.");
 		}
@@ -106,14 +114,19 @@ public final class SolutionTable implements ISolutionTableService {
 
 	@Override
 	public void voteForSolution(int index, int penalty, int fairness) {
+		index = index - voteIndexModification;
 		ISolution solution = notVotedTable.get(index);
+		notVotedTable.remove(index);
 		solutionTable.add(new WeightedSolution(solution, penalty, fairness));
 		currentNotVotedCount--;
 	}
 
 	@Override
-	public int getSize() {
-		return solutionTable.size() + currentNotVotedCount;
+	public int getSize(boolean includeNotVotedSolutions) {
+		if (includeNotVotedSolutions) {
+			return solutionTable.size() + currentNotVotedCount;
+		}
+		return solutionTable.size();
 	}
 
 	@Override
@@ -123,26 +136,29 @@ public final class SolutionTable implements ISolutionTableService {
 
 	@Override
 	public int getNumberOfEmptySlots() {
-		return TABLE_SIZE - getSize();
+		return TABLE_SIZE - getSize(true);
 	}
 
 	@Override
 	public String toString() {
-		return "Solution Table (" + getSize() + " entries)";
+		return "Solution Table (" + getSize(true) + " entries)";
 	}
 
 	@Override
 	public ISolution getSolution(int index) {
 		WeightedSolution[] array = solutionTable
-				.toArray(new WeightedSolution[getSize()]);
+				.toArray(new WeightedSolution[getSize(false)]);
 		return array[index].getSolution();
 	}
 
 	@Override
 	public void update() {
-		notVotedTable.clear();
-		currentNotVotedCount = 0;
-		bestPenaltySolution = solutionTable.first();
+		voteIndexModification = 0;
+		updateBestPenaltySolution();
+		updateBestFairnessSolution();
+	}
+
+	private void updateBestFairnessSolution() {
 		WeightedSolution bestFairnessInTable = null;
 		for (WeightedSolution weightedSolution : solutionTable) {
 			if (bestFairnessInTable == null) {
@@ -165,6 +181,18 @@ public final class SolutionTable implements ISolutionTableService {
 			if (bestFairnessInTable.getFairness() < bestFairnessSolution
 					.getFairness()) {
 				bestFairnessSolution = bestFairnessInTable;
+			}
+		}
+	}
+
+	private void updateBestPenaltySolution() {
+		WeightedSolution bestPenaltyInTable = solutionTable.first();
+		if (bestPenaltySolution == null) {
+			bestPenaltySolution = bestPenaltyInTable;
+		} else {
+			if (bestPenaltyInTable.getPenalty() < bestPenaltySolution
+					.getPenalty()) {
+				bestPenaltySolution = bestPenaltyInTable;
 			}
 		}
 	}
