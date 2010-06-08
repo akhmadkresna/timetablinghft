@@ -125,6 +125,11 @@ public final class Main {
 					.println("CRAZY GENETIST: Finished after " + time + "ms.");
 
 			startMillis = System.currentTimeMillis();
+			evaluator.evaluateSolutions();
+			time = System.currentTimeMillis() - startMillis;
+			System.out.println("EVALUATOR: Finished after " + time + "ms.");
+
+			startMillis = System.currentTimeMillis();
 			ISolutionTableService solutionTable = locator
 					.getSolutionTableService();
 			solutionTable.update();
