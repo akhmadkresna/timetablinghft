@@ -382,14 +382,46 @@ class SessionObject {
 		 * present in the period
 		 */
 
-		Set<ICurriculum> intersection = new HashSet<ICurriculum>();
-		intersection.addAll(curriculaInPeriod.get(period));
-		intersection.retainAll(course.getCurricula());
-
-		return (intersection.size() > 0)
+		return intersects(course, period)
 				|| violatesUnavailabilityConstraints(course, period)
-				|| teachersInPeriod.get(period).contains(course.getTeacher())
-				|| allRoomsOccupied(period);
+				|| teacherOverlap(course, period) || allRoomsOccupied(period);
+	}
+
+	/**
+	 * This method checks whether there is already another course in the period
+	 * which belongs to the same curriculum.
+	 * 
+	 * @param course
+	 *            the course to be checked
+	 * @param period
+	 *            the period in which the course is to be assigned
+	 * @return true if and only if assigning the course would violate curricula
+	 *         hard constraints, false otherwise
+	 */
+	private boolean intersects(ICourse course, int period) {
+
+		Set<ICurriculum> curricula = curriculaInPeriod.get(period);
+		for (ICurriculum c : course.getCurricula()) {
+			if (curricula.contains(c)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * This method checks whether the teacher giving the specific course has
+	 * already been assigned in this period.
+	 * 
+	 * @param course
+	 *            the course to be checked
+	 * @param period
+	 *            the period in which the course is to be assigned
+	 * @return true if and only if the teacher is already busy in this period,
+	 *         false otherwise
+	 */
+	private boolean teacherOverlap(ICourse course, int period) {
+		return teachersInPeriod.get(period).contains(course.getTeacher());
 	}
 
 	/**
