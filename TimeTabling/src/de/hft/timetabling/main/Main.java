@@ -39,19 +39,26 @@ public final class Main {
 	 * 
 	 * @param args
 	 *            The first argument is the name of the problem instance file to
-	 *            solve.
+	 *            solve. If a second argument is available it's treated as the
+	 *            amount of milliseconds to sleep between each iteration.
 	 * 
 	 * @throws IllegalArgumentException
-	 *             If the length of <tt>args</tt> is not exactly 1.
+	 *             If the length of <tt>args</tt> is smaller than 1.
 	 */
 	public static void main(String[] args) {
-		if (args.length != 1) {
+		if (args.length < 1) {
 			throw new IllegalArgumentException(
-					"The program first argument must be the name of the problem instance file to solve.");
+					"The program's first argument must be the name of the problem instance file to solve.");
 		}
+		long sleepTime = 0;
+		if (args.length == 2) {
+			sleepTime = Long.valueOf(args[1]);
+		}
+
 		setUpServices();
+
 		try {
-			run(args[0]);
+			run(args[0], sleepTime);
 		} catch (IOException e) {
 			handleException(e);
 		} catch (NoFeasibleSolutionFoundException e) {
@@ -82,8 +89,8 @@ public final class Main {
 	/**
 	 * Runs the main loop of the program.
 	 */
-	private static void run(String fileName) throws IOException,
-			NoFeasibleSolutionFoundException {
+	private static void run(String fileName, long sleepMilliSeconds)
+			throws IOException, NoFeasibleSolutionFoundException {
 
 		ServiceLocator locator = ServiceLocator.getInstance();
 		IReaderService reader = locator.getReaderService();
@@ -119,16 +126,16 @@ public final class Main {
 					.getEliminatorService();
 			eliminatorService.eliminateSolutions();
 
-			shortSleep();
+			shortSleep(sleepMilliSeconds);
 		}
 
 		IWriterService writer = locator.getWriterService();
 		writer.outputBestSolution();
 	}
 
-	private static void shortSleep() {
+	private static void shortSleep(long sleepMilliSeconds) {
 		try {
-			Thread.sleep(500);
+			Thread.sleep(sleepMilliSeconds);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
