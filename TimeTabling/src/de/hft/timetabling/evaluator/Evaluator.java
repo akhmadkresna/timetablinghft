@@ -26,18 +26,6 @@ public class Evaluator implements IEvaluatorService {
 		// constructor
 	}
 
-	// Check if the ISolution already has a penalty value in the ISolutionTable
-	// and then do validation
-	// ** new/recombined solutions should not have old penalty values (-1)
-	/*
-	 * Code to be added
-	 */
-
-	// After checking constrains send the message with problems to output
-	/*
-	 * Code to be added
-	 */
-
 	private IProblemInstance currentInstance;
 	private ICourse[][] currentCode;
 	private IRoom currentRoom;
@@ -64,14 +52,8 @@ public class Evaluator implements IEvaluatorService {
 		// Get the solution array for this ISolution
 		currentCode = solution.getCoding();
 
-		// iNoOfStudents = currentCourse.getNumberOfStudents();
-		// currentInstance.getCurricula();getNumberOfRooms();
-		// currentRoom.getCapacity();
-
 		// Get the courses for the curriculum
 		courses = curriculum.getCourses();
-
-		// currentInstance.getCourses();
 
 		for (p = 0; p < currentInstance.getNumberOfPeriods(); p++) {
 			for (r = 0; r < currentInstance.getNumberOfRooms(); r++) {
@@ -122,15 +104,6 @@ public class Evaluator implements IEvaluatorService {
 		courses = curriculum.getCourses();
 
 		iPeriodPerDay = currentInstance.getPeriodsPerDay();
-		// iNumberOfCourses = curriculum.getNumberOfCourses();
-		// System.out.println("The number of course:" + iNumberOfCourses);
-		// ArrayCourse = new String[iNumberOfCourses];
-		// curriculum.containsCourse(courses);
-		/*
-		 * do { int i = 0; ArrayCourse[i] =
-		 * courses.iterator().next().toString(); i++; } while
-		 * (courses.iterator().hasNext());
-		 */
 
 		// To convert set to array
 		// String[] array = courses.toArray(new String[courses.size()]);
@@ -139,7 +112,6 @@ public class Evaluator implements IEvaluatorService {
 		it = courses.iterator();
 		while (it.hasNext()) {
 			Course = it.next();
-			// ArrayCourse[i] = Course.toString();
 			iMinWorkingDays = Course.getMinWorkingDays();
 			iWorkingDays = 0;
 			boolean bDay = true;
@@ -162,9 +134,6 @@ public class Evaluator implements IEvaluatorService {
 					// the course should be equal to the course
 					if ((currentCode[p][r] != null)
 							&& (currentCode[p][r] == Course)) {
-
-						// iMinWorkingDays =
-						// currentCode[p][r].getMinWorkingDays();
 
 						// Check the flag for day
 						if (bDay) {
@@ -200,8 +169,6 @@ public class Evaluator implements IEvaluatorService {
 		int p, r, d, iPreviousRoom;
 		int iPreviousPeriod;
 		Set<ICourse> courses;
-		// String strCourse;
-		// IRoom previousRoom;
 
 		currentInstance = solution.getProblemInstance();
 		currentCode = solution.getCoding();
@@ -216,7 +183,6 @@ public class Evaluator implements IEvaluatorService {
 			iPreviousRoom = -1;
 			for (; p < currentInstance.getPeriodsPerDay() * d; p++) {
 				for (r = 0; r < currentInstance.getNumberOfRooms(); r++) {
-					// strCourse = currentCode[p][r].getId();
 					// Assuming the value is null if no course is assigned
 					// the course should be contained in the curriculum
 					if ((currentCode[p][r] != null)
@@ -235,8 +201,7 @@ public class Evaluator implements IEvaluatorService {
 						// if (p % currentInstance.getPeriodsPerDay()!= 0) {
 						if ((iPreviousPeriod != -1) && (iPreviousRoom != -1)) {
 							// Check if the previous period course is of the
-							// same
-							// curriculum
+							// same curriculum
 							// if (!courses.contains(currentCode[p -
 							// 1][iPreviousRoom]))
 							// {
