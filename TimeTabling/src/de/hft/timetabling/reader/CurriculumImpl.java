@@ -68,8 +68,6 @@ final class CurriculumImpl implements ICurriculum {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result
-				+ ((problemInstance == null) ? 0 : problemInstance.hashCode());
 		return result;
 	}
 
@@ -90,13 +88,6 @@ final class CurriculumImpl implements ICurriculum {
 				return false;
 			}
 		} else if (!id.equals(other.id)) {
-			return false;
-		}
-		if (problemInstance == null) {
-			if (other.problemInstance != null) {
-				return false;
-			}
-		} else if (!problemInstance.equals(other.problemInstance)) {
 			return false;
 		}
 		return true;

@@ -32,7 +32,7 @@ public interface ISolution {
 	int getRecombinationCount();
 
 	/**
-	 * Set the number of recombinations
+	 * Set the number of recombinations.
 	 * 
 	 * @param nrOfRecombinations
 	 * @author Steffen
@@ -47,9 +47,9 @@ public interface ISolution {
 	void increaseRecombinationCount();
 
 	/**
-	 * Method to clone a solution
+	 * Method to clone a solution.
 	 * 
-	 * @return colne of a ISolution
+	 * @return clone of a ISolution
 	 * @author Steffen
 	 */
 	ISolution clone();

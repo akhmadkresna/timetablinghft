@@ -1,8 +1,5 @@
 package de.hft.timetabling.eliminator;
 
-import java.util.List;
-
-import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.services.IEliminatorService;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.ServiceLocator;
@@ -21,14 +18,9 @@ public final class Eliminator implements IEliminatorService {
 
 		ISolutionTableService solutionTable = ServiceLocator.getInstance()
 				.getSolutionTableService();
-		List<ISolution> orderedSolutions = solutionTable
-				.getSolutionsOrderedByPenalty();
-
-		// The worst solutions are at the end of the ordered list.
-		int halfSize = orderedSolutions.size() / 2;
-		for (int i = halfSize - 1; i < halfSize; i++) {
-			ISolution solution = orderedSolutions.get(i);
-			solutionTable.removeSolution(solution);
+		int halfSize = solutionTable.getSize() / 2;
+		for (int i = 0; i < halfSize; i++) {
+			solutionTable.removeWorstSolution();
 		}
 
 		System.out.print(" done.\n");

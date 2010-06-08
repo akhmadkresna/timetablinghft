@@ -26,7 +26,7 @@ public final class Writer implements IWriterService {
 	public void outputBestSolution() throws IOException {
 		ISolutionTableService solutionTableService = ServiceLocator
 				.getInstance().getSolutionTableService();
-		ISolution bestSolution = solutionTableService.getBestSolution();
+		ISolution bestSolution = solutionTableService.getBestPenaltySolution();
 		IProblemInstance problemInstance = bestSolution.getProblemInstance();
 
 		long timestamp = System.currentTimeMillis() / 1000;

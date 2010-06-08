@@ -1,6 +1,7 @@
 package de.hft.timetabling.evaluator;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
@@ -290,46 +291,38 @@ public class Evaluator implements IEvaluatorService {
 	private void callSoftConstrainEvalutors(ISolutionTableService solutionTable) {
 		Set<ICurriculum> currentCurriculumSet;
 		ICurriculum currentCurricula;
-		ISolution solutionCode;
-		int iCost = 0, numberOfCurriculum, iFairness;
+		int numberOfCurriculum, iFairness;
 		int[] curriculumCosts = null;
-		int currentPenalty;
 
-		int size = solutionTable.getActualSolutionTableCount();
+		List<ISolution> notVotedSolutions = solutionTable
+				.getNotVotedSolutions();
+		for (int i = 0; i < notVotedSolutions.size(); i++) {
+			ISolution solutionCode = notVotedSolutions.get(i);
+			currentInstance = solutionCode.getProblemInstance();
+			currentCode = solutionCode.getCoding();
+			currentCurriculumSet = currentInstance.getCurricula();
+			numberOfCurriculum = currentInstance.getNumberOfCurricula();
+			curriculumCosts = new int[numberOfCurriculum];
+			Iterator<ICurriculum> it = currentCurriculumSet.iterator();
+			int c = 0;
+			int iPenalty = 0;
 
-		for (int i = 0; i < size; i++) {
-			solutionCode = solutionTable.getSolution(i);
-			currentPenalty = solutionTable.getPenaltySumForSolution(i);
-			// Make sure there is a solution
-			// and that the solution has not been evaluated before
-			if ((solutionCode != null) && (currentPenalty == -1)) {
-				currentInstance = solutionCode.getProblemInstance();
-				currentCode = solutionCode.getCoding();
-				currentCurriculumSet = currentInstance.getCurricula();
-				numberOfCurriculum = currentInstance.getNumberOfCurricula();
-				curriculumCosts = new int[numberOfCurriculum];
-				Iterator<ICurriculum> it = currentCurriculumSet.iterator();
-				int c = 0;
-				// Iterate through each curriculum
-				while (it.hasNext()) {
-					currentCurricula = it.next();
-					// Penalty calculation for given solution
-					iCost = 0;
-					iCost += costsOnRoomCapacity(solutionCode, currentCurricula);
-					iCost += costsOnMinWorkingDays(solutionCode,
-							currentCurricula);
-					iCost += costsOnCurriculumCompactnessAndRoomStability(
-							solutionCode, currentCurricula);
-					solutionTable.addPenaltyToSolution(solutionCode, iCost);
-					curriculumCosts[c] = iCost;
-					c++;
-				}
-
-				// call fairness method
-				iFairness = evaluateFairness(curriculumCosts,
-						numberOfCurriculum);
-				solutionTable.addFairnessToSolution(solutionCode, iFairness);
+			// Iterate through each curriculum
+			while (it.hasNext()) {
+				currentCurricula = it.next();
+				// Penalty calculation for given solution
+				iPenalty += costsOnRoomCapacity(solutionCode, currentCurricula);
+				iPenalty += costsOnMinWorkingDays(solutionCode,
+						currentCurricula);
+				iPenalty += costsOnCurriculumCompactnessAndRoomStability(
+						solutionCode, currentCurricula);
+				curriculumCosts[c] = iPenalty;
+				c++;
 			}
+
+			iFairness = evaluateFairness(curriculumCosts, numberOfCurriculum);
+
+			solutionTable.voteForSolution(i, iPenalty, iFairness);
 		}
 	}
 

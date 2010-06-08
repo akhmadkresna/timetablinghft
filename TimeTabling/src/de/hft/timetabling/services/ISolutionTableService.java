@@ -23,7 +23,12 @@ import de.hft.timetabling.common.ISolution;
 public interface ISolutionTableService {
 
 	/** Defines how many solution are held in the solution table. */
-	int TABLE_SIZE = 50;
+	int TABLE_SIZE = 25;
+
+	/**
+	 * Returns how many solution slots are currently empty.
+	 */
+	int getNumberOfEmptySlots();
 
 	/**
 	 * Factory method allowing to create new solution instances.
@@ -47,209 +52,67 @@ public interface ISolutionTableService {
 			IProblemInstance problemInstance);
 
 	/**
-	 * Replaces the solution in the table identified by the given solution
-	 * number with the provided solution.
+	 * Stores the given solution into the solution table.
 	 * 
-	 * @param solutionNumber
-	 *            The solution's number in the table.
 	 * @param solution
-	 *            The solution to store in the solution table at the given
-	 *            solution number.
-	 * 
-	 * @throws IndexOutOfBoundsException
-	 *             If the given solution number is not inside the allowed range.
-	 */
-	void putSolution(int solutionNumber, ISolution solution);
-
-	/**
-	 * Returns the solution that's currently located at the given solution table
-	 * number or <tt>null</tt> if there is currently no solution stored at the
-	 * given solution number.
-	 * 
-	 * @param solutionNumber
-	 *            The number of the solution to retrieve from the solution
-	 *            table.
-	 * 
-	 * @throws IndexOutOfBoundsException
-	 *             If the given solution number is not inside the allowed range.
-	 */
-	ISolution getSolution(int solutionNumber);
-
-	/**
-	 * Allows to add penalty for the given solution.
-	 * 
-	 * @author Roy //Changed function name and implementation
-	 * @param solution
-	 *            The solution to vote for.
-	 * @param penaltyPoints
-	 *            The number of penalty points to give.
+	 *            The solution to store in the solution table.
 	 * 
 	 * @throws RuntimeException
-	 *             If the given solution is not currently stored in the solution
-	 *             table.
+	 *             If the solution table is full.
 	 */
-	void addPenaltyToSolution(ISolution solution, int penaltyPoints);
+	void addSolution(ISolution solution);
 
 	/**
-	 * Allows to vote for the solution located at the specified solution number.
-	 * 
-	 * @author Roy //Changed the function name for better understanding
-	 * 
-	 * @param solutionNumber
-	 *            The solution number identifying the solution to vote for.
-	 * @param penaltyPoints
-	 *            The number of penalty points to give.
-	 * 
-	 * @throws IndexOutOfBoundsException
-	 *             If the given solution number is not inside the allowed range.
-	 */
-	void addPenaltyToSolution(int solutionNumber, int penaltyPoints);
-
-	/**
-	 * Returns the sum of penalty points for the given solution. Returns -1 if
-	 * the solution wasn't evaluated yet.
-	 * 
-	 * @param solution
-	 *            The solution to retrieve the penalty points for.
-	 * 
-	 * @throws RuntimeException
-	 *             If the given solution is not currently stored in the solution
-	 *             table.
-	 */
-	int getPenaltySumForSolution(ISolution solution);
-
-	/**
-	 * Returns the sum of penalty points for the solution identified by the
-	 * given solution number. Returns -1 if the solution wasn't evaluated yet.
-	 * 
-	 * @param solutionNumber
-	 *            The solution number identifying the solution to obtain the
-	 *            penalty points for.
-	 * 
-	 * @throws IndexOutOfBoundsException
-	 *             If the given solution number is not inside the allowed range.
-	 */
-	int getPenaltySumForSolution(int solutionNumber);
-
-	/**
-	 * Returns the fairness for the solution identified by the given solution
-	 * number. Returns -1 if the solution wasn't evaluated yet.
-	 * 
-	 * @param solutionNumber
-	 *            The solution number identifying the solution to obtain the
-	 *            fairness for.
-	 * 
-	 * @throws IndexOutOfBoundsException
-	 *             If the given solution number is not inside the allowed range.
-	 */
-	int getFairnessForSolution(int solutionNumber);
-
-	/**
-	 * Returns the fairness for the given solution.
-	 * 
-	 * @param solution
-	 *            The solution to retrieve the fairness for.
-	 * 
-	 * @throws RuntimeException
-	 *             If the given solution is not currently stored in the solution
-	 *             table.
-	 */
-	int getFairnessForSolution(ISolution solution);
-
-	/**
-	 * Returns the best solution so far or <tt>null</tt> if no best solution is
+	 * Returns the best solution so far or <tt>null</tt> if there is none
 	 * available yet. The best solution will always be the solution with the
 	 * fewest penalty points.
 	 */
-	ISolution getBestSolution();
+	ISolution getBestPenaltySolution();
 
 	/**
-	 * Returns the penalty points of the best solution.
-	 * 
-	 * @throws RuntimeException
-	 *             If there is no best solution available yet.
+	 * Returns the fairest solution so far or <tt>null</tt> if there is none
+	 * available yet. The fairest solution will always be the solution with the
+	 * fewest fairness points.
 	 */
-	int getBestSolutionPenaltySum();
+	ISolution getBestFairnessSolution();
+
+	int getBestPenaltySolutionPenalty();
+
+	int getBestPenaltySolutionFairness();
+
+	int getBestFairnessSolutionPenalty();
+
+	int getBestFairnessSolutionFairness();
+
+	void voteForSolution(int index, int penalty, int fairness);
+
+	List<ISolution> getNotVotedSolutions();
 
 	/**
-	 * Method to get back the actual number of solutions.
+	 * This method must be called once per main loop iteration. It updates the
+	 * current best penalty solution as well as the current best fairness
+	 * solution. Additional update actions that are absolutely mandatory are
+	 * performed as well.
+	 */
+	void update();
+
+	/**
+	 * Method to get back the actual number of solutions currently stored in the
+	 * solution table.
 	 * 
 	 * @author Steffen
 	 * @return number of solutions
 	 */
-	int getActualSolutionTableCount();
+	int getSize();
 
 	/**
-	 * Replaces the current worst solution with the provided one. If there are
-	 * currently no solutions at all in the table, the solution will be put into
-	 * the first slot.
-	 * 
-	 * @param newSolution
-	 *            The new solution with which to replace the worst one.
+	 * Deletes the current worst solution.
 	 */
-	void replaceWorstSolution(ISolution newSolution);
+	void removeWorstSolution();
 
 	/**
-	 * Allows to add fairness for the given solution.
-	 * 
-	 * @author Roy
-	 * 
-	 * @param solution
-	 *            The solution to vote for.
-	 * 
-	 * @param fairness
-	 *            The number related to fairness. It is a type of penalty point.
-	 * 
+	 * Returns the solution at the given index.
 	 */
-	void addFairnessToSolution(ISolution solution, int fairness);
-
-	/**
-	 * Allows to add fairness for the given solution.
-	 * 
-	 * @author Roy
-	 * 
-	 * @param solutionNumber
-	 *            The solution number of the solution to vote for.
-	 * 
-	 * @param fairness
-	 *            The number related to fairness. It is a type of penalty point.
-	 * 
-	 */
-	void addFairnessToSolution(int solutionNumber, int fairness);
-
-	/**
-	 * Returns the fairest solution so far or <tt>null</tt> if no fair solution
-	 * is available yet. The fairest solution will always be the solution with
-	 * the fewest fairness points.
-	 */
-	ISolution getFairestSolution();
-
-	/**
-	 * Returns the penalty points of the Fairest solution.
-	 * 
-	 * @throws RuntimeException
-	 *             If there is no best solution available yet.
-	 */
-	int getFairestSolutionPenalty();
-
-	/**
-	 * Returns the fairness points of the Fairest solution.
-	 * 
-	 * @throws RuntimeException
-	 *             If there is no best solution available yet.
-	 */
-	int getFairestSolutionFairness();
-
-	/**
-	 * Returns the fairness points of the Best solution.
-	 * 
-	 * @throws RuntimeException
-	 *             If there is no best solution available yet.
-	 */
-	int getBestSolutionFairness();
-
-	void removeSolution(ISolution solution);
-
-	List<ISolution> getSolutionsOrderedByPenalty();
+	ISolution getSolution(int index);
 
 }

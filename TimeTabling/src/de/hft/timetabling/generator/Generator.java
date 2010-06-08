@@ -25,13 +25,13 @@ import de.hft.timetabling.services.ServiceLocator;
  */
 public final class Generator implements IGeneratorService {
 
-	/*
+	/**
 	 * the amount of iterations which will be performed before the algorithm
 	 * gives up trying to create a feasible solution
 	 */
 	private final int MAX_ITERATIONS = 20;
 
-	/*
+	/**
 	 * the amount of loops during each iteration. Higher loop counts increase
 	 * the likelihood of a feasible solution to be found
 	 */
@@ -130,15 +130,19 @@ public final class Generator implements IGeneratorService {
 
 		ISolutionTableService solutionTable = ServiceLocator.getInstance()
 				.getSolutionTableService();
-		for (int i = 0; i < ISolutionTableService.TABLE_SIZE; i++) {
-			ISolution solution = solutionTable.getSolution(i);
-			if (solution == null) {
-				ICourse[][] coding = generateFeasibleSolution(problemInstance);
-				solution = solutionTable.createNewSolution(coding,
-						problemInstance);
-				solutionTable.putSolution(i, solution);
-			}
+
+		int numberOfEmptySlots = solutionTable.getNumberOfEmptySlots();
+		System.out.print("GENERATOR: Filling " + numberOfEmptySlots
+				+ " empty slots ...");
+
+		for (int i = 0; i < numberOfEmptySlots; i++) {
+			ICourse[][] coding = generateFeasibleSolution(problemInstance);
+			ISolution newSolution = solutionTable.createNewSolution(coding,
+					problemInstance);
+			solutionTable.addSolution(newSolution);
 		}
+
+		System.out.print(" done.\n");
 	}
 }
 

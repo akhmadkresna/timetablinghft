@@ -65,14 +65,14 @@ public class WriterTest extends TestCase {
 		solutionTable = new SolutionTable();
 		ServiceLocator.getInstance().setSolutionTableService(solutionTable);
 		ISolution solution = solutionTable.createNewSolution(coding, instance);
-		solutionTable.putSolution(0, solution);
-		solutionTable.addPenaltyToSolution(0, 1000);
-		solutionTable.addFairnessToSolution(0, 200);
+		solutionTable.addSolution(solution);
+		solutionTable.voteForSolution(0, 1000, 200);
+		solutionTable.update();
 	}
 
 	public void testOutputBestSolution() throws IOException {
 		String fileName = "test/temp.ctt";
-		writer.outputSolution(fileName, solutionTable.getBestSolution(),
+		writer.outputSolution(fileName, solutionTable.getBestPenaltySolution(),
 				instance);
 
 		FileInputStream fileStream = new FileInputStream(fileName);

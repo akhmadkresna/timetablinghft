@@ -27,10 +27,9 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	private ISolutionTableService solution;
 
 	/**
-	 * Iterations to chose one of the recombination algorithms. This number
-	 * means the percentage of the maximum table size.
+	 * Propability to chose one of the recombination algorithms.
 	 */
-	private int iterations = 10;
+	private double probability = 0.5;
 
 	/**
 	 * public Method to start recombination and mutation process. The solution
@@ -47,76 +46,60 @@ public class CrazyGenetist implements ICrazyGenetistService {
 		// Solution that is given back afterwards.
 		ISolution back = null;
 
-		if (solution.getActualSolutionTableCount() > 1) {
+		if (solution.getSize() > 1) {
 			// Solution that is used to pull values out of.
 			ISolution otherSolution = null;
 			// Solution that is used as basic for recombination
 			ISolution basicSolution = null;
 			// Choosing solutions that until they are not null and different
-			int handedInSolution = 0;
-			int iterationsRounds = ISolutionTableService.TABLE_SIZE
-					* (1 / iterations);
+			while ((otherSolution == null) || (basicSolution == null)
+					|| basicSolution.equals(otherSolution)) {
+				System.out
+						.print("CG: Trying to find solution to work with ...");
 
-			// Maake sure that it is executed at least once
-			if (iterationsRounds == 0) {
-				iterationsRounds = 1;
+				// --> if (Math.random() < probability)
+
+				int n1 = (int) (solution.getSize() * Math.random());
+				int n2 = (int) (solution.getSize() * Math.random());
+				basicSolution = solution.getSolution(n1);
+				otherSolution = solution.getSolution(n2);
+
+				System.out.print(" found " + n1 + "(" + basicSolution + "), "
+						+ n2 + "(" + otherSolution + ") ...\n");
+
+				/*
+				 * //for debugging reasons if ((otherSolution == null)) {
+				 * System.out.println("otherSolution is null"); } if
+				 * ((basicSolution == null)) {
+				 * System.out.println("basicSolution is null"); } if
+				 * (((basicSolution != null) && (otherSolution != null)) &&
+				 * basicSolution.equals(otherSolution)) {
+				 * System.out.println("solutions are equal!:");
+				 * System.out.println("Basic solution:\n" + CrazyGenetistUtility
+				 * .coursesToStringId(basicSolution .getCoding()));
+				 * System.out.println("Other solution:\n" + CrazyGenetistUtility
+				 * .coursesToStringId(otherSolution .getCoding()));
+				 * System.exit(0); }
+				 */
 			}
+			System.out.println("CG: Taking these solutions.");
 
-			// Doing as long as the maximum iterations are reached or in
-			// (maximum iterations)*2 are done
-			for (int i = 0; (handedInSolution <= iterationsRounds)
-					&& (i < (iterationsRounds * 2)); i++) {
-				while ((otherSolution == null) || (basicSolution == null)
-						|| basicSolution.equals(otherSolution)) {
-					System.out
-							.print("CG: Trying to find solution to work with ...");
+			back = mutateRoomStability(recombindation2(basicSolution,
+					otherSolution));
 
-					// --> if (Math.random() < probability)
+			basicSolution.increaseRecombinationCount();
+			otherSolution.increaseRecombinationCount();
 
-					int n1 = (int) (solution.getActualSolutionTableCount() * Math
-							.random());
-					int n2 = (int) (solution.getActualSolutionTableCount() * Math
-							.random());
-					basicSolution = solution.getSolution(n1);
-					otherSolution = solution.getSolution(n2);
+		}
 
-					System.out.print(" found " + n1 + "(" + basicSolution
-							+ "), " + n2 + "(" + otherSolution + ") ...\n");
-
-					/*
-					 * //for debugging reasons if ((otherSolution == null)) {
-					 * System.out.println("otherSolution is null"); } if
-					 * ((basicSolution == null)) {
-					 * System.out.println("basicSolution is null"); } if
-					 * (((basicSolution != null) && (otherSolution != null)) &&
-					 * basicSolution.equals(otherSolution)) {
-					 * System.out.println("solutions are equal!:");
-					 * System.out.println("Basic solution:\n" +
-					 * CrazyGenetistUtility .coursesToStringId(basicSolution
-					 * .getCoding())); System.out.println("Other solution:\n" +
-					 * CrazyGenetistUtility .coursesToStringId(otherSolution
-					 * .getCoding())); System.exit(0); }
-					 */
-				}
-				System.out.println("CG: Taking these solutions.");
-
-				back = mutateRoomStability(recombindation2(basicSolution,
-						otherSolution));
-
-				basicSolution.increaseRecombinationCount();
-				otherSolution.increaseRecombinationCount();
-
-				// Hand in solution
-				if ((back != null) && new ValidatorImpl().isValidSolution(back)) {
-					System.out.println("CG: Valid solution found. ("
-							+ back.toString() + ")");
-					getSolution().replaceWorstSolution(back);
-					handedInSolution++;
-				} else {
-					System.out.println("CG: No valid solution found.");
-				}
-			}
-
+		// Hand in solution
+		if ((back != null) && new ValidatorImpl().isValidSolution(back)) {
+			System.out.println("CG: Valid solution found. (" + back.toString()
+					+ ")");
+			getSolution().removeWorstSolution();
+			getSolution().addSolution(back);
+		} else {
+			System.out.println("CG: No valid solution found.");
 		}
 	}
 
@@ -391,22 +374,23 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	}
 
 	/**
-	 * Method for getting the set iterations of what algorithm should be chosen.
+	 * Method for getting the set probability of what algorithm should be
+	 * chosen.
 	 * 
-	 * @return iterations of algorithm choosing.
+	 * @return probability of algorithm choosing.
 	 */
-	public int getIiterations() {
-		return iterations;
+	public double getProbability() {
+		return probability;
 	}
 
 	/**
-	 * Method for setting the iterations of what algorithm should be chosen.
+	 * Method for setting the probability of what algorithm should be chosen.
 	 * 
-	 * @param iterations
+	 * @param probability
 	 *            of algorithm choosing.
 	 */
-	public void setIterations(int iterations) {
-		this.iterations = iterations;
+	public void setProbability(double probability) {
+		this.probability = probability;
 	}
 
 	/**

@@ -97,40 +97,78 @@ public final class Main {
 		IProblemInstance instance = reader.readInstance(fileName);
 
 		for (int i = 0; i < ITERATIONS; i++) {
+
+			// Variables for performance measurement.
+			long startMillis;
+			long time;
+
 			System.out.println("");
 			System.out.println("------ ITERATION " + i + " ------");
 
-			// Fills empty slots in the solution table.
+			startMillis = System.currentTimeMillis();
 			IGeneratorService generator = locator.getGeneratorService();
 			generator.fillSolutionTable(instance);
+			time = System.currentTimeMillis() - startMillis;
+			System.out.println("GENERATOR: Finished after " + time + "ms.");
 
+			startMillis = System.currentTimeMillis();
 			IEvaluatorService evaluator = locator.getEvaluatorService();
 			evaluator.evaluateSolutions();
+			time = System.currentTimeMillis() - startMillis;
+			System.out.println("EVALUATOR: Finished after " + time + "ms.");
 
+			startMillis = System.currentTimeMillis();
 			ICrazyGenetistService genetist = locator.getCrazyGenetistService();
 			genetist.recombineAndMutate();
+			time = System.currentTimeMillis() - startMillis;
+			System.out
+					.println("CRAZY GENETIST: Finished after " + time + "ms.");
 
+			startMillis = System.currentTimeMillis();
 			ISolutionTableService solutionTable = locator
 					.getSolutionTableService();
-			System.out.println("----------------------------");
-			System.out.println("-- Best solution penalty: "
-					+ solutionTable.getBestSolutionPenaltySum()
-					+ ", Fairness: " + solutionTable.getBestSolutionFairness());
-			System.out.println("-- Fairest solution penalty: "
-					+ solutionTable.getFairestSolutionPenalty()
-					+ "and it\'s Fairness: "
-					+ solutionTable.getFairestSolutionFairness());
-			System.out.println("");
+			solutionTable.update();
+			time = System.currentTimeMillis() - startMillis;
+			System.out.println("SOLUTION TABLE (Update): Finished after "
+					+ time + "ms.");
 
+			startMillis = System.currentTimeMillis();
 			IEliminatorService eliminatorService = locator
 					.getEliminatorService();
 			eliminatorService.eliminateSolutions();
+			time = System.currentTimeMillis() - startMillis;
+			System.out.println("ELIMINATOR: Finished after " + time + "ms.");
+
+			printBestSolution();
+			printFairestSolution();
 
 			shortSleep(sleepMilliSeconds);
 		}
 
 		IWriterService writer = locator.getWriterService();
 		writer.outputBestSolution();
+	}
+
+	private static void printBestSolution() {
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+
+		System.out.println("----------------------------");
+		System.out.println("-- Best Penalty Solution: Penalty: "
+				+ solutionTable.getBestPenaltySolutionPenalty()
+				+ ", Fairness: "
+				+ solutionTable.getBestPenaltySolutionFairness());
+	}
+
+	private static void printFairestSolution() {
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+
+		System.out.print("-- Best Fairness Solution: Penalty: "
+				+ solutionTable.getBestFairnessSolutionPenalty()
+				+ ", Fairness: "
+				+ solutionTable.getBestFairnessSolutionFairness() + "\n");
+		System.out.println("");
 	}
 
 	private static void shortSleep(long sleepMilliSeconds) {

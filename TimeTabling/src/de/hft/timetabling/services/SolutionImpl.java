@@ -7,7 +7,7 @@ import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
 
 /**
- * Immutable solution implementation.
+ * Implementation of the solution interface.
  * 
  * @author Alexander Weickmann
  * 
@@ -72,8 +72,6 @@ final class SolutionImpl implements ISolution {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + Arrays.hashCode(coding);
-		result = prime * result
-				+ ((problemInstance == null) ? 0 : problemInstance.hashCode());
 		return result;
 	}
 
@@ -90,13 +88,6 @@ final class SolutionImpl implements ISolution {
 		}
 		SolutionImpl other = (SolutionImpl) obj;
 		if (!Arrays.equals(coding, other.coding)) {
-			return false;
-		}
-		if (problemInstance == null) {
-			if (other.problemInstance != null) {
-				return false;
-			}
-		} else if (!problemInstance.equals(other.problemInstance)) {
 			return false;
 		}
 		return true;
