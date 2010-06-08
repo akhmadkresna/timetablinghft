@@ -16,7 +16,7 @@ import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.reader.Reader;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.ServiceLocator;
-import de.hft.timetabling.services.SolutionTable;
+import de.hft.timetabling.solutiontable.SolutionTable;
 
 public class WriterTest extends TestCase {
 

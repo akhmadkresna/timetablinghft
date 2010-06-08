@@ -1,7 +1,9 @@
-package de.hft.timetabling.services;
+package de.hft.timetabling.solutiontable;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ISolution;
+import de.hft.timetabling.services.AbstractServicesTest;
+import de.hft.timetabling.solutiontable.SolutionImpl;
 
 /**
  * @author Alexander Weickmann

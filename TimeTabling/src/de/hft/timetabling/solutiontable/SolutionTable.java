@@ -1,4 +1,4 @@
-package de.hft.timetabling.services;
+package de.hft.timetabling.solutiontable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.TreeSet;
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
+import de.hft.timetabling.services.ISolutionTableService;
 
 /**
  * Implementation of the solution table service.

@@ -1,4 +1,4 @@
-package de.hft.timetabling.services;
+package de.hft.timetabling.solutiontable;
 
 import java.util.Arrays;
 

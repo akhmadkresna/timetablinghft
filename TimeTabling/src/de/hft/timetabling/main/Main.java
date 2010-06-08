@@ -15,7 +15,7 @@ import de.hft.timetabling.services.IReaderService;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.IWriterService;
 import de.hft.timetabling.services.ServiceLocator;
-import de.hft.timetabling.services.SolutionTable;
+import de.hft.timetabling.solutiontable.SolutionTable;
 import de.hft.timetabling.writer.Writer;
 
 /**
