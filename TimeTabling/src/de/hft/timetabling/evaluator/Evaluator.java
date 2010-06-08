@@ -261,7 +261,8 @@ public class Evaluator implements IEvaluatorService {
 
 		List<ISolution> notVotedSolutions = solutionTable
 				.getNotVotedSolutions();
-		for (int i = 0; i < notVotedSolutions.size(); i++) {
+		int nrNotVoted = notVotedSolutions.size();
+		for (int i = 0; i < nrNotVoted; i++) {
 			ISolution solutionCode = notVotedSolutions.get(i);
 			currentInstance = solutionCode.getProblemInstance();
 			currentCode = solutionCode.getCoding();

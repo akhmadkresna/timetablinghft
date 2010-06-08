@@ -1,7 +1,6 @@
 package de.hft.timetabling.services;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -109,12 +108,16 @@ public final class SolutionTable implements ISolutionTableService {
 
 	@Override
 	public List<ISolution> getNotVotedSolutions() {
-		return Collections.unmodifiableList(notVotedTable);
+		List<ISolution> defensiveCopy = new ArrayList<ISolution>(notVotedTable
+				.size());
+		defensiveCopy.addAll(notVotedTable);
+		return defensiveCopy;
 	}
 
 	@Override
 	public void voteForSolution(int index, int penalty, int fairness) {
 		index = index - voteIndexModification;
+		voteIndexModification++;
 		ISolution solution = notVotedTable.get(index);
 		notVotedTable.remove(index);
 		solutionTable.add(new WeightedSolution(solution, penalty, fairness));

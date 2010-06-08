@@ -10,10 +10,7 @@ import de.hft.timetabling.generator.NoFeasibleSolutionFoundException;
 import de.hft.timetabling.genetist.CrazyGenetist;
 import de.hft.timetabling.genetist.ValidatorImpl;
 import de.hft.timetabling.reader.Reader;
-import de.hft.timetabling.services.ICrazyGenetistService;
 import de.hft.timetabling.services.IEliminatorService;
-import de.hft.timetabling.services.IEvaluatorService;
-import de.hft.timetabling.services.IGeneratorService;
 import de.hft.timetabling.services.IReaderService;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.IWriterService;
@@ -97,52 +94,22 @@ public final class Main {
 		IProblemInstance instance = reader.readInstance(fileName);
 
 		for (int i = 0; i < ITERATIONS; i++) {
-
-			// Variables for performance measurement.
-			long startMillis;
-			long time;
-
 			System.out.println("");
 			System.out.println("------ ITERATION " + i + " ------");
 
-			startMillis = System.currentTimeMillis();
-			IGeneratorService generator = locator.getGeneratorService();
-			generator.fillSolutionTable(instance);
-			time = System.currentTimeMillis() - startMillis;
-			System.out.println("GENERATOR: Finished after " + time + "ms.");
+			callGenerator(instance);
 
-			startMillis = System.currentTimeMillis();
-			IEvaluatorService evaluator = locator.getEvaluatorService();
-			evaluator.evaluateSolutions();
-			time = System.currentTimeMillis() - startMillis;
-			System.out.println("EVALUATOR: Finished after " + time + "ms.");
+			callEvaluator();
 
-			startMillis = System.currentTimeMillis();
-			ICrazyGenetistService genetist = locator.getCrazyGenetistService();
-			genetist.recombineAndMutate();
-			time = System.currentTimeMillis() - startMillis;
-			System.out
-					.println("CRAZY GENETIST: Finished after " + time + "ms.");
+			updateSolutionTable();
 
-			startMillis = System.currentTimeMillis();
-			evaluator.evaluateSolutions();
-			time = System.currentTimeMillis() - startMillis;
-			System.out.println("EVALUATOR: Finished after " + time + "ms.");
+			callCrazyGenetist();
 
-			startMillis = System.currentTimeMillis();
-			ISolutionTableService solutionTable = locator
-					.getSolutionTableService();
-			solutionTable.update();
-			time = System.currentTimeMillis() - startMillis;
-			System.out.println("SOLUTION TABLE (Update): Finished after "
-					+ time + "ms.");
+			callEvaluator();
 
-			startMillis = System.currentTimeMillis();
-			IEliminatorService eliminatorService = locator
-					.getEliminatorService();
-			eliminatorService.eliminateSolutions();
-			time = System.currentTimeMillis() - startMillis;
-			System.out.println("ELIMINATOR: Finished after " + time + "ms.");
+			updateSolutionTable();
+
+			callEliminator();
 
 			printBestSolution();
 			printFairestSolution();
@@ -150,8 +117,52 @@ public final class Main {
 			shortSleep(sleepMilliSeconds);
 		}
 
-		IWriterService writer = locator.getWriterService();
+		writeBestSolution();
+	}
+
+	private static void callGenerator(IProblemInstance instance)
+			throws NoFeasibleSolutionFoundException {
+
+		long startMillis = System.currentTimeMillis();
+		ServiceLocator.getInstance().getGeneratorService().fillSolutionTable(
+				instance);
+		long time = System.currentTimeMillis() - startMillis;
+		System.out.println("GENERATOR: Finished after " + time + "ms.");
+	}
+
+	private static void callCrazyGenetist() {
+		long startMillis = System.currentTimeMillis();
+		ServiceLocator.getInstance().getCrazyGenetistService()
+				.recombineAndMutate();
+		long time = System.currentTimeMillis() - startMillis;
+		System.out.println("CRAZY GENETIST: Finished after " + time + "ms.");
+	}
+
+	private static void callEvaluator() {
+		long startMillis = System.currentTimeMillis();
+		ServiceLocator.getInstance().getEvaluatorService().evaluateSolutions();
+		long time = System.currentTimeMillis() - startMillis;
+		System.out.println("EVALUATOR: Finished after " + time + "ms.");
+	}
+
+	private static void callEliminator() {
+		long startMillis = System.currentTimeMillis();
+		IEliminatorService eliminatorService = ServiceLocator.getInstance()
+				.getEliminatorService();
+		eliminatorService.eliminateSolutions();
+		long time = System.currentTimeMillis() - startMillis;
+		System.out.println("ELIMINATOR: Finished after " + time + "ms.");
+	}
+
+	private static void writeBestSolution() throws IOException {
+		IWriterService writer = ServiceLocator.getInstance().getWriterService();
 		writer.outputBestSolution();
+	}
+
+	private static void updateSolutionTable() {
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+		solutionTable.update();
 	}
 
 	private static void printBestSolution() {
