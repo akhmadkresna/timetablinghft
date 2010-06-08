@@ -1,5 +1,7 @@
 package de.hft.timetabling.services;
 
+import java.util.List;
+
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
@@ -21,7 +23,7 @@ import de.hft.timetabling.common.ISolution;
 public interface ISolutionTableService {
 
 	/** Defines how many solution are held in the solution table. */
-	int TABLE_SIZE = 10;
+	int TABLE_SIZE = 50;
 
 	/**
 	 * Factory method allowing to create new solution instances.
@@ -245,5 +247,9 @@ public interface ISolutionTableService {
 	 *             If there is no best solution available yet.
 	 */
 	int getBestSolutionFairness();
+
+	void removeSolution(ISolution solution);
+
+	List<ISolution> getSolutionsOrderedByPenalty();
 
 }

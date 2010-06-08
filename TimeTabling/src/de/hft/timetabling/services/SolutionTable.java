@@ -1,6 +1,8 @@
 package de.hft.timetabling.services;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import de.hft.timetabling.common.ICourse;
@@ -324,6 +326,41 @@ public final class SolutionTable implements ISolutionTableService {
 			throw new RuntimeException("No best solution available yet.");
 		}
 		return bestPenaltySolution.getFairness();
+	}
+
+	@Override
+	public void removeSolution(ISolution solution) {
+		for (Integer solutionNumber : solutionTable.keySet()) {
+			SolutionVote solutionVote = solutionTable.get(solutionNumber);
+			if (solutionVote.getSolution().equals(solution)) {
+				solutionTable.remove(solutionNumber);
+				break;
+			}
+		}
+	}
+
+	@Override
+	// TODO AW: Not yet finished
+	public List<ISolution> getSolutionsOrderedByPenalty() {
+		LinkedList<ISolution> orderedList = new LinkedList<ISolution>();
+		for (Integer solutionNumber : solutionTable.keySet()) {
+			ISolution solution = solutionTable.get(solutionNumber)
+					.getSolution();
+			if (orderedList.isEmpty()) {
+				orderedList.add(solution);
+				continue;
+			}
+			int penaltySum = getPenaltySumForSolution(solutionNumber);
+			int penaltySumFirst = getPenaltySumForSolution(orderedList
+					.getFirst());
+			int penaltySumLast = getPenaltySumForSolution(orderedList.getLast());
+			if (penaltySum < penaltySumFirst) {
+				orderedList.addFirst(solution);
+			} else if (penaltySum > penaltySumLast) {
+				orderedList.addLast(solution);
+			}
+		}
+		return orderedList;
 	}
 
 	/**
