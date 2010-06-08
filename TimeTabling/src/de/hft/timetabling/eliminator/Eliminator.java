@@ -9,17 +9,21 @@ import de.hft.timetabling.services.ServiceLocator;
  */
 public final class Eliminator implements IEliminatorService {
 
+	/** The percentage of the population to eliminate. */
+	private static final int PERCENTAGE = 25;
+
 	/**
-	 * Eliminates the 50% worst solutions from the table.
+	 * Eliminates a percentage of the worst solutions from the table.
 	 */
 	@Override
 	public void eliminateSolutions() {
-		System.out.print("ELIMINATOR: Eliminating worst 50% of solutions ...");
+		System.out.print("ELIMINATOR: Eliminating worst " + PERCENTAGE
+				+ "% of solutions ...");
 
 		ISolutionTableService solutionTable = ServiceLocator.getInstance()
 				.getSolutionTableService();
-		int halfSize = solutionTable.getSize() / 2;
-		for (int i = 0; i < halfSize; i++) {
+		int nrSolutionToEliminate = (PERCENTAGE * solutionTable.getSize()) / 100;
+		for (int i = 0; i < nrSolutionToEliminate; i++) {
 			solutionTable.removeWorstSolution();
 		}
 
