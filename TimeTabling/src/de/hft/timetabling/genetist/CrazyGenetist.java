@@ -27,14 +27,15 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	private ISolutionTableService solution;
 
 	/**
-	 * Propability to chose one of the recombination algorithms.
+	 * Iterations to chose one of the recombination algorithms. This number
+	 * means the percentage of the maximum table size.
 	 */
-	private double probability = 0.5;
+	private int iterations = 10;
 
 	/**
 	 * public Method to start recombination and mutation process. The solution
 	 * table will get from serviceLocator.getSolutionTableService(). The
-	 * Solutions that are recombined and mutated are choosen randomly.
+	 * Solutions that are recombined and mutated are chosen randomly.
 	 */
 	@Override
 	public void recombineAndMutate() {
@@ -52,54 +53,68 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			// Solution that is used as basic for recombination
 			ISolution basicSolution = null;
 			// Choosing solutions that until they are not null and different
-			while ((otherSolution == null) || (basicSolution == null)
-					|| basicSolution.equals(otherSolution)) {
-				System.out
-						.print("CG: Trying to find solution to work with ...");
+			int handedInSolution = 0;
+			int iterationsRounds = ISolutionTableService.TABLE_SIZE
+					* (1 / iterations);
 
-				// --> if (Math.random() < probability)
-
-				int n1 = (int) (solution.getSize() * Math.random());
-				int n2 = (int) (solution.getSize() * Math.random());
-				basicSolution = solution.getSolution(n1);
-				otherSolution = solution.getSolution(n2);
-
-				System.out.print(" found " + n1 + "(" + basicSolution + "), "
-						+ n2 + "(" + otherSolution + ") ...\n");
-
-				/*
-				 * //for debugging reasons if ((otherSolution == null)) {
-				 * System.out.println("otherSolution is null"); } if
-				 * ((basicSolution == null)) {
-				 * System.out.println("basicSolution is null"); } if
-				 * (((basicSolution != null) && (otherSolution != null)) &&
-				 * basicSolution.equals(otherSolution)) {
-				 * System.out.println("solutions are equal!:");
-				 * System.out.println("Basic solution:\n" + CrazyGenetistUtility
-				 * .coursesToStringId(basicSolution .getCoding()));
-				 * System.out.println("Other solution:\n" + CrazyGenetistUtility
-				 * .coursesToStringId(otherSolution .getCoding()));
-				 * System.exit(0); }
-				 */
+			// Make sure that it is executed at least once
+			if (iterationsRounds == 0) {
+				iterationsRounds = 1;
 			}
-			System.out.println("CG: Taking these solutions.");
 
-			back = mutateRoomStability(recombindation2(basicSolution,
-					otherSolution));
+			// Doing as long as the maximum iterations are reached or in
+			// (maximum iterations)*2 are done
+			for (int i = 0; (handedInSolution <= iterationsRounds)
+					&& (i < (iterationsRounds * 2)); i++) {
+				while ((otherSolution == null) || (basicSolution == null)
+						|| basicSolution.equals(otherSolution)) {
+					System.out
+							.print("CG: Trying to find solution to work with ...");
 
-			basicSolution.increaseRecombinationCount();
-			otherSolution.increaseRecombinationCount();
+					// --> if (Math.random() < probability)
 
-		}
+					int n1 = (int) (solution.getSize() * Math.random());
+					int n2 = (int) (solution.getSize() * Math.random());
+					basicSolution = solution.getSolution(n1);
+					otherSolution = solution.getSolution(n2);
 
-		// Hand in solution
-		if ((back != null) && new ValidatorImpl().isValidSolution(back)) {
-			System.out.println("CG: Valid solution found. (" + back.toString()
-					+ ")");
-			getSolution().removeWorstSolution();
-			getSolution().addSolution(back);
-		} else {
-			System.out.println("CG: No valid solution found.");
+					System.out.print(" found " + n1 + "(" + basicSolution
+							+ "), " + n2 + "(" + otherSolution + ") ...\n");
+
+					/*
+					 * //for debugging reasons if ((otherSolution == null)) {
+					 * System.out.println("otherSolution is null"); } if
+					 * ((basicSolution == null)) {
+					 * System.out.println("basicSolution is null"); } if
+					 * (((basicSolution != null) && (otherSolution != null)) &&
+					 * basicSolution.equals(otherSolution)) {
+					 * System.out.println("solutions are equal!:");
+					 * System.out.println("Basic solution:\n" +
+					 * CrazyGenetistUtility .coursesToStringId(basicSolution
+					 * .getCoding())); System.out.println("Other solution:\n" +
+					 * CrazyGenetistUtility .coursesToStringId(otherSolution
+					 * .getCoding())); System.exit(0); }
+					 */
+				}
+				System.out.println("CG: Taking these solutions.");
+
+				back = mutateRoomStability(recombindation2(basicSolution,
+						otherSolution));
+
+				basicSolution.increaseRecombinationCount();
+				otherSolution.increaseRecombinationCount();
+
+			}
+
+			// Hand in solution
+			if ((back != null) && new ValidatorImpl().isValidSolution(back)) {
+				System.out.println("CG: Valid solution found. ("
+						+ back.toString() + ")");
+				getSolution().removeWorstSolution();
+				getSolution().addSolution(back);
+			} else {
+				System.out.println("CG: No valid solution found.");
+			}
 		}
 	}
 
@@ -107,7 +122,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 * Method to set Solution that should be used.
 	 * 
 	 * @param solution
-	 *            Solution table that should be recomined and mutated.
+	 *            Solution table that should be recombined and mutated.
 	 */
 	public void setSolution(ISolutionTableService solution) {
 		this.solution = solution;
@@ -371,26 +386,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Method for getting the set probability of what algorithm should be
-	 * chosen.
-	 * 
-	 * @return probability of algorithm choosing.
-	 */
-	public double getProbability() {
-		return probability;
-	}
-
-	/**
-	 * Method for setting the probability of what algorithm should be chosen.
-	 * 
-	 * @param probability
-	 *            of algorithm choosing.
-	 */
-	public void setProbability(double probability) {
-		this.probability = probability;
 	}
 
 	/**
