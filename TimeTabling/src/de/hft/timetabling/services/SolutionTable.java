@@ -136,6 +136,7 @@ public final class SolutionTable implements ISolutionTableService {
 
 	@Override
 	public int getNumberOfEmptySlots() {
+		// Not voted solutions count not as empty slots.
 		return TABLE_SIZE - getSize(true);
 	}
 

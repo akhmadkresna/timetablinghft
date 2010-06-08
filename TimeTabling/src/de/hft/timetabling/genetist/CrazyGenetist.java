@@ -92,8 +92,9 @@ public class CrazyGenetist implements ICrazyGenetistService {
 					 */
 				}
 
-				back = mutateRoomStability(recombindation2(basicSolution,
-						otherSolution));
+				ISolution recombinedSolution = recombindation2(basicSolution,
+						otherSolution);
+				back = mutateRoomStability(recombinedSolution);
 
 				basicSolution.increaseRecombinationCount();
 				otherSolution.increaseRecombinationCount();
