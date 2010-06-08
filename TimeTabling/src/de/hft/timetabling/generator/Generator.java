@@ -29,7 +29,7 @@ public final class Generator implements IGeneratorService {
 	 * the amount of iterations which will be performed before the algorithm
 	 * gives up trying to create a feasible solution
 	 */
-	private final int MAX_ITERATIONS = 20;
+	private final int MAX_ITERATIONS = 30;
 
 	/**
 	 * the amount of loops during each iteration. Higher loop counts increase
@@ -381,13 +381,14 @@ class SessionObject {
 		 * of curricula the course belongs to with the set of curricula already
 		 * present in the period
 		 */
+
 		Set<ICurriculum> intersection = new HashSet<ICurriculum>();
 		intersection.addAll(curriculaInPeriod.get(period));
 		intersection.retainAll(course.getCurricula());
 
 		return (intersection.size() > 0)
-				|| teachersInPeriod.get(period).contains(course.getTeacher())
 				|| violatesUnavailabilityConstraints(course, period)
+				|| teachersInPeriod.get(period).contains(course.getTeacher())
 				|| allRoomsOccupied(period);
 	}
 
