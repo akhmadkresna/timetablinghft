@@ -30,7 +30,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 * Iterations to chose one of the recombination algorithms. This number
 	 * means the percentage of the maximum table size.
 	 */
-	private int iterations = 10;
+	private static final int ITERATIONS = 25;
 
 	/**
 	 * public Method to start recombination and mutation process. The solution
@@ -54,8 +54,8 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			ISolution basicSolution = null;
 			// Choosing solutions that until they are not null and different
 			int handedInSolution = 0;
-			int iterationsRounds = ISolutionTableService.TABLE_SIZE
-					* (1 / iterations);
+			int iterationsRounds = ITERATIONS
+					* ISolutionTableService.TABLE_SIZE / 100;
 
 			// Make sure that it is executed at least once
 			if (iterationsRounds == 0) {
@@ -64,8 +64,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 
 			// Doing as long as the maximum iterations are reached or in
 			// (maximum iterations)*2 are done
-			for (int i = 0; (handedInSolution <= iterationsRounds)
-					&& (i < (iterationsRounds * 2)); i++) {
+			for (int i = 0; handedInSolution < iterationsRounds; i++) {
 				while ((otherSolution == null) || (basicSolution == null)
 						|| basicSolution.equals(otherSolution)) {
 					System.out
@@ -104,16 +103,17 @@ public class CrazyGenetist implements ICrazyGenetistService {
 				basicSolution.increaseRecombinationCount();
 				otherSolution.increaseRecombinationCount();
 
-			}
-
-			// Hand in solution
-			if ((back != null) && new ValidatorImpl().isValidSolution(back)) {
-				System.out.println("CG: Valid solution found. ("
-						+ back.toString() + ")");
-				getSolution().removeWorstSolution();
-				getSolution().addSolution(back);
-			} else {
-				System.out.println("CG: No valid solution found.");
+				// Hand in solution
+				if ((back != null) && new ValidatorImpl().isValidSolution(back)) {
+					System.out.println("CG: Valid solution found. ("
+							+ back.toString() + ")");
+					getSolution().removeWorstSolution();
+					getSolution().addSolution(back);
+					handedInSolution++;
+				} else {
+					System.out.println("CG: No valid solution found.");
+					break;
+				}
 			}
 		}
 	}
@@ -131,7 +131,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	/**
 	 * Method to get Solution that should be recombined.
 	 * 
-	 * @return solution Solution table that should be recomined and mutated.
+	 * @return solution Solution table that should be recombined and mutated.
 	 */
 	public ISolutionTableService getSolution() {
 		return solution;
