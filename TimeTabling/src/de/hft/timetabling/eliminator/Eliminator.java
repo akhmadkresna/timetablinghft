@@ -19,7 +19,7 @@ public final class Eliminator implements IEliminatorService {
 	public void eliminateSolutions() {
 		ISolutionTableService solutionTable = ServiceLocator.getInstance()
 				.getSolutionTableService();
-		int nrSolutionToEliminate = (PERCENTAGE * solutionTable.getSize(true)) / 100;
+		int nrSolutionToEliminate = (PERCENTAGE * ISolutionTableService.TABLE_SIZE) / 100;
 
 		System.out.print("ELIMINATOR: Eliminating worst " + PERCENTAGE
 				+ "% of solutions (" + nrSolutionToEliminate + ") ...");
