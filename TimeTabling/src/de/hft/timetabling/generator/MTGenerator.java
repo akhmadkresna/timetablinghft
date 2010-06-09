@@ -16,14 +16,16 @@ public class MTGenerator implements IGeneratorService {
 
 	private static final Object ADD_LOCK = new Object();
 
+	private static final int NUM_THREADS = 10;
+
 	private int threadCount = 0;
 
 	@Override
 	public void fillSolutionTable(final IProblemInstance problemInstance) {
-
+		// TODO thread pool
 		final List<Thread> threads = new ArrayList<Thread>();
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < NUM_THREADS; i++) {
 			Thread thread = new Thread(new Runnable() {
 				private final Generator generator = new Generator();
 				private int threadId = threadCount++;
