@@ -2,6 +2,7 @@ package de.hft.timetabling.reader;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -44,6 +45,8 @@ final class ProblemInstanceImpl implements IProblemInstance {
 
 	private final Map<ICourse, Set<Integer>> unavailabilityConstraints;
 
+	private final Map<String, Set<ICourse>> coursesByTeacher;
+
 	public ProblemInstanceImpl(String fileName, String name,
 			int numberOfCourses, int numberOfRooms, int numberOfDays,
 			int periodsPerDay, int numberOfCurricula, int numberOfConstraints) {
@@ -61,6 +64,7 @@ final class ProblemInstanceImpl implements IProblemInstance {
 		rooms = new LinkedHashSet<IRoom>();
 		curricula = new LinkedHashSet<ICurriculum>();
 		unavailabilityConstraints = new HashMap<ICourse, Set<Integer>>();
+		coursesByTeacher = new HashMap<String, Set<ICourse>>();
 	}
 
 	@Override
@@ -178,4 +182,21 @@ final class ProblemInstanceImpl implements IProblemInstance {
 		return "Problem Instance: " + name;
 	}
 
+	@Override
+	public Set<ICourse> getCoursesForTeacher(String teacher) {
+		Set<ICourse> teachersCourses = coursesByTeacher.get(teacher);
+
+		if (teachersCourses == null) {
+			teachersCourses = new HashSet<ICourse>();
+
+			for (ICourse course : courses) {
+				if (course.getTeacher().equals(teacher)) {
+					teachersCourses.add(course);
+				}
+			}
+			coursesByTeacher.put(teacher, teachersCourses);
+		}
+
+		return Collections.unmodifiableSet(teachersCourses);
+	}
 }

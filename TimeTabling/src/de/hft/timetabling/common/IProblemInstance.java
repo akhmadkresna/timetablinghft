@@ -100,4 +100,13 @@ public interface IProblemInstance {
 	 */
 	int getNumberOfPeriods();
 
+	/**
+	 * Returns the set of all courses which a teacher gives.
+	 * 
+	 * @param The
+	 *            teacher which
+	 * @return the courses held by the teacher
+	 */
+	Set<ICourse> getCoursesForTeacher(String teacher);
+
 }
