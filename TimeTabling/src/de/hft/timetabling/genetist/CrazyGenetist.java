@@ -30,7 +30,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 * Iterations to chose one of the recombination algorithms. This number
 	 * means the percentage of the maximum table size.
 	 */
-	private static final int ITERATIONS = 25;
+	private static final int ITERATIONS = 1;
 
 	/**
 	 * public Method to start recombination and mutation process. The solution
@@ -89,9 +89,14 @@ public class CrazyGenetist implements ICrazyGenetistService {
 					 */
 				}
 
-				ISolution recombinedSolution = recombindation2(basicSolution,
+				basicSolution = mutateRoomStability(basicSolution);
+				otherSolution = mutateCourseIsolation(otherSolution);
+
+				ISolution recombinedSolution = recombination2(basicSolution,
 						otherSolution);
-				recombinedSolution = mutateRoomStability(recombinedSolution);
+
+				// recombinedSolution =
+				// mutateRoomStability(recombinedSolution);
 
 				basicSolution.increaseRecombinationCount();
 				otherSolution.increaseRecombinationCount();
@@ -112,6 +117,30 @@ public class CrazyGenetist implements ICrazyGenetistService {
 
 			System.out.print(" done.\n");
 		}
+	}
+
+	/**
+	 * Mutation algorithm to mutate course stability.
+	 * 
+	 * @param solution
+	 *            solution to mutate
+	 * @return mutated solution
+	 */
+	private ISolution mutateCourseIsolation(ISolution solution) {
+
+		ISolution newSolution = solution.clone();
+
+		int n1 = 0, n2 = 0;
+		while (n1 == n2) {
+			n1 = (int) (newSolution.getCoding().length * Math.random());
+			n2 = (int) (newSolution.getCoding().length * Math.random());
+		}
+
+		ICourse[] temp = newSolution.getCoding()[n1];
+		newSolution.getCoding()[n1] = newSolution.getCoding()[n2];
+		newSolution.getCoding()[n2] = temp;
+
+		return newSolution;
 	}
 
 	/**
@@ -198,7 +227,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 *            Other solutions where ICourses are put of.
 	 * @return recombied solution
 	 */
-	private ISolution recombindation2(ISolution solution1, ISolution solution2) {
+	private ISolution recombination2(ISolution solution1, ISolution solution2) {
 		// ICourse[][] oldBestSolution;
 		// ValidatorImpl vi = new ValidatorImpl();
 		// Set<ICourse> savingList = new HashSet<ICourse>();
