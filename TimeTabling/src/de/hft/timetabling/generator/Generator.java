@@ -48,7 +48,7 @@ public final class Generator implements IGeneratorService {
 	 *             when no solution can be found within the set amount of
 	 *             iterations
 	 */
-	private ICourse[][] generateFeasibleSolution(final IProblemInstance instance)
+	public ICourse[][] generateFeasibleSolution(final IProblemInstance instance)
 			throws NoFeasibleSolutionFoundException {
 
 		int iterations = 0;
@@ -125,8 +125,7 @@ public final class Generator implements IGeneratorService {
 	}
 
 	@Override
-	public void fillSolutionTable(IProblemInstance problemInstance)
-			throws NoFeasibleSolutionFoundException {
+	public void fillSolutionTable(IProblemInstance problemInstance) {
 
 		ISolutionTableService solutionTable = ServiceLocator.getInstance()
 				.getSolutionTableService();
@@ -135,11 +134,17 @@ public final class Generator implements IGeneratorService {
 		System.out.print("GENERATOR: Filling " + numberOfEmptySlots
 				+ " empty slots ...");
 
-		for (int i = 0; i < numberOfEmptySlots; i++) {
-			ICourse[][] coding = generateFeasibleSolution(problemInstance);
-			ISolution newSolution = solutionTable.createNewSolution(coding,
-					problemInstance);
-			solutionTable.addSolution(newSolution);
+		while (solutionTable.getNumberOfEmptySlots() > 0) {
+			ICourse[][] coding;
+			try {
+				coding = generateFeasibleSolution(problemInstance);
+				ISolution newSolution = solutionTable.createNewSolution(coding,
+						problemInstance);
+				solutionTable.addSolution(newSolution);
+			} catch (NoFeasibleSolutionFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		System.out.print(" done.\n");

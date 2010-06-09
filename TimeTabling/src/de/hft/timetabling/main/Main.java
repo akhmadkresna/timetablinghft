@@ -6,7 +6,6 @@ import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.eliminator.Eliminator;
 import de.hft.timetabling.evaluator.Evaluator;
 import de.hft.timetabling.generator.Generator;
-import de.hft.timetabling.generator.NoFeasibleSolutionFoundException;
 import de.hft.timetabling.genetist.CrazyGenetist;
 import de.hft.timetabling.genetist.ValidatorImpl;
 import de.hft.timetabling.reader.Reader;
@@ -55,10 +54,11 @@ public final class Main {
 		setUpServices();
 
 		try {
+			long startTime = System.currentTimeMillis();
 			run(args[0], sleepTime);
+			System.out.println("ALGORITHM: Finished after "
+					+ (System.currentTimeMillis() - startTime) + " ms.");
 		} catch (IOException e) {
-			handleException(e);
-		} catch (NoFeasibleSolutionFoundException e) {
 			handleException(e);
 		}
 	}
@@ -87,7 +87,7 @@ public final class Main {
 	 * Runs the main loop of the program.
 	 */
 	private static void run(String fileName, long sleepMilliSeconds)
-			throws IOException, NoFeasibleSolutionFoundException {
+			throws IOException {
 
 		ServiceLocator locator = ServiceLocator.getInstance();
 		IReaderService reader = locator.getReaderService();
@@ -120,8 +120,7 @@ public final class Main {
 		writeBestSolution();
 	}
 
-	private static void callGenerator(IProblemInstance instance)
-			throws NoFeasibleSolutionFoundException {
+	private static void callGenerator(IProblemInstance instance) {
 
 		long startMillis = System.currentTimeMillis();
 		ServiceLocator.getInstance().getGeneratorService().fillSolutionTable(

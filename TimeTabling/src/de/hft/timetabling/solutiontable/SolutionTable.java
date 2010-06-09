@@ -28,10 +28,6 @@ public final class SolutionTable implements ISolutionTableService {
 
 	private int currentNotVotedCount;
 
-	private Object createLock = new Object();
-
-	private Object addLock = new Object();
-
 	/**
 	 * When voting, a solution moves from the not voted list to the real
 	 * solution table. To assure that further indexes of calls to
@@ -50,36 +46,31 @@ public final class SolutionTable implements ISolutionTableService {
 	public ISolution createNewSolution(ICourse[][] coding,
 			IProblemInstance problemInstance) {
 
-		synchronized (createLock) {
-			int numberOfPeriods = problemInstance.getNumberOfDays()
-					* problemInstance.getPeriodsPerDay();
-			if (coding.length != numberOfPeriods) {
-				throw new IllegalArgumentException(
-						"Incomplete coding: period-dimension (x) not matching the number of periods of the problem instance.");
-			}
-			for (int period = 0; period < numberOfPeriods; period++) {
-				ICourse[] coursesPerPeriod = coding[period];
-				if (coursesPerPeriod.length != problemInstance
-						.getNumberOfRooms()) {
-					throw new IllegalArgumentException(
-							"Incomplete coding: room-dimension (y) not matching the number of rooms of the problem instance in period "
-									+ period + ".");
-				}
-			}
-			return new SolutionImpl(coding, problemInstance);
+		int numberOfPeriods = problemInstance.getNumberOfDays()
+				* problemInstance.getPeriodsPerDay();
+		if (coding.length != numberOfPeriods) {
+			throw new IllegalArgumentException(
+					"Incomplete coding: period-dimension (x) not matching the number of periods of the problem instance.");
 		}
+		for (int period = 0; period < numberOfPeriods; period++) {
+			ICourse[] coursesPerPeriod = coding[period];
+			if (coursesPerPeriod.length != problemInstance.getNumberOfRooms()) {
+				throw new IllegalArgumentException(
+						"Incomplete coding: room-dimension (y) not matching the number of rooms of the problem instance in period "
+								+ period + ".");
+			}
+		}
+		return new SolutionImpl(coding, problemInstance);
 	}
 
 	@Override
 	public void addSolution(ISolution solution) {
-		synchronized (addLock) {
-			if (getSize(true) == ISolutionTableService.TABLE_SIZE) {
-				throw new RuntimeException(
-						"Insertion of solution failed because the solution table is full.");
-			}
-			notVotedTable.add(solution);
-			currentNotVotedCount++;
+		if (getSize(true) == ISolutionTableService.TABLE_SIZE) {
+			throw new RuntimeException(
+					"Insertion of solution failed because the solution table is full.");
 		}
+		notVotedTable.add(solution);
+		currentNotVotedCount++;
 	}
 
 	@Override
