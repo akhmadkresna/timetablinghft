@@ -325,10 +325,10 @@ public class Evaluator implements IEvaluatorService {
 
 		if (maxAvgDiff >= minAvgDiff) {
 			// iFairnessCost = maxAvgDiff;
-			iFairnessCost = maxAvgDiff - minAvgDiff;
+			iFairnessCost = maxAvgDiff;
 		} else {
 			// iFairnessCost = minAvgDiff;
-			iFairnessCost = minAvgDiff - maxAvgDiff;
+			iFairnessCost = minAvgDiff;
 		}
 
 		return iFairnessCost;
