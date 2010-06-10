@@ -384,4 +384,16 @@ public final class SolutionTable implements ISolutionTableService {
 		}
 
 	}
+
+	@Override
+	public void clear() {
+		solutionTable.clear();
+		notVotedTable.clear();
+		bestPenaltySolution = null;
+		bestFairnessSolution = null;
+		worstPenaltySolution = null;
+		worstFairnessSolution = null;
+		currentNotVotedCount = 0;
+		voteIndexModification = 0;
+	}
 }

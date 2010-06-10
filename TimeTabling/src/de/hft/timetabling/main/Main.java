@@ -1,6 +1,11 @@
 package de.hft.timetabling.main;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Date;
 
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.eliminator.Eliminator;
@@ -31,6 +36,8 @@ public final class Main {
 	 */
 	private static final int ITERATIONS = 1000;
 
+	private static final boolean ALL = false;
+
 	/**
 	 * Runs the program.
 	 * 
@@ -56,7 +63,11 @@ public final class Main {
 
 		try {
 			long startTime = System.currentTimeMillis();
-			run(args[0], sleepTime);
+			if (ALL) {
+				runAllInstances();
+			} else {
+				run(args[0], sleepTime);
+			}
 			System.out.println("ALGORITHM: Finished after "
 					+ (System.currentTimeMillis() - startTime) + " ms.\n");
 		} catch (IOException e) {
@@ -97,6 +108,8 @@ public final class Main {
 		IReaderService reader = locator.getReaderService();
 		IProblemInstance instance = reader.readInstance(fileName);
 
+		ServiceLocator.getInstance().getSolutionTableService().clear();
+
 		for (int i = 0; i < ITERATIONS; i++) {
 			System.out.println("");
 			System.out.println("------ ITERATION " + i + " ------");
@@ -125,6 +138,9 @@ public final class Main {
 
 		printGeneratorStats();
 		writeBestSolution();
+
+		System.out.println("Genetist success: " + CrazyGenetist.success);
+		System.out.println("Genetist failure: " + CrazyGenetist.failure);
 	}
 
 	private static void callGenerator(IProblemInstance instance) {
@@ -225,4 +241,87 @@ public final class Main {
 		}
 	}
 
+	private static void runAllInstances() throws IOException {
+		String logFileName = "allinstances.log";
+
+		File logFile = new File(logFileName);
+		if (logFile.exists()) {
+			logFile.delete();
+			logFile.createNewFile();
+		}
+
+		File instancesDir = new File("instances");
+		File[] instanceFiles = instancesDir.listFiles(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".ctt");
+			}
+		});
+
+		BufferedWriter writer = new BufferedWriter(new FileWriter(logFile));
+
+		createLogFileHeader(writer, logFile);
+
+		for (int i = 0; i < instanceFiles.length; i++) {
+			run(instanceFiles[i].getName(), 0);
+			writeResult(writer, instanceFiles[i]);
+		}
+
+		writer.close();
+	}
+
+	private static void createLogFileHeader(BufferedWriter writer, File logFile)
+			throws IOException {
+
+		writer.write("Log file created at " + new Date());
+		writer.newLine();
+		writer.write("--------------------------------------------------");
+		writer.newLine();
+		writer.newLine();
+		writer.write("Table size: " + ISolutionTableService.TABLE_SIZE);
+		writer.newLine();
+		writer.write("Iterations: " + ITERATIONS);
+		writer.newLine();
+		writer.newLine();
+
+		writer.flush();
+	}
+
+	private static void writeResult(BufferedWriter writer, File instanceFile)
+			throws IOException {
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+
+		writer.write(instanceFile.getName() + ":");
+		writer.newLine();
+		writer.write("Best penalty/penalty: "
+				+ solutionTable.getBestPenaltySolutionPenalty());
+		writer.newLine();
+		writer.write("Best penalty/fairness: "
+				+ solutionTable.getBestPenaltySolutionFairness());
+		writer.newLine();
+		writer.write("Best fairness/penalty: "
+				+ solutionTable.getBestFairnessSolutionPenalty());
+		writer.newLine();
+		writer.write("Best fairness/fairness: "
+				+ solutionTable.getBestFairnessSolutionFairness());
+		writer.newLine();
+		writer.write("Worst penalty/penalty: "
+				+ solutionTable.getWorstPenaltySolutionPenalty());
+		writer.newLine();
+		writer.write("Worst penalty/fairness: "
+				+ solutionTable.getWorstPenaltySolutionFairness());
+		writer.newLine();
+		writer.write("Worst fairness/penalty: "
+				+ solutionTable.getWorstFairnessSolutionPenalty());
+		writer.newLine();
+		writer.write("Worst fairness/fairness: "
+				+ solutionTable.getWorstFairnessSolutionFairness());
+		writer.newLine();
+		writer.newLine();
+		writer.newLine();
+
+		writer.flush();
+	}
 }

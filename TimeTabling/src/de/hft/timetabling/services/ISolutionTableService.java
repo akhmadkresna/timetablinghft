@@ -132,4 +132,6 @@ public interface ISolutionTableService {
 	 */
 	boolean compareWithWorstSolution(int iPenalty);
 
+	void clear();
+
 }

@@ -21,6 +21,9 @@ import de.hft.timetabling.services.ServiceLocator;
  */
 public class CrazyGenetist implements ICrazyGenetistService {
 
+	public static int success = 0;
+	public static int failure = 0;
+
 	/**
 	 * Solutions that should be improved.
 	 */
@@ -106,6 +109,8 @@ public class CrazyGenetist implements ICrazyGenetistService {
 						&& new ValidatorImpl()
 								.isValidSolution(recombinedSolution)) {
 
+					success++;
+
 					// Call evaluator
 					int iPenalty = ServiceLocator.getInstance()
 							.getEvaluatorService().evaluateSolution(
@@ -122,6 +127,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 				} else {
 					System.out
 							.println("CRAZY GENETIST: No valid solution found.");
+					failure++;
 					break;
 				}
 			}
