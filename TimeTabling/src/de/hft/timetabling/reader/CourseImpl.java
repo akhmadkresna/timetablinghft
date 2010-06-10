@@ -74,7 +74,7 @@ final class CourseImpl implements ICourse {
 	}
 
 	@Override
-	public Set<ICurriculum> getCurricula() {
+	public synchronized Set<ICurriculum> getCurricula() {
 		if (curricula.isEmpty()) {
 			for (ICurriculum curriculum : problemInstance.getCurricula()) {
 				if (curriculum.containsCourse(this)) {

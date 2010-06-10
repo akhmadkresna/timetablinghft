@@ -37,7 +37,7 @@ public final class Main {
 	 */
 	private static final int ITERATIONS = 1000;
 
-	private static final boolean ALL = false;
+	private static final boolean ALL = true;
 
 	private static long duration = 0;
 
@@ -240,7 +240,7 @@ public final class Main {
 				+ ", Failure: " + Generator.failure);
 	}
 
-	private static void shortSleep(long sleepMilliSeconds) {
+	private static void shortSleep(final long sleepMilliSeconds) {
 		try {
 			Thread.sleep(sleepMilliSeconds);
 		} catch (InterruptedException e) {
@@ -249,26 +249,28 @@ public final class Main {
 	}
 
 	private static void runAllInstances() throws IOException {
-		String logFileName = "allinstances.log";
+		final String logFileName = "allinstances.log";
 
-		File logFile = new File(logFileName);
+		final File logFile = new File(logFileName);
 		if (logFile.exists()) {
 			logFile.delete();
 			logFile.createNewFile();
 		}
 
-		File instancesDir = new File("instances");
-		File[] instanceFiles = instancesDir.listFiles(new FilenameFilter() {
+		final File instancesDir = new File("instances");
+		final File[] instanceFiles = instancesDir
+				.listFiles(new FilenameFilter() {
 
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".ctt");
-			}
-		});
+					@Override
+					public boolean accept(File dir, String name) {
+						return name.endsWith(".ctt");
+					}
+				});
 
-		BufferedWriter writer = new BufferedWriter(new FileWriter(logFile));
+		final BufferedWriter writer = new BufferedWriter(
+				new FileWriter(logFile));
 
-		createLogFileHeader(writer, logFile);
+		createLogFileHeader(writer);
 
 		for (int i = 0; i < instanceFiles.length; i++) {
 			run(instanceFiles[i].getName(), 0);
@@ -278,7 +280,7 @@ public final class Main {
 		writer.close();
 	}
 
-	private static void createLogFileHeader(BufferedWriter writer, File logFile)
+	private static void createLogFileHeader(final BufferedWriter writer)
 			throws IOException {
 
 		writer.write("Log file created at " + new Date());
@@ -295,19 +297,19 @@ public final class Main {
 		writer.flush();
 	}
 
-	private static void writeResult(BufferedWriter writer, File instanceFile)
-			throws IOException {
-		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-				.getSolutionTableService();
+	private static void writeResult(final BufferedWriter writer,
+			final File instanceFile) throws IOException {
+		final ISolutionTableService solutionTable = ServiceLocator
+				.getInstance().getSolutionTableService();
 
 		writer.write(instanceFile.getName());
 
-		long hours = TimeUnit.MILLISECONDS.toHours(duration);
-		long minutes = TimeUnit.MILLISECONDS.toMinutes(duration)
+		final long hours = TimeUnit.MILLISECONDS.toHours(duration);
+		final long minutes = TimeUnit.MILLISECONDS.toMinutes(duration)
 				- TimeUnit.HOURS.toMinutes(hours);
-		long seconds = TimeUnit.MILLISECONDS.toSeconds(duration)
+		final long seconds = TimeUnit.MILLISECONDS.toSeconds(duration)
 				- TimeUnit.MINUTES.toSeconds(minutes);
-		long msecs = duration - TimeUnit.SECONDS.toMillis(seconds);
+		final long msecs = duration - TimeUnit.SECONDS.toMillis(seconds);
 
 		writer.write(String.format(" (Duration: %d h, %d m, %d s, %d ms):",
 				hours, minutes, seconds, msecs));

@@ -132,6 +132,10 @@ public interface ISolutionTableService {
 	 */
 	boolean compareWithWorstSolution(int iPenalty);
 
+	/**
+	 * Clears all current entries in the table and prepares it for a new
+	 * iteration in general.
+	 */
 	void clear();
 
 }

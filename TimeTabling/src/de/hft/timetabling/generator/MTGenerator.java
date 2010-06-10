@@ -10,7 +10,7 @@ import de.hft.timetabling.services.IGeneratorService;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.ServiceLocator;
 
-public class MTGenerator implements IGeneratorService {
+public final class MTGenerator implements IGeneratorService {
 
 	private static final Object CREATE_LOCK = new Object();
 

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import de.hft.timetabling.common.ICourse;
@@ -14,7 +15,7 @@ import de.hft.timetabling.services.IGeneratorService;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.ServiceLocator;
 
-public class PooledMtGenerator implements IGeneratorService {
+public final class PooledMtGenerator implements IGeneratorService {
 
 	private IProblemInstance problemInstance;
 
@@ -23,11 +24,10 @@ public class PooledMtGenerator implements IGeneratorService {
 	private final ISolutionTableService solutionTable = ServiceLocator
 			.getInstance().getSolutionTableService();
 
-	private final ExecutorService exec = java.util.concurrent.Executors
-			.newFixedThreadPool(2);
+	private final ExecutorService exec = Executors.newFixedThreadPool(2);
 
 	@Override
-	public void fillSolutionTable(IProblemInstance problemInstance) {
+	public void fillSolutionTable(final IProblemInstance problemInstance) {
 		if (this.problemInstance != problemInstance) {
 			this.problemInstance = problemInstance;
 			taskGroup.clear();
@@ -39,13 +39,11 @@ public class PooledMtGenerator implements IGeneratorService {
 		}
 
 		try {
-			List<Future<ISolution>> futureList = new ArrayList<Future<ISolution>>();
-
-			futureList = exec.invokeAll(taskGroup.subList(0, solutionTable
-					.getNumberOfEmptySlots()));
+			final List<Future<ISolution>> futureList = exec.invokeAll(taskGroup
+					.subList(0, solutionTable.getNumberOfEmptySlots()));
 
 			for (Future<ISolution> future : futureList) {
-				ISolution sol = future.get();
+				final ISolution sol = future.get();
 				solutionTable.addSolution(sol);
 			}
 		} catch (InterruptedException e1) {
@@ -53,12 +51,16 @@ public class PooledMtGenerator implements IGeneratorService {
 		} catch (ExecutionException e) {
 			e.printStackTrace();
 		}
+		if (solutionTable.getNumberOfEmptySlots() > 0) {
+			System.err.println("NOT FULL!!!!!");
+			System.exit(1);
+		}
 	}
 }
 
-class SolutionTask implements Callable<ISolution> {
+final class SolutionTask implements Callable<ISolution> {
 
-	private static final Object CREATE_LOCK = new Object();
+	public static final Object CREATE_LOCK = new Object();
 
 	private final Generator gen = new Generator();
 
@@ -69,7 +71,7 @@ class SolutionTask implements Callable<ISolution> {
 
 	private final int id;
 
-	public SolutionTask(IProblemInstance instance, int id) {
+	public SolutionTask(final IProblemInstance instance, final int id) {
 		this.instance = instance;
 		this.id = id;
 	}
