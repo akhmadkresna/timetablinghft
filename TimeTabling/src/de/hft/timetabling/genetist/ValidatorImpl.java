@@ -44,16 +44,14 @@ public final class ValidatorImpl implements IValidatorService {
 	 */
 	private boolean noCurriculaOverlap(final ICourse[][] coding) {
 		for (int i = 0; i < coding.length; i++) {
-			boolean firstCourse = true;
 			Set<ICurriculum> curriculaInPeriod = new HashSet<ICurriculum>();
 
 			for (int j = 0; j < coding[i].length; j++) {
 				ICourse course = coding[i][j];
 
 				if (course != null) {
-					if (firstCourse) {
+					if (curriculaInPeriod.isEmpty()) {
 						curriculaInPeriod.addAll(course.getCurricula());
-						firstCourse = false;
 					} else {
 						Set<ICurriculum> intersection = new HashSet<ICurriculum>();
 						intersection.addAll(curriculaInPeriod);
@@ -65,6 +63,7 @@ public final class ValidatorImpl implements IValidatorService {
 							return false;
 						}
 
+						curriculaInPeriod.addAll(course.getCurricula());
 					}
 				}
 			}
