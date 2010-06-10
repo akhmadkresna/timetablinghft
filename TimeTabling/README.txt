@@ -12,3 +12,4 @@
 			(defaults to 0)
 	
 	4)	Name of the directory to read initial solutions from							optional
+			(feature will not be used if not specified)
