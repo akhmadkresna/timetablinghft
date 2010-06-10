@@ -290,7 +290,7 @@ public final class Main {
 		createLogFileHeader(writer);
 
 		for (int i = 0; i < instanceFiles.length; i++) {
-			long duration = run(instanceFiles[i].getName(),
+			long duration = run("instances/" + instanceFiles[i].getName(),
 					initialSolutionsDirectory, 0);
 			writeResult(writer, instanceFiles[i], duration);
 		}
