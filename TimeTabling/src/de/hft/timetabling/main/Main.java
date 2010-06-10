@@ -37,7 +37,7 @@ public final class Main {
 	 */
 	private static final int ITERATIONS = 1000;
 
-	private static final boolean ALL = true;
+	private static final boolean ALL = false;
 
 	private static long duration = 0;
 

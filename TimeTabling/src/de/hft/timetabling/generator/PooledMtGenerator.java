@@ -51,10 +51,6 @@ public final class PooledMtGenerator implements IGeneratorService {
 		} catch (ExecutionException e) {
 			e.printStackTrace();
 		}
-		if (solutionTable.getNumberOfEmptySlots() > 0) {
-			System.err.println("NOT FULL!!!!!");
-			System.exit(1);
-		}
 	}
 }
 
