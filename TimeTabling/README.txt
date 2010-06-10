@@ -3,7 +3,7 @@
 	-------------------------------------
 	
 	1)	File name of the problem instance contained in the folder "instances"			mandatory
-			(use ALL if you want to batch-execute all problem instances!)
+			(use 'ALL' if you want to batch-execute all problem instances!)
 	
 	2)	Number of iterations to perform													optional
 			(defaults to 1000)
