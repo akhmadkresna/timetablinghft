@@ -105,9 +105,20 @@ public class CrazyGenetist implements ICrazyGenetistService {
 				if ((recombinedSolution != null)
 						&& new ValidatorImpl()
 								.isValidSolution(recombinedSolution)) {
-					getSolution().removeWorstSolution();
-					getSolution().addSolution(recombinedSolution);
-					handedInSolution++;
+
+					// Call evaluator
+					int iPenalty = ServiceLocator.getInstance()
+							.getEvaluatorService().evaluateSolution(
+									recombinedSolution);
+					// return true of new solution is better
+					if (getSolution().compareWithWorstSolution(iPenalty)) {
+						getSolution().removeWorstSolution();
+						getSolution().addSolution(recombinedSolution);
+						handedInSolution++;
+					} else {
+						System.out.println("New Solution is worse!!!");
+					}
+
 				} else {
 					System.out
 							.println("CRAZY GENETIST: No valid solution found.");

@@ -210,6 +210,19 @@ public final class SolutionTable implements ISolutionTableService {
 		}
 	}
 
+	/**
+	 * @author Roy
+	 */
+	@Override
+	public boolean compareWithWorstSolution(int iPenalty) {
+		int worstSolutionPenalty = solutionTable.last().getPenalty();
+		if (iPenalty < worstSolutionPenalty) {
+			return true;
+		}
+
+		return false;
+	}
+
 	private static class WeightedSolution implements
 			Comparable<WeightedSolution> {
 

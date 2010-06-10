@@ -108,4 +108,16 @@ public interface ISolutionTableService {
 	 */
 	ISolution getSolution(int index);
 
+	/**
+	 * compare parameter value with penalty of worst solution (last())
+	 * 
+	 * @author Roy
+	 * 
+	 * @param iPenalty
+	 *            Penalty value
+	 * 
+	 * @return true if the Penalty given is better than worst solution
+	 */
+	boolean compareWithWorstSolution(int iPenalty);
+
 }

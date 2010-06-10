@@ -272,7 +272,9 @@ public class Evaluator implements IEvaluatorService {
 			Iterator<ICurriculum> it = currentCurriculumSet.iterator();
 			int c = 0;
 			int iPenalty = 0;
-
+			int iRoom = 0;
+			int iMinWDays = 0;
+			int iCompRoomS = 0;
 			// Iterate through each curriculum
 			while (it.hasNext()) {
 				currentCurricula = it.next();
@@ -284,11 +286,21 @@ public class Evaluator implements IEvaluatorService {
 						solutionCode, currentCurricula);
 				curriculumCosts[c] = iPenalty;
 				c++;
+
+				// Debug code
+				iRoom += costsOnRoomCapacity(solutionCode, currentCurricula);
+				iMinWDays += costsOnMinWorkingDays(solutionCode,
+						currentCurricula);
+				iCompRoomS += costsOnCurriculumCompactnessAndRoomStability(
+						solutionCode, currentCurricula);
 			}
 
 			iFairness = evaluateFairness(curriculumCosts, numberOfCurriculum);
 
 			solutionTable.voteForSolution(i, iPenalty, iFairness);
+			System.out.println("RoomCapacity: " + iRoom);
+			System.out.println("MinWorking day: " + iMinWDays);
+			System.out.println("CirriculumRoom: " + iCompRoomS);
 		}
 	}
 
@@ -333,4 +345,96 @@ public class Evaluator implements IEvaluatorService {
 
 		return iFairnessCost;
 	}
+	
+	@Override
+	public int evaluateSolution(ISolution newSolution) {
+		Set<ICurriculum> currentCurriculumSet;
+		ICurriculum currentCurricula;
+		int numberOfCurriculum;
+		int[] curriculumCosts = null;
+		currentInstance = newSolution.getProblemInstance();
+		currentCode = newSolution.getCoding();
+		currentCurriculumSet = currentInstance.getCurricula();
+		numberOfCurriculum = currentInstance.getNumberOfCurricula();
+		curriculumCosts = new int[numberOfCurriculum];
+		Iterator<ICurriculum> it = currentCurriculumSet.iterator();
+		int c = 0;
+		int iPenalty = 0;
+		//int iRoom = 0;
+		//int iMinWDays = 0;
+		//int iCompRoomS = 0;
+		// Iterate through each curriculum
+		while (it.hasNext()) {
+			currentCurricula = it.next();
+			// Penalty calculation for given solution
+			iPenalty += costsOnRoomCapacity(newSolution, currentCurricula);
+			iPenalty += costsOnMinWorkingDays(newSolution,
+					currentCurricula);
+			iPenalty += costsOnCurriculumCompactnessAndRoomStability(
+					newSolution, currentCurricula);
+			curriculumCosts[c] = iPenalty;
+			c++;
+
+			// Debug code
+			//iRoom += costsOnRoomCapacity(newSolution, currentCurricula);
+			//iMinWDays += costsOnMinWorkingDays(newSolution,
+			//		currentCurricula);
+			//iCompRoomS += costsOnCurriculumCompactnessAndRoomStability(
+			//		newSolution, currentCurricula);
+		}
+
+		//evaluateFairness(curriculumCosts, numberOfCurriculum);
+
+		//solutionTable.voteForSolution(i, iPenalty, iFairness);
+		//System.out.println("RoomCapacity: " + iRoom);
+		//System.out.println("MinWorking day: " + iMinWDays);
+		//System.out.println("CirriculumRoom: " + iCompRoomS);
+		
+		return iPenalty;
+	}
+	/*
+	private void callEvalutorToCheckNewPenalty(ISolution newSolution){
+		Set<ICurriculum> currentCurriculumSet;
+		ICurriculum currentCurricula;
+		int numberOfCurriculum;
+		int[] curriculumCosts = null;
+		currentInstance = newSolution.getProblemInstance();
+		currentCode = newSolution.getCoding();
+		currentCurriculumSet = currentInstance.getCurricula();
+		numberOfCurriculum = currentInstance.getNumberOfCurricula();
+		curriculumCosts = new int[numberOfCurriculum];
+		Iterator<ICurriculum> it = currentCurriculumSet.iterator();
+		int c = 0;
+		int iPenalty = 0;
+		int iRoom = 0;
+		int iMinWDays = 0;
+		int iCompRoomS = 0;
+		// Iterate through each curriculum
+		while (it.hasNext()) {
+			currentCurricula = it.next();
+			// Penalty calculation for given solution
+			iPenalty += costsOnRoomCapacity(newSolution, currentCurricula);
+			iPenalty += costsOnMinWorkingDays(newSolution,
+					currentCurricula);
+			iPenalty += costsOnCurriculumCompactnessAndRoomStability(
+					newSolution, currentCurricula);
+			curriculumCosts[c] = iPenalty;
+			c++;
+
+			// Debug code
+			iRoom += costsOnRoomCapacity(newSolution, currentCurricula);
+			iMinWDays += costsOnMinWorkingDays(newSolution,
+					currentCurricula);
+			iCompRoomS += costsOnCurriculumCompactnessAndRoomStability(
+					newSolution, currentCurricula);
+		}
+
+		//evaluateFairness(curriculumCosts, numberOfCurriculum);
+
+		//solutionTable.voteForSolution(i, iPenalty, iFairness);
+		System.out.println("RoomCapacity: " + iRoom);
+		System.out.println("MinWorking day: " + iMinWDays);
+		System.out.println("CirriculumRoom: " + iCompRoomS);
+	}
+	*/
 }
