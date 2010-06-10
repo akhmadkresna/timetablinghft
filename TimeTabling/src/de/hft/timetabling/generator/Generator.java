@@ -25,6 +25,10 @@ import de.hft.timetabling.services.ServiceLocator;
  */
 public final class Generator implements IGeneratorService {
 
+	public static int success = 0;
+
+	public static int failure = 0;
+
 	/**
 	 * the amount of iterations which will be performed before the algorithm
 	 * gives up trying to create a feasible solution
@@ -83,9 +87,11 @@ public final class Generator implements IGeneratorService {
 			 * feasible solution found if there are no unassigned courses left
 			 */
 			if (unassigned.isEmpty()) {
+				success++;
 				return session.getCoding();
 			}
 
+			failure++;
 			iterations++;
 		}
 

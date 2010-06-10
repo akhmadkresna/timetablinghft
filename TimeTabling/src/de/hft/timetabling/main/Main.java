@@ -5,7 +5,8 @@ import java.io.IOException;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.eliminator.Eliminator;
 import de.hft.timetabling.evaluator.Evaluator;
-import de.hft.timetabling.generator.MTGenerator;
+import de.hft.timetabling.generator.Generator;
+import de.hft.timetabling.generator.PooledMtGenerator;
 import de.hft.timetabling.genetist.CrazyGenetist;
 import de.hft.timetabling.genetist.ValidatorImpl;
 import de.hft.timetabling.reader.Reader;
@@ -61,6 +62,9 @@ public final class Main {
 		} catch (IOException e) {
 			handleException(e);
 		}
+		System.out.println("Success: " + Generator.success);
+		System.out.println("Failure: " + Generator.failure);
+		// System.exit(0);
 	}
 
 	private static void handleException(Exception e) {
@@ -76,7 +80,7 @@ public final class Main {
 		serviceLocator.setReaderService(new Reader());
 		serviceLocator.setSolutionTableService(new SolutionTable());
 		serviceLocator.setWriterService(new Writer());
-		serviceLocator.setGeneratorService(new MTGenerator());
+		serviceLocator.setGeneratorService(new PooledMtGenerator());
 		serviceLocator.setValidatorService(new ValidatorImpl());
 		serviceLocator.setCrazyGenetistService(new CrazyGenetist());
 		serviceLocator.setEvaluatorService(new Evaluator());

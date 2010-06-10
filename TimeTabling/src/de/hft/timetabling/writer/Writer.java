@@ -40,7 +40,7 @@ public final class Writer implements IWriterService {
 	 * This method was split off from the above method so it can be tested with
 	 * any file name and solution.
 	 */
-	void outputSolution(String fileName, ISolution bestSolution,
+	public void outputSolution(String fileName, ISolution bestSolution,
 			IProblemInstance problemInstance) throws IOException {
 
 		System.out.print("WRITER: Writing best solution to " + fileName);

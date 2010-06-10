@@ -20,23 +20,24 @@ public class MTGenerator implements IGeneratorService {
 
 	private int threadCount = 0;
 
-	private Generator generator = new Generator();
+	private final Generator generator = new Generator();
+
+	private final ISolutionTableService solutionTable = ServiceLocator
+			.getInstance().getSolutionTableService();
 
 	@Override
 	public void fillSolutionTable(final IProblemInstance problemInstance) {
+
 		// TODO thread pool
 
-		final ISolutionTableService table = ServiceLocator.getInstance()
-				.getSolutionTableService();
-
-		if (table.getNumberOfEmptySlots() == 1) {
-			while (table.getNumberOfEmptySlots() > 0) {
+		if (solutionTable.getNumberOfEmptySlots() == 1) {
+			while (solutionTable.getNumberOfEmptySlots() > 0) {
 				try {
 					ICourse[][] coding = generator
 							.generateFeasibleSolution(problemInstance);
-					ISolution sol = table.createNewSolution(coding,
+					ISolution sol = solutionTable.createNewSolution(coding,
 							problemInstance);
-					table.addSolution(sol);
+					solutionTable.addSolution(sol);
 				} catch (NoFeasibleSolutionFoundException e) {
 					e.printStackTrace();
 				}
@@ -78,7 +79,6 @@ public class MTGenerator implements IGeneratorService {
 									table.addSolution(sol);
 								}
 							}
-
 						} catch (NoFeasibleSolutionFoundException e) {
 							e.printStackTrace();
 						}
@@ -99,5 +99,4 @@ public class MTGenerator implements IGeneratorService {
 
 		threadCount = 0;
 	}
-
 }
