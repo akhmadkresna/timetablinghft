@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.eliminator.Eliminator;
@@ -36,7 +37,9 @@ public final class Main {
 	 */
 	private static final int ITERATIONS = 1000;
 
-	private static final boolean ALL = false;
+	private static final boolean ALL = true;
+
+	private static long duration = 0;
 
 	/**
 	 * Runs the program.
@@ -62,14 +65,11 @@ public final class Main {
 		setUpServices();
 
 		try {
-			long startTime = System.currentTimeMillis();
 			if (ALL) {
 				runAllInstances();
 			} else {
 				run(args[0], sleepTime);
 			}
-			System.out.println("ALGORITHM: Finished after "
-					+ (System.currentTimeMillis() - startTime) + " ms.\n");
 		} catch (IOException e) {
 			handleException(e);
 		}
@@ -103,6 +103,11 @@ public final class Main {
 	 */
 	private static void run(String fileName, long sleepMilliSeconds)
 			throws IOException {
+		long startTime = System.currentTimeMillis();
+		CrazyGenetist.success = 0;
+		CrazyGenetist.failure = 0;
+		Generator.success = 0;
+		Generator.failure = 0;
 
 		ServiceLocator locator = ServiceLocator.getInstance();
 		IReaderService reader = locator.getReaderService();
@@ -141,6 +146,8 @@ public final class Main {
 
 		System.out.println("Genetist success: " + CrazyGenetist.success);
 		System.out.println("Genetist failure: " + CrazyGenetist.failure);
+
+		duration = System.currentTimeMillis() - startTime;
 	}
 
 	private static void callGenerator(IProblemInstance instance) {
@@ -293,7 +300,17 @@ public final class Main {
 		ISolutionTableService solutionTable = ServiceLocator.getInstance()
 				.getSolutionTableService();
 
-		writer.write(instanceFile.getName() + ":");
+		writer.write(instanceFile.getName());
+
+		long hours = TimeUnit.MILLISECONDS.toHours(duration);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(duration)
+				- TimeUnit.HOURS.toMinutes(hours);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(duration)
+				- TimeUnit.MINUTES.toSeconds(minutes);
+		long msecs = duration - TimeUnit.SECONDS.toMillis(seconds);
+
+		writer.write(String.format(" (Duration: %d h, %d m, %d s, %d ms):",
+				hours, minutes, seconds, msecs));
 		writer.newLine();
 		writer.write("Best penalty/penalty: "
 				+ solutionTable.getBestPenaltySolutionPenalty());
@@ -318,6 +335,18 @@ public final class Main {
 		writer.newLine();
 		writer.write("Worst fairness/fairness: "
 				+ solutionTable.getWorstFairnessSolutionFairness());
+		writer.newLine();
+		writer.write("Generator success: " + Generator.success);
+		writer.newLine();
+		writer.write("Generator failure: " + Generator.failure);
+		writer.newLine();
+		writer
+				.write("Mutation/recombination success: "
+						+ CrazyGenetist.success);
+		writer.newLine();
+		writer
+				.write("Mutation/recombination failure: "
+						+ CrazyGenetist.failure);
 		writer.newLine();
 		writer.newLine();
 		writer.newLine();
