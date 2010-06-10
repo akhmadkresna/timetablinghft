@@ -30,7 +30,7 @@ import de.hft.timetabling.util.PeriodUtil;
 public final class Reader implements IReaderService {
 
 	/** The current unique number that is assigned to a room. */
-	private int currentUniqueNumber;
+	private int currentUniqueRoomNumber;
 
 	@Override
 	public IProblemInstance readInstance(String fileName) throws IOException {
@@ -129,7 +129,7 @@ public final class Reader implements IReaderService {
 	}
 
 	private void reset() {
-		currentUniqueNumber = 0;
+		currentUniqueRoomNumber = 0;
 	}
 
 	/**
@@ -272,9 +272,9 @@ public final class Reader implements IReaderService {
 		StringTokenizer tokenizer = new StringTokenizer(line, " ");
 		String id = tokenizer.nextToken();
 		int capacity = Integer.valueOf(tokenizer.nextToken());
-		IRoom room = new RoomImpl(id, capacity, currentUniqueNumber, instance);
+		IRoom room = new RoomImpl(id, capacity, currentUniqueRoomNumber, instance);
 		instance.addRoom(room);
-		currentUniqueNumber++;
+		currentUniqueRoomNumber++;
 	}
 
 	private void parseCourse(String line, ProblemInstanceImpl instance) {

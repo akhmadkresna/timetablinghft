@@ -55,7 +55,9 @@ public final class Main {
 	public static void main(String[] args) {
 		if (args.length < 1) {
 			throw new IllegalArgumentException(
-					"The program's first argument must either be the name of the problem instance file to solve or 'ALL' to run all instances.");
+					"The program's first argument must either be the "
+							+ "name of the problem instance file to solve or "
+							+ "'ALL' to run all instances.");
 		}
 
 		long sleepTime = 0;
