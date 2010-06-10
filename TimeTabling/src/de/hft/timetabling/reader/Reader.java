@@ -2,6 +2,7 @@ package de.hft.timetabling.reader;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,7 +14,10 @@ import java.util.StringTokenizer;
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.IRoom;
+import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.services.IReaderService;
+import de.hft.timetabling.services.ISolutionTableService;
+import de.hft.timetabling.services.ServiceLocator;
 import de.hft.timetabling.util.PeriodUtil;
 
 /**
@@ -30,13 +34,98 @@ public final class Reader implements IReaderService {
 
 	@Override
 	public IProblemInstance readInstance(String fileName) throws IOException {
-		System.out.print("READER: Reading input file " + fileName);
+		System.out.print("READER: Reading input file '" + fileName + "'");
 		reset();
 		List<String> lines = readFile("instances/" + fileName);
 		ProblemInstanceImpl instance = parseGeneralInformation(lines, fileName);
 		parseContents(lines, instance);
 		System.out.print(" ... success.\n");
 		return instance;
+	}
+
+	@Override
+	public IProblemInstance readInstanceUsingInitialSolutionDirectory(
+			String instanceFileName, String solutionDirectoryName)
+			throws IOException {
+
+		IProblemInstance instance = readInstance(instanceFileName);
+		readSolutionDirectory(solutionDirectoryName, instance);
+		return instance;
+	}
+
+	/**
+	 * Reads all solutions stored in the directory identified by the directory
+	 * name provided. These solutions are put into the solution table to be used
+	 * as initial solutions.
+	 */
+	private void readSolutionDirectory(String directoryName,
+			IProblemInstance instance) throws IOException {
+
+		File folder = new File(directoryName);
+		if (!(folder.exists())) {
+			throw new FileNotFoundException("The directory '" + directoryName
+					+ "' does not exist.");
+		}
+		if (!(folder.isDirectory())) {
+			throw new IOException("The name " + directoryName
+					+ " is not actually a directory.");
+		}
+
+		System.out.print("READER: Reading solutions from directory '"
+				+ directoryName + "' ...");
+
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+
+		int nrReadSolutions = 0;
+		for (String fileName : folder.list()) {
+			if (!(fileName.endsWith(".ctt"))) {
+				continue;
+			}
+			if (solutionTable.isFull()) {
+				break;
+			}
+			ISolution solution = readSolution(directoryName + "/" + fileName,
+					instance);
+			solutionTable.addSolution(solution);
+			nrReadSolutions++;
+		}
+
+		System.out.print(" done (" + nrReadSolutions + " initialized).\n");
+	}
+
+	/**
+	 * Reads one specific solution from an input file following the output
+	 * format of the time tabling competition.
+	 */
+	private ISolution readSolution(String fileName, IProblemInstance instance)
+			throws IOException {
+
+		ICourse[][] coding = new ICourse[instance.getNumberOfPeriods()][instance
+				.getNumberOfRooms()];
+
+		BufferedReader bufferedReader = getBufferedReader(fileName);
+		String line = bufferedReader.readLine();
+		while (line != null) {
+			StringTokenizer tokenizer = new StringTokenizer(line, " ");
+			String courseId = tokenizer.nextToken();
+			String roomId = tokenizer.nextToken();
+
+			int day = Integer.valueOf(tokenizer.nextToken());
+			int period = Integer.valueOf(tokenizer.nextToken());
+			period = PeriodUtil.convertToPeriodOnly(day, period, instance
+					.getPeriodsPerDay());
+
+			int roomNr = instance.getRoomById(roomId).getUniqueNumber();
+			coding[period][roomNr] = instance.getCourseById(courseId);
+
+			line = bufferedReader.readLine();
+		}
+		bufferedReader.close();
+
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+		return solutionTable.createNewSolution(coding, instance);
 	}
 
 	private void reset() {

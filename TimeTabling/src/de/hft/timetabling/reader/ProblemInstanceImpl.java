@@ -47,6 +47,10 @@ final class ProblemInstanceImpl implements IProblemInstance {
 
 	private final Map<String, Set<ICourse>> coursesByTeacher;
 
+	private final Map<String, IRoom> roomsById;
+
+	private final Map<String, ICourse> coursesById;
+
 	public ProblemInstanceImpl(String fileName, String name,
 			int numberOfCourses, int numberOfRooms, int numberOfDays,
 			int periodsPerDay, int numberOfCurricula, int numberOfConstraints) {
@@ -65,6 +69,8 @@ final class ProblemInstanceImpl implements IProblemInstance {
 		curricula = new LinkedHashSet<ICurriculum>();
 		unavailabilityConstraints = new HashMap<ICourse, Set<Integer>>();
 		coursesByTeacher = new HashMap<String, Set<ICourse>>();
+		roomsById = new HashMap<String, IRoom>();
+		coursesById = new HashMap<String, ICourse>();
 	}
 
 	@Override
@@ -109,10 +115,12 @@ final class ProblemInstanceImpl implements IProblemInstance {
 
 	void addCourse(ICourse course) {
 		courses.add(course);
+		coursesById.put(course.getId(), course);
 	}
 
 	void addRoom(IRoom room) {
 		rooms.add(room);
+		roomsById.put(room.getId(), room);
 	}
 
 	void addCurriculum(ICurriculum curriculum) {
@@ -154,12 +162,7 @@ final class ProblemInstanceImpl implements IProblemInstance {
 
 	@Override
 	public ICourse getCourseById(String courseId) {
-		for (ICourse course : courses) {
-			if (course.getId().equals(courseId)) {
-				return course;
-			}
-		}
-		return null;
+		return coursesById.get(courseId);
 	}
 
 	@Override
@@ -199,4 +202,10 @@ final class ProblemInstanceImpl implements IProblemInstance {
 
 		return Collections.unmodifiableSet(teachersCourses);
 	}
+
+	@Override
+	public IRoom getRoomById(String roomId) {
+		return roomsById.get(roomId);
+	}
+
 }

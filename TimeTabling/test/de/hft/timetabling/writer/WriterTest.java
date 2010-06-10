@@ -31,7 +31,7 @@ public class WriterTest extends TestCase {
 		super.setUp();
 
 		writer = new Writer();
-		instance = new Reader().readInstance("test.txt");
+		instance = new Reader().readInstance("test.ctt");
 		ICourse[] courses = instance.getCourses().toArray(
 				new ICourse[instance.getNumberOfCourses()]);
 

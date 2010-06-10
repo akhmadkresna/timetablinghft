@@ -109,4 +109,6 @@ public interface IProblemInstance {
 	 */
 	Set<ICourse> getCoursesForTeacher(String teacher);
 
+	IRoom getRoomById(String roomId);
+
 }

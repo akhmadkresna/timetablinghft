@@ -30,6 +30,8 @@ public interface ISolutionTableService {
 	 */
 	int getNumberOfEmptySlots();
 
+	boolean isFull();
+
 	/**
 	 * Factory method allowing to create new solution instances.
 	 * 

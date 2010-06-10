@@ -68,6 +68,11 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
+	public boolean isFull() {
+		return getNumberOfEmptySlots() == 0;
+	}
+
+	@Override
 	public void addSolution(ISolution solution) {
 		if (getSize(true) == ISolutionTableService.TABLE_SIZE) {
 			throw new RuntimeException(

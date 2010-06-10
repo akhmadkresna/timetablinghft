@@ -35,15 +35,19 @@ public final class Main {
 	 * The number of iterations to perform until the best solution will be
 	 * printed.
 	 */
-	private static final int ITERATIONS = 1000;
+	private static int iterations = 1000;
 
 	/**
 	 * Runs the program.
 	 * 
 	 * @param args
-	 *            The first argument is the name of the problem instance file to
-	 *            solve. If a second argument is available it's treated as the
-	 *            amount of milliseconds to sleep between each iteration.
+	 *            1) The first argument is the name of the problem instance file
+	 *            to solve. 2) If a second argument is available it is treated
+	 *            as the number of iterations to perform. 3) If a third argument
+	 *            is available it's treated as the amount of milliseconds to
+	 *            sleep between each iteration. 4) If a fourth argument is
+	 *            provided it is treated as the name of the directory where
+	 *            initial solutions shall be read from.
 	 * 
 	 * @throws IllegalArgumentException
 	 *             If the length of <tt>args</tt> is smaller than 1.
@@ -53,18 +57,27 @@ public final class Main {
 			throw new IllegalArgumentException(
 					"The program's first argument must either be the name of the problem instance file to solve or 'ALL' to run all instances.");
 		}
+
 		long sleepTime = 0;
-		if (args.length == 2) {
-			sleepTime = Long.valueOf(args[1]);
+		String initialSolutionDirectory = null;
+
+		if (args.length >= 2) {
+			iterations = Integer.valueOf(args[1]);
+			if (args.length >= 3) {
+				sleepTime = Long.valueOf(args[2]);
+				if (args.length == 4) {
+					initialSolutionDirectory = args[3];
+				}
+			}
 		}
 
 		setUpServices();
 
 		try {
 			if (args[0].equals("ALL")) {
-				runAllInstances();
+				runAllInstances(initialSolutionDirectory);
 			} else {
-				run(args[0], sleepTime);
+				run(args[0], initialSolutionDirectory, sleepTime);
 			}
 		} catch (IOException e) {
 			handleException(e);
@@ -98,8 +111,8 @@ public final class Main {
 	 * Runs the main loop of the program. Returns the duration of the program in
 	 * milliseconds.
 	 */
-	private static long run(String fileName, long sleepMilliSeconds)
-			throws IOException {
+	private static long run(String fileName, String initialSolutionDirectory,
+			long sleepMilliSeconds) throws IOException {
 
 		long startTime = System.currentTimeMillis();
 		CrazyGenetist.success = 0;
@@ -109,11 +122,14 @@ public final class Main {
 
 		ServiceLocator locator = ServiceLocator.getInstance();
 		IReaderService reader = locator.getReaderService();
-		IProblemInstance instance = reader.readInstance(fileName);
+		IProblemInstance instance = (initialSolutionDirectory == null) ? reader
+				.readInstance(fileName) : reader
+				.readInstanceUsingInitialSolutionDirectory(fileName,
+						initialSolutionDirectory);
 
 		ServiceLocator.getInstance().getSolutionTableService().clear();
 
-		for (int i = 0; i < ITERATIONS; i++) {
+		for (int i = 0; i < iterations; i++) {
 			System.out.println("");
 			System.out.println("------ ITERATION " + i + " ------");
 
@@ -246,7 +262,9 @@ public final class Main {
 		}
 	}
 
-	private static void runAllInstances() throws IOException {
+	private static void runAllInstances(String initialSolutionsDirectory)
+			throws IOException {
+
 		final String logFileName = "allinstances.log";
 
 		final File logFile = new File(logFileName);
@@ -270,7 +288,8 @@ public final class Main {
 		createLogFileHeader(writer);
 
 		for (int i = 0; i < instanceFiles.length; i++) {
-			long duration = run(instanceFiles[i].getName(), 0);
+			long duration = run(instanceFiles[i].getName(),
+					initialSolutionsDirectory, 0);
 			writeResult(writer, instanceFiles[i], duration);
 		}
 
@@ -287,7 +306,7 @@ public final class Main {
 		writer.newLine();
 		writer.write("Table size: " + ISolutionTableService.TABLE_SIZE);
 		writer.newLine();
-		writer.write("Iterations: " + ITERATIONS);
+		writer.write("Iterations: " + iterations);
 		writer.newLine();
 		writer.newLine();
 

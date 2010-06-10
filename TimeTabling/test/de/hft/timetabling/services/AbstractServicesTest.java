@@ -14,7 +14,7 @@ public abstract class AbstractServicesTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		instance = new Reader().readInstance("test.txt");
+		instance = new Reader().readInstance("test.ctt");
 	}
 
 }
