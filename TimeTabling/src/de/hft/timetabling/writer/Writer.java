@@ -43,7 +43,7 @@ public final class Writer implements IWriterService {
 	public void outputSolution(String fileName, ISolution bestSolution,
 			IProblemInstance problemInstance) throws IOException {
 
-		System.out.print("WRITER: Writing best solution to " + fileName);
+		System.out.print("WRITER: Writing best solution to '" + fileName + "'");
 
 		FileWriter fileWriter = new FileWriter(fileName);
 		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);

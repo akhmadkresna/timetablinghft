@@ -315,6 +315,18 @@ public final class SolutionTable implements ISolutionTableService {
 		return false;
 	}
 
+	@Override
+	public void clear() {
+		solutionTable.clear();
+		notVotedTable.clear();
+		bestPenaltySolution = null;
+		bestFairnessSolution = null;
+		worstPenaltySolution = null;
+		worstFairnessSolution = null;
+		currentNotVotedCount = 0;
+		voteIndexModification = 0;
+	}
+
 	private static class WeightedSolution implements
 			Comparable<WeightedSolution> {
 
@@ -390,15 +402,4 @@ public final class SolutionTable implements ISolutionTableService {
 
 	}
 
-	@Override
-	public void clear() {
-		solutionTable.clear();
-		notVotedTable.clear();
-		bestPenaltySolution = null;
-		bestFairnessSolution = null;
-		worstPenaltySolution = null;
-		worstFairnessSolution = null;
-		currentNotVotedCount = 0;
-		voteIndexModification = 0;
-	}
 }
