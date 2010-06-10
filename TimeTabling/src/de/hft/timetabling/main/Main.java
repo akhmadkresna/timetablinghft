@@ -58,13 +58,13 @@ public final class Main {
 			long startTime = System.currentTimeMillis();
 			run(args[0], sleepTime);
 			System.out.println("ALGORITHM: Finished after "
-					+ (System.currentTimeMillis() - startTime) + " ms.");
+					+ (System.currentTimeMillis() - startTime) + " ms.\n");
 		} catch (IOException e) {
 			handleException(e);
 		}
-		System.out.println("Success: " + Generator.success);
-		System.out.println("Failure: " + Generator.failure);
-		// System.exit(0);
+
+		// MR: band-aid fix until I find out why the app does not terminate
+		System.exit(0);
 	}
 
 	private static void handleException(Exception e) {
@@ -117,10 +117,13 @@ public final class Main {
 
 			printBestSolution();
 			printFairestSolution();
+			printWorstSolution();
+			printUnfairestSolution();
 
 			shortSleep(sleepMilliSeconds);
 		}
 
+		printGeneratorStats();
 		writeBestSolution();
 	}
 
@@ -187,7 +190,31 @@ public final class Main {
 				+ solutionTable.getBestFairnessSolutionPenalty()
 				+ ", Fairness: "
 				+ solutionTable.getBestFairnessSolutionFairness() + "\n");
-		System.out.println("");
+	}
+
+	private static void printWorstSolution() {
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+		System.out.println("-- Worst Penalty Solution: Penalty: "
+				+ solutionTable.getWorstPenaltySolutionPenalty()
+				+ ", Fairness: "
+				+ solutionTable.getWorstPenaltySolutionFairness());
+	}
+
+	private static void printUnfairestSolution() {
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+
+		System.out.print("-- Worst Fairness Solution: Penalty: "
+				+ solutionTable.getWorstFairnessSolutionPenalty()
+				+ ", Fairness: "
+				+ solutionTable.getWorstFairnessSolutionFairness() + "\n");
+	}
+
+	private static void printGeneratorStats() {
+		System.out.println("----------------------------");
+		System.out.println("-- Generator stats: Success: " + Generator.success
+				+ ", Failure: " + Generator.failure);
 	}
 
 	private static void shortSleep(long sleepMilliSeconds) {
