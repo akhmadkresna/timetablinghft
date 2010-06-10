@@ -16,13 +16,34 @@ public class MTGenerator implements IGeneratorService {
 
 	private static final Object ADD_LOCK = new Object();
 
-	private static final int NUM_THREADS = 10;
+	private static final int NUM_THREADS = 2;
 
 	private int threadCount = 0;
+
+	private Generator generator = new Generator();
 
 	@Override
 	public void fillSolutionTable(final IProblemInstance problemInstance) {
 		// TODO thread pool
+
+		final ISolutionTableService table = ServiceLocator.getInstance()
+				.getSolutionTableService();
+
+		if (table.getNumberOfEmptySlots() == 1) {
+			while (table.getNumberOfEmptySlots() > 0) {
+				try {
+					ICourse[][] coding = generator
+							.generateFeasibleSolution(problemInstance);
+					ISolution sol = table.createNewSolution(coding,
+							problemInstance);
+					table.addSolution(sol);
+				} catch (NoFeasibleSolutionFoundException e) {
+					e.printStackTrace();
+				}
+			}
+			return;
+		}
+
 		final List<Thread> threads = new ArrayList<Thread>();
 
 		for (int i = 0; i < NUM_THREADS; i++) {
