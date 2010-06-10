@@ -84,6 +84,18 @@ public interface ISolutionTableService {
 
 	int getBestFairnessSolutionFairness();
 
+	ISolution getWorstPenaltySolution();
+
+	ISolution getWorstFairnessSolution();
+
+	int getWorstPenaltySolutionPenalty();
+
+	int getWorstPenaltySolutionFairness();
+
+	int getWorstFairnessSolutionPenalty();
+
+	int getWorstFairnessSolutionFairness();
+
 	void voteForSolution(int index, int penalty, int fairness);
 
 	List<ISolution> getNotVotedSolutions();

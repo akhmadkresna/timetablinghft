@@ -26,6 +26,10 @@ public final class SolutionTable implements ISolutionTableService {
 
 	private WeightedSolution bestFairnessSolution;
 
+	private WeightedSolution worstPenaltySolution;
+
+	private WeightedSolution worstFairnessSolution;
+
 	private int currentNotVotedCount;
 
 	/**
@@ -108,6 +112,40 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
+	public ISolution getWorstPenaltySolution() {
+		return worstPenaltySolution.getSolution();
+	}
+
+	@Override
+	public ISolution getWorstFairnessSolution() {
+		return worstFairnessSolution.getSolution();
+	}
+
+	@Override
+	public int getWorstFairnessSolutionFairness() {
+		return (worstFairnessSolution == null) ? 0 : worstFairnessSolution
+				.getFairness();
+	}
+
+	@Override
+	public int getWorstFairnessSolutionPenalty() {
+		return (worstFairnessSolution == null) ? 0 : worstFairnessSolution
+				.getPenalty();
+	}
+
+	@Override
+	public int getWorstPenaltySolutionFairness() {
+		return (worstPenaltySolution == null) ? 0 : worstPenaltySolution
+				.getFairness();
+	}
+
+	@Override
+	public int getWorstPenaltySolutionPenalty() {
+		return (worstPenaltySolution == null) ? 0 : worstPenaltySolution
+				.getPenalty();
+	}
+
+	@Override
 	public List<ISolution> getNotVotedSolutions() {
 		List<ISolution> defensiveCopy = new ArrayList<ISolution>(notVotedTable
 				.size());
@@ -161,6 +199,8 @@ public final class SolutionTable implements ISolutionTableService {
 		voteIndexModification = 0;
 		updateBestPenaltySolution();
 		updateBestFairnessSolution();
+		updateWorstPenaltySolution();
+		updateWorstFairnessSolution();
 	}
 
 	private void updateBestFairnessSolution() {
@@ -206,6 +246,53 @@ public final class SolutionTable implements ISolutionTableService {
 			if (bestPenaltyInTable.getPenalty() < bestPenaltySolution
 					.getPenalty()) {
 				bestPenaltySolution = bestPenaltyInTable;
+			}
+		}
+	}
+
+	private void updateWorstFairnessSolution() {
+		WeightedSolution worstFairnessInTable = null;
+		for (WeightedSolution weightedSolution : solutionTable) {
+			if (worstFairnessInTable == null) {
+				worstFairnessInTable = weightedSolution;
+				continue;
+			}
+			if (weightedSolution.getFairness() > worstFairnessInTable
+					.getFairness()) {
+				worstFairnessInTable = weightedSolution;
+			}
+		}
+
+		if (worstFairnessInTable == null) {
+			throw new RuntimeException();
+		}
+
+		if (worstFairnessSolution == null) {
+			worstFairnessSolution = worstFairnessInTable;
+		}
+		// case when fairness is same, eg. fairness=0
+		else if (worstFairnessSolution.getFairness() == worstFairnessInTable
+				.getFairness()) {
+			if (worstFairnessInTable.getPenalty() > worstFairnessSolution
+					.getPenalty()) {
+				worstFairnessSolution = worstFairnessInTable;
+			}
+		} else {
+			if (worstFairnessInTable.getFairness() > worstFairnessSolution
+					.getFairness()) {
+				worstFairnessSolution = worstFairnessInTable;
+			}
+		}
+	}
+
+	private void updateWorstPenaltySolution() {
+		WeightedSolution worstPenaltyInTable = solutionTable.last();
+		if (worstPenaltySolution == null) {
+			worstPenaltySolution = worstPenaltyInTable;
+		} else {
+			if (worstPenaltyInTable.getPenalty() > worstPenaltySolution
+					.getPenalty()) {
+				worstPenaltySolution = worstPenaltyInTable;
 			}
 		}
 	}
@@ -297,5 +384,4 @@ public final class SolutionTable implements ISolutionTableService {
 		}
 
 	}
-
 }

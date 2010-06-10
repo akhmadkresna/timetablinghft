@@ -43,8 +43,12 @@ public final class ValidatorImpl implements IValidatorService {
 	 * period.
 	 */
 	private boolean noCurriculaOverlap(final ICourse[][] coding) {
+
+		final Set<ICurriculum> curriculaInPeriod = new HashSet<ICurriculum>();
+
 		for (int i = 0; i < coding.length; i++) {
-			Set<ICurriculum> curriculaInPeriod = new HashSet<ICurriculum>();
+
+			curriculaInPeriod.clear();
 
 			for (int j = 0; j < coding[i].length; j++) {
 				ICourse course = coding[i][j];
@@ -75,10 +79,12 @@ public final class ValidatorImpl implements IValidatorService {
 	 * Checks whether a teacher gives more than one lecture in the same period.
 	 */
 	private boolean noTeacherOverlap(final ICourse[][] coding) {
-		Set<String> teachersInPeriod;
+
+		Set<String> teachersInPeriod = new HashSet<String>();
 
 		for (int i = 0; i < coding.length; i++) {
-			teachersInPeriod = new HashSet<String>();
+
+			teachersInPeriod.clear();
 
 			for (int j = 0; j < coding[i].length; j++) {
 				ICourse course = coding[i][j];
@@ -108,6 +114,7 @@ public final class ValidatorImpl implements IValidatorService {
 
 		for (int i = 0; i < coding.length; i++) {
 			for (int j = 0; j < coding[i].length; j++) {
+
 				ICourse course = coding[i][j];
 
 				if (course != null) {
@@ -127,7 +134,7 @@ public final class ValidatorImpl implements IValidatorService {
 		}
 
 		/*
-		 * Check if all courses are assigned
+		 * Check if all courses are assigned at least once
 		 */
 		Set<ICourse> difference = new HashSet<ICourse>();
 		difference.addAll(inst.getCourses());
@@ -162,6 +169,7 @@ public final class ValidatorImpl implements IValidatorService {
 
 		for (int i = 0; i < coding.length; i++) {
 			for (int j = 0; j < coding[i].length; j++) {
+
 				ICourse course = coding[i][j];
 
 				if ((course != null)

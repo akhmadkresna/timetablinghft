@@ -78,10 +78,8 @@ class SolutionTask implements Callable<ISolution> {
 	public ISolution call() {
 		ISolution sol = null;
 
-		int iteration = 0;
-
 		while (sol == null) {
-			System.out.println("Task " + id + ", iteration " + iteration++);
+			System.out.println("Task " + id);
 
 			try {
 				ICourse[][] coding = gen.generateFeasibleSolution(instance);
@@ -90,7 +88,7 @@ class SolutionTask implements Callable<ISolution> {
 					sol = solutionTable.createNewSolution(coding, instance);
 				}
 			} catch (NoFeasibleSolutionFoundException e) {
-				e.printStackTrace();
+				// nothing to do
 			}
 		}
 		return sol;
