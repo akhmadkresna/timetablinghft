@@ -27,7 +27,7 @@ public class ReaderTest extends TestCase {
 	 * Tests whether a specific problem instance input file is read correctly.
 	 */
 	public void testReadInstance() throws IOException {
-		IProblemInstance instance = reader.readInstance("test.ctt");
+		IProblemInstance instance = reader.readInstance("test/test.ctt");
 
 		// # GENERAL INFORMATION
 		assertEquals("ToyExample", instance.getName());
@@ -144,10 +144,10 @@ public class ReaderTest extends TestCase {
 	public void testReadAllInstances() throws IOException {
 		File instancesFolder = new File("instances");
 		for (String fileName : instancesFolder.list()) {
-			if (fileName.equals(".svn")) {
+			if (!(fileName.endsWith(".ctt"))) {
 				continue;
 			}
-			reader.readInstance(fileName);
+			reader.readInstance("instances/" + fileName);
 		}
 	}
 

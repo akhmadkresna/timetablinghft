@@ -7,7 +7,7 @@ import junit.framework.TestCase;
  */
 public abstract class AbstractReaderTest extends TestCase {
 
-	protected static final String FILE_NAME = "test.ctt";
+	protected static final String FILE_NAME = "test/test.ctt";
 
 	protected static final String NAME = "Test Instance";
 

@@ -31,6 +31,7 @@ public final class Writer implements IWriterService {
 
 		long timestamp = System.currentTimeMillis() / 1000;
 		String fileName = problemInstance.getFileName();
+		fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
 		fileName = fileName.substring(0, fileName.lastIndexOf('.'));
 		fileName = "output/" + fileName + "_" + timestamp + ".ctt";
 		outputSolution(fileName, bestSolution, problemInstance);

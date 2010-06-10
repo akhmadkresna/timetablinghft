@@ -36,7 +36,7 @@ public final class Reader implements IReaderService {
 	public IProblemInstance readInstance(String fileName) throws IOException {
 		System.out.print("READER: Reading input file '" + fileName + "'");
 		reset();
-		List<String> lines = readFile("instances/" + fileName);
+		List<String> lines = readFile(fileName);
 		ProblemInstanceImpl instance = parseGeneralInformation(lines, fileName);
 		parseContents(lines, instance);
 		System.out.print(" ... success.\n");
@@ -272,7 +272,8 @@ public final class Reader implements IReaderService {
 		StringTokenizer tokenizer = new StringTokenizer(line, " ");
 		String id = tokenizer.nextToken();
 		int capacity = Integer.valueOf(tokenizer.nextToken());
-		IRoom room = new RoomImpl(id, capacity, currentUniqueRoomNumber, instance);
+		IRoom room = new RoomImpl(id, capacity, currentUniqueRoomNumber,
+				instance);
 		instance.addRoom(room);
 		currentUniqueRoomNumber++;
 	}
