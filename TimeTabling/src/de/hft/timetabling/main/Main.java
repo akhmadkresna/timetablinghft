@@ -37,7 +37,7 @@ public final class Main {
 	 */
 	private static final int ITERATIONS = 1000;
 
-	private static final boolean ALL = true;
+	private static final boolean ALL = false;
 
 	private static long duration = 0;
 
@@ -311,6 +311,8 @@ public final class Main {
 
 		writer.write(String.format(" (Duration: %d h, %d m, %d s, %d ms):",
 				hours, minutes, seconds, msecs));
+		writer.newLine();
+		writer.write("--------------");
 		writer.newLine();
 		writer.write("Best penalty/penalty: "
 				+ solutionTable.getBestPenaltySolutionPenalty());
