@@ -37,10 +37,6 @@ public final class Main {
 	 */
 	private static final int ITERATIONS = 1000;
 
-	private static final boolean ALL = false;
-
-	private static long duration = 0;
-
 	/**
 	 * Runs the program.
 	 * 
@@ -55,7 +51,7 @@ public final class Main {
 	public static void main(String[] args) {
 		if (args.length < 1) {
 			throw new IllegalArgumentException(
-					"The program's first argument must be the name of the problem instance file to solve.");
+					"The program's first argument must either be the name of the problem instance file to solve or 'ALL' to run all instances.");
 		}
 		long sleepTime = 0;
 		if (args.length == 2) {
@@ -65,7 +61,7 @@ public final class Main {
 		setUpServices();
 
 		try {
-			if (ALL) {
+			if (args[0].equals("ALL")) {
 				runAllInstances();
 			} else {
 				run(args[0], sleepTime);
@@ -99,10 +95,12 @@ public final class Main {
 	}
 
 	/**
-	 * Runs the main loop of the program.
+	 * Runs the main loop of the program. Returns the duration of the program in
+	 * milliseconds.
 	 */
-	private static void run(String fileName, long sleepMilliSeconds)
+	private static long run(String fileName, long sleepMilliSeconds)
 			throws IOException {
+
 		long startTime = System.currentTimeMillis();
 		CrazyGenetist.success = 0;
 		CrazyGenetist.failure = 0;
@@ -147,7 +145,7 @@ public final class Main {
 		System.out.println("Genetist success: " + CrazyGenetist.success);
 		System.out.println("Genetist failure: " + CrazyGenetist.failure);
 
-		duration = System.currentTimeMillis() - startTime;
+		return System.currentTimeMillis() - startTime;
 	}
 
 	private static void callGenerator(IProblemInstance instance) {
@@ -260,7 +258,6 @@ public final class Main {
 		final File instancesDir = new File("instances");
 		final File[] instanceFiles = instancesDir
 				.listFiles(new FilenameFilter() {
-
 					@Override
 					public boolean accept(File dir, String name) {
 						return name.endsWith(".ctt");
@@ -273,8 +270,8 @@ public final class Main {
 		createLogFileHeader(writer);
 
 		for (int i = 0; i < instanceFiles.length; i++) {
-			run(instanceFiles[i].getName(), 0);
-			writeResult(writer, instanceFiles[i]);
+			long duration = run(instanceFiles[i].getName(), 0);
+			writeResult(writer, instanceFiles[i], duration);
 		}
 
 		writer.close();
@@ -298,7 +295,8 @@ public final class Main {
 	}
 
 	private static void writeResult(final BufferedWriter writer,
-			final File instanceFile) throws IOException {
+			final File instanceFile, long duration) throws IOException {
+
 		final ISolutionTableService solutionTable = ServiceLocator
 				.getInstance().getSolutionTableService();
 
@@ -357,4 +355,5 @@ public final class Main {
 
 		writer.flush();
 	}
+
 }
