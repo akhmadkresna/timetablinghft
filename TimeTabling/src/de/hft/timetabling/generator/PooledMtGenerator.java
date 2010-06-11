@@ -11,8 +11,10 @@ import java.util.concurrent.Future;
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
+import de.hft.timetabling.genetist.ValidatorImpl;
 import de.hft.timetabling.services.IGeneratorService;
 import de.hft.timetabling.services.ISolutionTableService;
+import de.hft.timetabling.services.IValidatorService;
 import de.hft.timetabling.services.ServiceLocator;
 
 public final class PooledMtGenerator implements IGeneratorService {
@@ -24,7 +26,8 @@ public final class PooledMtGenerator implements IGeneratorService {
 	private final ISolutionTableService solutionTable = ServiceLocator
 			.getInstance().getSolutionTableService();
 
-	private final ExecutorService exec = Executors.newFixedThreadPool(2);
+	private final ExecutorService exec = Executors.newFixedThreadPool(Runtime
+			.getRuntime().availableProcessors());
 
 	private final IGeneratorService generator;
 
@@ -80,6 +83,8 @@ final class SolutionTask implements Callable<ISolution> {
 
 	private final int id;
 
+	private IValidatorService validator = new ValidatorImpl();
+
 	public SolutionTask(final IProblemInstance instance,
 			IGeneratorService generator, int id) {
 		this.instance = instance;
@@ -101,6 +106,13 @@ final class SolutionTask implements Callable<ISolution> {
 
 				synchronized (CREATE_LOCK) {
 					sol = solutionTable.createNewSolution(coding, instance);
+					// if (validator.isValidSolution(sol)) {
+					// System.out.println("Valid!");
+					// } else {
+					// System.err.println("Invalid :-( ("
+					// + instance.getFileName() + ")");
+					// System.exit(1);
+					// }
 				}
 			} catch (NoFeasibleSolutionFoundException e) {
 				// nothing to do
