@@ -22,15 +22,6 @@ import de.hft.timetabling.services.ServiceLocator;
  */
 public class CrazyGenetist implements ICrazyGenetistService {
 
-	/** The strategy to use for recombination. */
-	private static final RecombinationStrategy RECOMBINATION_STRATEGY = new NeighborhoodRecombinationStrategy();
-
-	/**
-	 * Iterations to chose one of the recombination algorithms. This number
-	 * means the percentage of the maximum table size.
-	 */
-	private static final int RECOMBINE_PERCENTAGE = 50;
-
 	/**
 	 * public Method to start recombination and mutation process. The solution
 	 * table will get from serviceLocator.getSolutionTableService(). The
@@ -41,16 +32,15 @@ public class CrazyGenetist implements ICrazyGenetistService {
 		ISolutionTableService solutionTable = ServiceLocator.getInstance()
 				.getSolutionTableService();
 
-		if (solutionTable.getSize(false) <= 1) {
+		if (solutionTable.getSize(false) <= 2) {
 			return;
 		}
 
 		// Choosing solutions that until they are not null and different
-		int iterationRounds = (RECOMBINE_PERCENTAGE * ISolutionTableService.TABLE_SIZE) / 100;
+		int iterationRounds = (PERCENTAGE * ISolutionTableService.TABLE_SIZE) / 100;
 
 		System.out.print("CRAZY GENETIST: Starting to create "
-				+ iterationRounds + " children (" + RECOMBINE_PERCENTAGE
-				+ "%) ...");
+				+ iterationRounds + " children (" + PERCENTAGE + "%) ...");
 
 		// The solutions ordered by rank (low to high, highest rank is best)
 		ISolution[] rankedSolutions = new ISolution[solutionTable
@@ -67,9 +57,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			slotSum += i;
 		}
 
-		int handedInSolutions = 0;
-		for (int i = 0; handedInSolutions < iterationRounds; i++) {
-
+		for (int i = 0; i < iterationRounds; i++) {
 			// Solution that is used to pull values out of.
 			ISolution otherSolution = null;
 			// Solution that is used as a basis for recombination
@@ -87,39 +75,42 @@ public class CrazyGenetist implements ICrazyGenetistService {
 						.getSize(false), slotSum);
 				basisSolution = rankedSolutions[rank1 - 1];
 				otherSolution = rankedSolutions[rank2 - 1];
+				IValidatorService validatorService = ServiceLocator
+						.getInstance().getValidatorService();
+				validatorService.isValidSolution(basisSolution);
+				validatorService.isValidSolution(otherSolution);
 			}
 
 			// Recombination
+			RECOMBINATION_STRATEGY.reset();
 			ISolution recombinedSolution = RECOMBINATION_STRATEGY.recombine(
 					basisSolution, otherSolution);
-			basisSolution.increaseRecombinationCount();
-			otherSolution.increaseRecombinationCount();
-
-			// Mutation
-			recombinedSolution = mutateRoomStability(recombinedSolution);
-			if (Math.random() <= 0.05) {
-				recombinedSolution = mutateCourseIsolation(recombinedSolution);
+			if (recombinedSolution == null) {
+				System.out.println("CRAZY GENETIST: Failure (recombination).");
+				Main.mutateRecombineFailure++;
+				continue;
 			}
 
-			// Hand in solution
+			// Mutation
+			if (Math.random() <= 0.15) {
+				recombinedSolution = mutateRoomStability(recombinedSolution);
+			}
+			// if (Math.random() <= 0.05) {
+			// recombinedSolution = mutateCourseIsolation(recombinedSolution);
+			// }
+
+			// Hand in solution if valid
 			IValidatorService validatorService = ServiceLocator.getInstance()
 					.getValidatorService();
-			boolean validSolution = validatorService
-					.isValidSolution(recombinedSolution);
-			if ((recombinedSolution != null) && validSolution) {
-
+			if (validatorService.isValidSolution(recombinedSolution)) {
 				Main.mutateRecombineSuccess++;
-
+				basisSolution.increaseRecombinationCount();
+				otherSolution.increaseRecombinationCount();
 				solutionTable.removeWorstSolution();
 				solutionTable.addSolution(recombinedSolution);
-				handedInSolutions++;
-
 			} else {
-				System.out.println("CRAZY GENETIST: No valid solution found.");
-
+				System.out.println("CRAZY GENETIST: Failure (validation).");
 				Main.mutateRecombineFailure++;
-
-				break;
 			}
 		}
 

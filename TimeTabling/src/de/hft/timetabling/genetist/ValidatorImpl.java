@@ -33,12 +33,18 @@ public final class ValidatorImpl implements IValidatorService {
 
 	public boolean isValidSolution(final IProblemInstance instance,
 			final ICourse[][] coding) {
-		return noUnavailabilityViolations(coding, instance)
-				&& noCurriculaOverlap(coding) && noTeacherOverlap(coding)
-				&& allCoursesHeld(coding, instance);
+
+		boolean noUnavailabilityViolations = noUnavailabilityViolations(coding,
+				instance);
+		boolean noCurriculaOverlap = noCurriculaOverlap(coding);
+		boolean noTeacherOverlap = noTeacherOverlap(coding);
+		boolean allCoursesHeld = allCoursesHeld(coding, instance);
+
+		return noUnavailabilityViolations && noCurriculaOverlap
+				&& noTeacherOverlap && allCoursesHeld;
 	}
 
-	/*
+	/**
 	 * Checks whether courses which belong to the same curriculum in the same
 	 * period.
 	 */
@@ -75,7 +81,7 @@ public final class ValidatorImpl implements IValidatorService {
 		return true;
 	}
 
-	/*
+	/**
 	 * Checks whether a teacher gives more than one lecture in the same period.
 	 */
 	private boolean noTeacherOverlap(final ICourse[][] coding) {
@@ -105,7 +111,7 @@ public final class ValidatorImpl implements IValidatorService {
 		return true;
 	}
 
-	/*
+	/**
 	 * Checks whether all courses are held the designated amount of times.
 	 */
 	private boolean allCoursesHeld(final ICourse[][] coding,
@@ -141,8 +147,8 @@ public final class ValidatorImpl implements IValidatorService {
 		difference.removeAll(courseCount.keySet());
 
 		if (difference.size() > 0) {
-			System.out
-					.println("CHECK:---allCoursesHeld1(difference.size() > 0)");
+			System.out.println("CHECK:---allCoursesHeld1(" + difference.size()
+					+ " > 0)");
 			return false;
 		}
 
@@ -152,7 +158,8 @@ public final class ValidatorImpl implements IValidatorService {
 		for (ICourse course : inst.getCourses()) {
 			if (courseCount.get(course) < course.getNumberOfLectures()) {
 				System.out.println("CHECK:---allCoursesHeld2(" + course.getId()
-						+ ")");
+						+ " " + courseCount.get(course) + " / "
+						+ course.getNumberOfLectures() + ")");
 				return false;
 			}
 		}
@@ -160,7 +167,7 @@ public final class ValidatorImpl implements IValidatorService {
 		return true;
 	}
 
-	/*
+	/**
 	 * Checks whether there is an assignment of a course to a period which
 	 * violates unavailability violations.
 	 */

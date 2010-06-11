@@ -16,6 +16,7 @@ import de.hft.timetabling.generator.YetAnotherGenerator;
 import de.hft.timetabling.genetist.CrazyGenetist;
 import de.hft.timetabling.genetist.ValidatorImpl;
 import de.hft.timetabling.reader.Reader;
+import de.hft.timetabling.services.ICrazyGenetistService;
 import de.hft.timetabling.services.IEliminatorService;
 import de.hft.timetabling.services.IReaderService;
 import de.hft.timetabling.services.ISolutionTableService;
@@ -275,7 +276,11 @@ public final class Main {
 	private static void runAllInstances(String initialSolutionsDirectory)
 			throws IOException {
 
-		final String logFileName = "allinstances.log";
+		String dateString = new Date().toString();
+		dateString = dateString.replaceAll(" ", "-");
+		dateString = dateString.replaceAll(":", "-");
+		final String logFileName = "doc/logs/allinstances_" + dateString
+				+ ".txt";
 
 		final File logFile = new File(logFileName);
 		if (logFile.exists()) {
@@ -323,6 +328,13 @@ public final class Main {
 		writer.write("Table size: " + ISolutionTableService.TABLE_SIZE);
 		writer.newLine();
 		writer.write("Iterations: " + iterations);
+		writer.newLine();
+		writer.write("Elimination: " + IEliminatorService.PERCENTAGE + "%");
+		writer.newLine();
+		writer.write("Reproduction: " + ICrazyGenetistService.PERCENTAGE + "%");
+		writer.newLine();
+		writer.write("Strategy: "
+				+ ICrazyGenetistService.RECOMBINATION_STRATEGY.getName());
 		writer.newLine();
 		writer.newLine();
 

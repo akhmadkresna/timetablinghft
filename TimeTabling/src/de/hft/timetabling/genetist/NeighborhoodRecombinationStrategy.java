@@ -1,7 +1,6 @@
 package de.hft.timetabling.genetist;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
@@ -12,15 +11,16 @@ import de.hft.timetabling.common.ISolution;
 /**
  * Recombination strategy from Sotiris and Steffen. This recombination strategy
  * tries to adapt the neighborhood N1 mutation strategy (see paper in doc
- * folder) in order to perfom recombination.
+ * folder) in order to perform recombination.
  * 
  * @author Steffen
  * @author Sotiris
  */
-final class NeighborhoodRecombinationStrategy extends RecombinationStrategy {
+public final class NeighborhoodRecombinationStrategy extends
+		RecombinationStrategy {
 
 	@Override
-	ISolution recombine(ISolution solution1, ISolution solution2) {
+	public ISolution recombine(ISolution solution1, ISolution solution2) {
 		ISolution newSolution = solution1.clone();
 
 		for (int i = 0; i < newSolution.getCoding().length; i++) {
@@ -30,10 +30,12 @@ final class NeighborhoodRecombinationStrategy extends RecombinationStrategy {
 				if ((newSolution.getCoding()[i][j] == null)
 						&& (solution2.getCoding()[i][j] != null)) {
 
-					boolean sameCurriculumInPeriod = existsSameCurriculumInPeriod(
-							newSolution, solution2.getCoding()[i][j], i);
-					boolean sameTeacherInPeriod = existsSameTeacherInPeriod(
-							newSolution, solution2.getCoding()[i][j], i);
+					boolean sameCurriculumInPeriod = existsCurriculaInPeriod(
+							newSolution.getCoding(),
+							solution2.getCoding()[i][j].getCurricula(), i);
+					boolean sameTeacherInPeriod = existsTeacherInPeriod(
+							newSolution.getCoding(),
+							solution2.getCoding()[i][j].getTeacher(), i);
 
 					if (!(sameCurriculumInPeriod) && !(sameTeacherInPeriod)) {
 						CoursePosition cp1 = getCoursePositionRandomly(getPositionOfCourse(
@@ -64,6 +66,11 @@ final class NeighborhoodRecombinationStrategy extends RecombinationStrategy {
 		}
 
 		return newSolution;
+	}
+
+	@Override
+	protected void reset() {
+		// Nothing to do.
 	}
 
 	/**
@@ -139,60 +146,9 @@ final class NeighborhoodRecombinationStrategy extends RecombinationStrategy {
 		return null;
 	}
 
-	/**
-	 * Checks if there is a curriculum in the same period
-	 * 
-	 * @param courses
-	 *            Solution that should be analyzed.
-	 * @param givenCourse
-	 *            Course that should be found.
-	 * @param period
-	 *            period in which that course should be
-	 * @return true if there is a course of the same curriculum in the same
-	 *         period
-	 */
-	private boolean existsSameCurriculumInPeriod(ISolution courses,
-			ICourse givenCourse, int period) {
-		Set<ICurriculum> givenCourseCurriculum = givenCourse.getCurricula();
-
-		for (int i = 0; i < courses.getCoding()[period].length; i++) {
-
-			if (courses.getCoding()[period][i] != null) {
-				Iterator<ICurriculum> iter = courses.getCoding()[period][i]
-						.getCurricula().iterator();
-				while (iter.hasNext()) {
-					ICurriculum coursename = iter.next();
-					if (givenCourseCurriculum.contains(coursename)) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Method to check if there is a teacher holding a course in the same period
-	 * 
-	 * @param courses
-	 *            Solution that should be analyzed.
-	 * @param givenCourse
-	 *            Course that should be found.
-	 * @param period
-	 *            period in which that course should be
-	 * @return true if in the same period is a course thought by the same
-	 *         teacher as givenCourse
-	 */
-	private boolean existsSameTeacherInPeriod(ISolution courses,
-			ICourse givenCourse, int period) {
-		for (int i = 0; i < courses.getCoding()[period].length; i++) {
-			if ((courses.getCoding()[period][i] != null)
-					&& courses.getCoding()[period][i].getTeacher().equals(
-							givenCourse.getTeacher())) {
-				return true;
-			}
-		}
-		return false;
+	@Override
+	public String getName() {
+		return "Neighborhood v1";
 	}
 
 }

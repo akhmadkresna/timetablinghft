@@ -23,7 +23,7 @@ import de.hft.timetabling.common.ISolution;
 public interface ISolutionTableService {
 
 	/** Defines how many solution are held in the solution table. */
-	int TABLE_SIZE = 40;
+	int TABLE_SIZE = 50;
 
 	/**
 	 * Returns how many solution slots are currently empty.

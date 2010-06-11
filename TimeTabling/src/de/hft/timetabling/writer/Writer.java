@@ -37,11 +37,8 @@ public final class Writer implements IWriterService {
 		outputSolution(fileName, bestSolution, problemInstance);
 	}
 
-	/**
-	 * This method was split off from the above method so it can be tested with
-	 * any file name and solution.
-	 */
-	public void outputSolution(String fileName, ISolution bestSolution,
+	@Override
+	public void outputSolution(String fileName, ISolution solution,
 			IProblemInstance problemInstance) throws IOException {
 
 		System.out.print("WRITER: Writing best solution to '" + fileName + "'");
@@ -49,7 +46,7 @@ public final class Writer implements IWriterService {
 		FileWriter fileWriter = new FileWriter(fileName);
 		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
-		ICourse[][] coding = bestSolution.getCoding();
+		ICourse[][] coding = solution.getCoding();
 		int numberOfPeriods = problemInstance.getNumberOfPeriods();
 		int numberOfRooms = problemInstance.getNumberOfRooms();
 		for (int period = 0; period < numberOfPeriods; period++) {

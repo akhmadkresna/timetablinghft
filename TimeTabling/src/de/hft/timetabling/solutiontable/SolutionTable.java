@@ -168,7 +168,7 @@ public final class SolutionTable implements ISolutionTableService {
 				penalty, fairness));
 		if (!(added)) {
 			System.out
-					.println("SOLUTION TABLE: WARNING - Same vote already in exists in table!");
+					.println("SOLUTION TABLE: WARNING - Same vote already exists in table!");
 		}
 		currentNotVotedCount--;
 	}
