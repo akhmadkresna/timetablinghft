@@ -245,7 +245,7 @@ public final class CourseExchangeRecombinationStrategy extends
 
 	private Slot findNearestFreeValidSlot(Slot baseSlot, ICourse course) {
 		// TODO AW: Not yet really finished as for now only one direction is
-		// checked.
+		// checked (finds a free slot but not necessarily the nearest).
 		int startPeriod = baseSlot.getPeriod();
 		int nextPeriod = getNextPeriod(startPeriod);
 		while (!(nextPeriod == startPeriod)) {
@@ -277,7 +277,8 @@ public final class CourseExchangeRecombinationStrategy extends
 	/**
 	 * Tries to assign the given course at the given period and room. Returns
 	 * <tt>true</tt> if successful. Returns <tt>false</tt> if the assignment was
-	 * not possible due to hard constraint violation.
+	 * not possible due to hard constraint violation or because there is already
+	 * an assignment.
 	 */
 	private boolean assign(ICourse course, int period, int room) {
 		if (isValidToAssign(course, period, room)) {
