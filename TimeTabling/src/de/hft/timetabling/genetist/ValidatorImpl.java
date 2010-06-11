@@ -112,10 +112,10 @@ public final class ValidatorImpl implements IValidatorService {
 			final IProblemInstance inst) {
 		Map<ICourse, Integer> courseCount = new HashMap<ICourse, Integer>();
 
-		for (int i = 0; i < coding.length; i++) {
-			for (int j = 0; j < coding[i].length; j++) {
+		for (int period = 0; period < coding.length; period++) {
+			for (int room = 0; room < coding[period].length; room++) {
 
-				ICourse course = coding[i][j];
+				ICourse course = coding[period][room];
 
 				if (course != null) {
 					/*

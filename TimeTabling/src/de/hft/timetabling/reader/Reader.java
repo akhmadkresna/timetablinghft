@@ -98,7 +98,7 @@ public final class Reader implements IReaderService {
 	 * Reads one specific solution from an input file following the output
 	 * format of the time tabling competition.
 	 */
-	private ISolution readSolution(String fileName, IProblemInstance instance)
+	public ISolution readSolution(String fileName, IProblemInstance instance)
 			throws IOException {
 
 		ICourse[][] coding = new ICourse[instance.getNumberOfPeriods()][instance

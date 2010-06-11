@@ -34,7 +34,7 @@ public final class YetAnotherGenerator implements IGeneratorService {
 	 * the amount of loops during each iteration. Higher loop counts increase
 	 * the likelihood of a feasible solution to be found
 	 */
-	private final int MAX_LOOPS = 10;
+	private final int MAX_LOOPS = 20;
 
 	/**
 	 * This method tries to construct a feasible solution for the given problem
@@ -59,9 +59,9 @@ public final class YetAnotherGenerator implements IGeneratorService {
 			YetAnotherSessionObject session = new YetAnotherSessionObject(
 					instance);
 
-			Set<ICourse> prioterized = new HashSet<ICourse>();
-			Set<ICourse> nonPrioterized = new HashSet<ICourse>();
-			Set<ICourse> unassigned = new HashSet<ICourse>();
+			final Set<ICourse> prioterized = new HashSet<ICourse>();
+			final Set<ICourse> nonPrioterized = new HashSet<ICourse>();
+			final Set<ICourse> unassigned = new HashSet<ICourse>();
 
 			do {
 				prioterized.addAll(unassigned);
@@ -184,7 +184,7 @@ class YetAnotherSessionObject {
 		}
 	}
 
-	public ICourse getMostCriticalEvent(Set<ICourse> courses) {
+	public ICourse getMostCriticalEvent(final Set<ICourse> courses) {
 		ICourse critical = null;
 		int minimum = Integer.MAX_VALUE;
 
@@ -203,26 +203,26 @@ class YetAnotherSessionObject {
 		return schedule;
 	}
 
-	public boolean assignable(ICourse course) {
+	public boolean assignable(final ICourse course) {
 		return availablePeriods.get(course).size() >= course
 				.getNumberOfLectures();
 	}
 
-	public void assignRandomViableSlots(ICourse critical) {
-		List<Integer> periods = new ArrayList<Integer>();
+	public void assignRandomViableSlots(final ICourse critical) {
+		final List<Integer> periods = new ArrayList<Integer>();
 		periods.addAll(availablePeriods.get(critical));
-		Set<Integer> occupiedPeriods = new HashSet<Integer>();
+		final Set<Integer> occupiedPeriods = new HashSet<Integer>();
 
 		for (int i = 0; i < critical.getNumberOfLectures(); i++) {
 			Collections.shuffle(periods);
 
 			int randomPeriod = periods.get(0);
 
-			List<Integer> rooms = new ArrayList<Integer>();
+			final List<Integer> rooms = new ArrayList<Integer>();
 			rooms.addAll(availableRooms.get(randomPeriod));
 
 			if (rooms.size() == 1) {
-				for (ICourse course : instance.getCourses()) {
+				for (final ICourse course : instance.getCourses()) {
 					availablePeriods.get(course).remove(randomPeriod);
 				}
 			}
