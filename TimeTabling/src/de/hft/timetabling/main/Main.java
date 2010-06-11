@@ -117,8 +117,8 @@ public final class Main {
 			long sleepMilliSeconds) throws IOException {
 
 		long startTime = System.currentTimeMillis();
-		CrazyGenetist.success = 0;
-		CrazyGenetist.failure = 0;
+		CrazyGenetist.successes = 0;
+		CrazyGenetist.failures = 0;
 		Generator.success = 0;
 		Generator.failure = 0;
 
@@ -160,8 +160,8 @@ public final class Main {
 		printGeneratorStats();
 		writeBestSolution();
 
-		System.out.println("Genetist success: " + CrazyGenetist.success);
-		System.out.println("Genetist failure: " + CrazyGenetist.failure);
+		System.out.println("Genetist success: " + CrazyGenetist.successes);
+		System.out.println("Genetist failure: " + CrazyGenetist.failures);
 
 		return System.currentTimeMillis() - startTime;
 	}
@@ -365,11 +365,11 @@ public final class Main {
 		writer.newLine();
 		writer
 				.write("Mutation/recombination success: "
-						+ CrazyGenetist.success);
+						+ CrazyGenetist.successes);
 		writer.newLine();
 		writer
 				.write("Mutation/recombination failure: "
-						+ CrazyGenetist.failure);
+						+ CrazyGenetist.failures);
 		writer.newLine();
 		writer.newLine();
 		writer.newLine();
