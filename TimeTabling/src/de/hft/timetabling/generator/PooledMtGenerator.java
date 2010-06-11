@@ -26,6 +26,12 @@ public final class PooledMtGenerator implements IGeneratorService {
 
 	private final ExecutorService exec = Executors.newFixedThreadPool(2);
 
+	private final IGeneratorService generator;
+
+	public PooledMtGenerator(IGeneratorService generator) {
+		this.generator = generator;
+	}
+
 	@Override
 	public void fillSolutionTable(final IProblemInstance problemInstance) {
 		if (this.problemInstance != problemInstance) {
@@ -34,7 +40,8 @@ public final class PooledMtGenerator implements IGeneratorService {
 			int taskCount = 0;
 
 			for (int i = 0; i < ISolutionTableService.TABLE_SIZE; i++) {
-				taskGroup.add(new SolutionTask(problemInstance, taskCount++));
+				taskGroup.add(new SolutionTask(problemInstance,
+						new YetAnotherGenerator(), taskCount++));
 			}
 		}
 
@@ -52,35 +59,45 @@ public final class PooledMtGenerator implements IGeneratorService {
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public ICourse[][] generateFeasibleSolution(IProblemInstance problemInstance)
+			throws NoFeasibleSolutionFoundException {
+		return generator.generateFeasibleSolution(problemInstance);
+	}
 }
 
 final class SolutionTask implements Callable<ISolution> {
 
 	public static final Object CREATE_LOCK = new Object();
 
-	private final Generator gen = new Generator();
-
 	private final IProblemInstance instance;
 
 	private final ISolutionTableService solutionTable = ServiceLocator
 			.getInstance().getSolutionTableService();
 
+	private final IGeneratorService generator;
+
 	private final int id;
 
-	public SolutionTask(final IProblemInstance instance, final int id) {
+	public SolutionTask(final IProblemInstance instance,
+			IGeneratorService generator, int id) {
 		this.instance = instance;
+		this.generator = generator;
 		this.id = id;
 	}
 
 	@Override
 	public ISolution call() {
+
 		ISolution sol = null;
 
 		while (sol == null) {
 			// System.out.println("Task " + id);
 
 			try {
-				ICourse[][] coding = gen.generateFeasibleSolution(instance);
+				ICourse[][] coding = generator
+						.generateFeasibleSolution(instance);
 
 				synchronized (CREATE_LOCK) {
 					sol = solutionTable.createNewSolution(coding, instance);

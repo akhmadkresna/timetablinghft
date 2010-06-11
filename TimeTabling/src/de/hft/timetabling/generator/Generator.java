@@ -11,6 +11,7 @@ import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
+import de.hft.timetabling.main.Main;
 import de.hft.timetabling.services.IGeneratorService;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.ServiceLocator;
@@ -24,10 +25,6 @@ import de.hft.timetabling.services.ServiceLocator;
  * @author Matthias Ruszala
  */
 public final class Generator implements IGeneratorService {
-
-	public static int success = 0;
-
-	public static int failure = 0;
 
 	/**
 	 * the amount of iterations which will be performed before the algorithm
@@ -87,11 +84,11 @@ public final class Generator implements IGeneratorService {
 			 * feasible solution found if there are no unassigned courses left
 			 */
 			if (unassigned.isEmpty()) {
-				success++;
+				Main.generatorSuccess++;
 				return session.getCoding();
 			}
 
-			failure++;
+			Main.generatorFailure++;
 			iterations++;
 		}
 

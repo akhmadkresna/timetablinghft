@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.eliminator.Eliminator;
 import de.hft.timetabling.evaluator.Evaluator;
-import de.hft.timetabling.generator.Generator;
 import de.hft.timetabling.generator.PooledMtGenerator;
+import de.hft.timetabling.generator.YetAnotherGenerator;
 import de.hft.timetabling.genetist.CrazyGenetist;
 import de.hft.timetabling.genetist.ValidatorImpl;
 import de.hft.timetabling.reader.Reader;
@@ -30,6 +30,11 @@ import de.hft.timetabling.writer.Writer;
  * @author Alexander Weickmann
  */
 public final class Main {
+
+	public static int generatorSuccess = 0;
+	public static int generatorFailure = 0;
+	public static int mutateRecombineSuccess = 0;
+	public static int mutateRecombineFailure = 0;
 
 	/**
 	 * The number of iterations to perform until the best solution will be
@@ -102,7 +107,8 @@ public final class Main {
 		serviceLocator.setReaderService(new Reader());
 		serviceLocator.setSolutionTableService(new SolutionTable());
 		serviceLocator.setWriterService(new Writer());
-		serviceLocator.setGeneratorService(new PooledMtGenerator());
+		serviceLocator.setGeneratorService(new PooledMtGenerator(
+				new YetAnotherGenerator()));
 		serviceLocator.setValidatorService(new ValidatorImpl());
 		serviceLocator.setCrazyGenetistService(new CrazyGenetist());
 		serviceLocator.setEvaluatorService(new Evaluator());
@@ -117,10 +123,10 @@ public final class Main {
 			long sleepMilliSeconds) throws IOException {
 
 		long startTime = System.currentTimeMillis();
-		CrazyGenetist.successes = 0;
-		CrazyGenetist.failures = 0;
-		Generator.success = 0;
-		Generator.failure = 0;
+		Main.generatorSuccess = 0;
+		Main.generatorFailure = 0;
+		Main.mutateRecombineSuccess = 0;
+		Main.mutateRecombineFailure = 0;
 
 		ServiceLocator locator = ServiceLocator.getInstance();
 		IReaderService reader = locator.getReaderService();
@@ -160,8 +166,8 @@ public final class Main {
 		printGeneratorStats();
 		writeBestSolution();
 
-		System.out.println("Genetist success: " + CrazyGenetist.successes);
-		System.out.println("Genetist failure: " + CrazyGenetist.failures);
+		System.out.println("Genetist success: " + Main.mutateRecombineSuccess);
+		System.out.println("Genetist failure: " + Main.mutateRecombineFailure);
 
 		return System.currentTimeMillis() - startTime;
 	}
@@ -252,8 +258,10 @@ public final class Main {
 
 	private static void printGeneratorStats() {
 		System.out.println("----------------------------");
-		System.out.println("-- Generator stats: Success: " + Generator.success
-				+ ", Failure: " + Generator.failure);
+		System.out
+				.println("-- Generator stats: Success: "
+						+ Main.generatorSuccess + ", Failure: "
+						+ Main.generatorFailure);
 	}
 
 	private static void shortSleep(final long sleepMilliSeconds) {
@@ -276,6 +284,7 @@ public final class Main {
 		}
 
 		final File instancesDir = new File("instances");
+
 		final File[] instanceFiles = instancesDir
 				.listFiles(new FilenameFilter() {
 					@Override
@@ -289,11 +298,16 @@ public final class Main {
 
 		createLogFileHeader(writer);
 
+		long totalDuration = 0;
+
 		for (int i = 0; i < instanceFiles.length; i++) {
 			long duration = run("instances/" + instanceFiles[i].getName(),
 					initialSolutionsDirectory, 0);
+			totalDuration += duration;
 			writeResult(writer, instanceFiles[i], duration);
 		}
+
+		createLogFileFooter(writer, totalDuration);
 
 		writer.close();
 	}
@@ -301,7 +315,7 @@ public final class Main {
 	private static void createLogFileHeader(final BufferedWriter writer)
 			throws IOException {
 
-		writer.write("Log file created at " + new Date());
+		writer.write("Log file created on " + new Date());
 		writer.newLine();
 		writer.write("--------------------------------------------------");
 		writer.newLine();
@@ -323,15 +337,7 @@ public final class Main {
 
 		writer.write(instanceFile.getName());
 
-		final long hours = TimeUnit.MILLISECONDS.toHours(duration);
-		final long minutes = TimeUnit.MILLISECONDS.toMinutes(duration)
-				- TimeUnit.HOURS.toMinutes(hours);
-		final long seconds = TimeUnit.MILLISECONDS.toSeconds(duration)
-				- TimeUnit.MINUTES.toSeconds(minutes);
-		final long msecs = duration - TimeUnit.SECONDS.toMillis(seconds);
-
-		writer.write(String.format(" (Duration: %d h, %d m, %d s, %d ms):",
-				hours, minutes, seconds, msecs));
+		writer.write(" (Duration: " + toTimeString(duration) + "):");
 		writer.newLine();
 		writer.write("--------------");
 		writer.newLine();
@@ -359,17 +365,15 @@ public final class Main {
 		writer.write("Worst fairness/fairness: "
 				+ solutionTable.getWorstFairnessSolutionFairness());
 		writer.newLine();
-		writer.write("Generator success: " + Generator.success);
+		writer.write("Generator success: " + Main.generatorSuccess);
 		writer.newLine();
-		writer.write("Generator failure: " + Generator.failure);
+		writer.write("Generator failure: " + Main.generatorFailure);
 		writer.newLine();
-		writer
-				.write("Mutation/recombination success: "
-						+ CrazyGenetist.successes);
+		writer.write("Mutation/recombination success: "
+				+ Main.mutateRecombineSuccess);
 		writer.newLine();
-		writer
-				.write("Mutation/recombination failure: "
-						+ CrazyGenetist.failures);
+		writer.write("Mutation/recombination failure: "
+				+ Main.mutateRecombineFailure);
 		writer.newLine();
 		writer.newLine();
 		writer.newLine();
@@ -377,4 +381,18 @@ public final class Main {
 		writer.flush();
 	}
 
+	private static void createLogFileFooter(BufferedWriter writer,
+			long totalDuration) throws IOException {
+		writer.write("Total duration: " + toTimeString(totalDuration));
+	}
+
+	private static String toTimeString(long timeInMillis) {
+		final long hours = TimeUnit.MILLISECONDS.toHours(timeInMillis);
+		final long minutes = TimeUnit.MILLISECONDS.toMinutes(timeInMillis)
+				- TimeUnit.HOURS.toMinutes(hours);
+		final long seconds = TimeUnit.MILLISECONDS.toSeconds(timeInMillis)
+				- TimeUnit.MINUTES.toSeconds(minutes);
+
+		return String.format("%d h, %d m, %d s", hours, minutes, seconds);
+	}
 }

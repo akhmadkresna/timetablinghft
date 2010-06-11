@@ -7,6 +7,7 @@ import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
+import de.hft.timetabling.main.Main;
 import de.hft.timetabling.services.ICrazyGenetistService;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.IValidatorService;
@@ -110,14 +111,18 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			boolean validSolution = validatorService
 					.isValidSolution(recombinedSolution);
 			if ((recombinedSolution != null) && validSolution) {
-				successes++;
+
+				Main.mutateRecombineSuccess++;
+
 				solutionTable.removeWorstSolution();
 				solutionTable.addSolution(recombinedSolution);
 				handedInSolutions++;
 
 			} else {
 				System.out.println("CRAZY GENETIST: No valid solution found.");
-				failures++;
+
+				Main.mutateRecombineFailure++;
+
 				break;
 			}
 		}

@@ -20,10 +20,14 @@ public final class MTGenerator implements IGeneratorService {
 
 	private int threadCount = 0;
 
-	private final Generator generator = new Generator();
+	private final IGeneratorService generator;
 
 	private final ISolutionTableService solutionTable = ServiceLocator
 			.getInstance().getSolutionTableService();
+
+	public MTGenerator(final IGeneratorService generator) {
+		this.generator = generator;
+	}
 
 	@Override
 	public void fillSolutionTable(final IProblemInstance problemInstance) {
@@ -98,5 +102,11 @@ public final class MTGenerator implements IGeneratorService {
 		}
 
 		threadCount = 0;
+	}
+
+	@Override
+	public ICourse[][] generateFeasibleSolution(IProblemInstance problemInstance)
+			throws NoFeasibleSolutionFoundException {
+		return generator.generateFeasibleSolution(problemInstance);
 	}
 }
