@@ -7,6 +7,9 @@ package de.hft.timetabling.services;
  */
 public interface IEliminatorService {
 
+	/** The percentage of the population to eliminate. */
+	int PERCENTAGE = 25;
+
 	void eliminateSolutions();
 
 }

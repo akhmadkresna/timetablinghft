@@ -77,7 +77,7 @@ final class SolutionTask implements Callable<ISolution> {
 		ISolution sol = null;
 
 		while (sol == null) {
-			System.out.println("Task " + id);
+			// System.out.println("Task " + id);
 
 			try {
 				ICourse[][] coding = gen.generateFeasibleSolution(instance);

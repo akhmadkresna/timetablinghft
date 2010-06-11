@@ -2,6 +2,7 @@ package de.hft.timetabling.genetist;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
@@ -10,6 +11,7 @@ import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.services.ICrazyGenetistService;
 import de.hft.timetabling.services.ISolutionTableService;
+import de.hft.timetabling.services.IValidatorService;
 import de.hft.timetabling.services.ServiceLocator;
 
 /**
@@ -25,15 +27,10 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	public static int failure = 0;
 
 	/**
-	 * Solutions that should be improved.
-	 */
-	private ISolutionTableService solution;
-
-	/**
 	 * Iterations to chose one of the recombination algorithms. This number
 	 * means the percentage of the maximum table size.
 	 */
-	private static final int ITERATIONS = 50;
+	private static final int RECOMBINE_PERCENTAGE = 50;
 
 	/**
 	 * public Method to start recombination and mutation process. The solution
@@ -42,98 +39,107 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 */
 	@Override
 	public void recombineAndMutate() {
-		ServiceLocator serviceLocator = ServiceLocator.getInstance();
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
 
-		setSolution(serviceLocator.getSolutionTableService());
+		if (solutionTable.getSize(false) <= 1) {
+			return;
+		}
 
-		if (solution.getSize(false) > 1) {
+		// Choosing solutions that until they are not null and different
+		int iterationRounds = (RECOMBINE_PERCENTAGE * ISolutionTableService.TABLE_SIZE) / 100;
+
+		System.out.print("CRAZY GENETIST: Starting to create "
+				+ iterationRounds + " children (" + RECOMBINE_PERCENTAGE
+				+ "%) ...");
+
+		// The solutions ordered by rank (low to high, highest rank is best)
+		ISolution[] rankedSolutions = new ISolution[solutionTable
+				.getSize(false)];
+		for (int i = rankedSolutions.length - 1; i >= 0; i--) {
+			rankedSolutions[i] = solutionTable.getSolution(i);
+		}
+
+		// Compute slot sum
+		int slotSum = 0;
+		for (int i = 1; i <= rankedSolutions.length; i++) {
+			slotSum += i;
+		}
+
+		int handedInSolutions = 0;
+		for (int i = 0; handedInSolutions < iterationRounds; i++) {
+
 			// Solution that is used to pull values out of.
 			ISolution otherSolution = null;
-			// Solution that is used as basic for recombination
-			ISolution basicSolution = null;
-			// Choosing solutions that until they are not null and different
-			int handedInSolution = 0;
-			int iterationsRounds = (ITERATIONS * ISolutionTableService.TABLE_SIZE) / 100;
+			// Solution that is used as a basis for recombination
+			ISolution basisSolution = null;
 
-			System.out.print("CRAZY GENETIST: Starting to create "
-					+ iterationsRounds + " children (" + ITERATIONS + "%) ...");
+			while ((otherSolution == null) || (basisSolution == null)
+					|| basisSolution.equals(otherSolution)) {
 
-			// Make sure that it is executed at least once
-			if (iterationsRounds == 0) {
-				iterationsRounds = 1;
+				Random random = new Random();
+				int selectedSlot1 = random.nextInt(slotSum) + 1;
+				int selectedSlot2 = random.nextInt(slotSum) + 1;
+				int rank1 = slotToRank(selectedSlot1, solutionTable
+						.getSize(false), slotSum);
+				int rank2 = slotToRank(selectedSlot2, solutionTable
+						.getSize(false), slotSum);
+				basisSolution = rankedSolutions[rank1 - 1];
+				otherSolution = rankedSolutions[rank2 - 1];
 			}
 
-			// Doing as long as the maximum iterations are reached or in
-			// (maximum iterations)*2 are done
-			for (int i = 0; handedInSolution < iterationsRounds; i++) {
-				while ((otherSolution == null) || (basicSolution == null)
-						|| basicSolution.equals(otherSolution)) {
+			ISolution recombinedSolution = recombination2(basisSolution,
+					otherSolution);
 
-					// --> if (Math.random() < probability)
+			recombinedSolution = mutateRoomStability(recombinedSolution);
+			recombinedSolution = mutateCourseIsolation(recombinedSolution);
 
-					int n1 = (int) (solution.getSize(false) * Math.random());
-					int n2 = (int) (solution.getSize(false) * Math.random());
-					basicSolution = solution.getSolution(n1);
-					otherSolution = solution.getSolution(n2);
+			basisSolution.increaseRecombinationCount();
+			otherSolution.increaseRecombinationCount();
 
-					/*
-					 * //for debugging reasons if ((otherSolution == null)) {
-					 * System.out.println("otherSolution is null"); } if
-					 * ((basicSolution == null)) {
-					 * System.out.println("basicSolution is null"); } if
-					 * (((basicSolution != null) && (otherSolution != null)) &&
-					 * basicSolution.equals(otherSolution)) {
-					 * System.out.println("solutions are equal!:");
-					 * System.out.println("Basic solution:\n" +
-					 * CrazyGenetistUtility .coursesToStringId(basicSolution
-					 * .getCoding())); System.out.println("Other solution:\n" +
-					 * CrazyGenetistUtility .coursesToStringId(otherSolution
-					 * .getCoding())); System.exit(0); }
-					 */
-				}
+			// Hand in solution
+			IValidatorService validatorService = ServiceLocator.getInstance()
+					.getValidatorService();
+			boolean validSolution = validatorService
+					.isValidSolution(recombinedSolution);
+			if ((recombinedSolution != null) && validSolution) {
+				success++;
+				solutionTable.removeWorstSolution();
+				solutionTable.addSolution(recombinedSolution);
+				handedInSolutions++;
 
-				ISolution recombinedSolution = recombination2(basicSolution,
-						otherSolution);
-
-				recombinedSolution = mutateRoomStability(recombinedSolution);
-				recombinedSolution = mutateCourseIsolation(recombinedSolution);
-
-				// recombinedSolution =
-				// mutateRoomStability(recombinedSolution);
-
-				basicSolution.increaseRecombinationCount();
-				otherSolution.increaseRecombinationCount();
-
-				// Hand in solution
-				if ((recombinedSolution != null)
-						&& new ValidatorImpl()
-								.isValidSolution(recombinedSolution)) {
-
-					success++;
-
-					// Call evaluator
-					// int iPenalty = ServiceLocator.getInstance()
-					// .getEvaluatorService().evaluateSolution(
-					// recombinedSolution);
-					// return true of new solution is better
-					// if (getSolution().compareWithWorstSolution(iPenalty)) {
-					getSolution().removeWorstSolution();
-					getSolution().addSolution(recombinedSolution);
-					handedInSolution++;
-					// } else {
-					// System.out.println("New Solution is worse!!!");
-					// }
-
-				} else {
-					System.out
-							.println("CRAZY GENETIST: No valid solution found.");
-					failure++;
-					break;
-				}
+			} else {
+				System.out.println("CRAZY GENETIST: No valid solution found.");
+				failure++;
+				break;
 			}
-
-			System.out.print(" done.\n");
 		}
+
+		System.out.print(" done.\n");
+	}
+
+	/**
+	 * Returns the rank that the given slot is assigned to.
+	 * 
+	 * @param slot
+	 *            A rank consists of as many slots as the rank number is. For
+	 *            example, rank 100 has 100 slots.
+	 * @param nrSolutions
+	 *            The number of solutions in total.
+	 * @param slotSum
+	 *            The sum of all slots.
+	 */
+	private int slotToRank(int slot, int nrSolutions, int slotSum) {
+		int rank = 1;
+		int currentSlotSum = 1;
+		while (rank <= nrSolutions) {
+			if (slot <= currentSlotSum) {
+				break;
+			}
+			rank++;
+			currentSlotSum += rank + 1;
+		}
+		return rank;
 	}
 
 	/**
@@ -144,7 +150,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 * @return mutated solution
 	 */
 	private ISolution mutateCourseIsolation(ISolution solution) {
-
 		ISolution newSolution = solution.clone();
 
 		int n1 = 0, n2 = 0;
@@ -158,25 +163,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 		newSolution.getCoding()[n2] = temp;
 
 		return newSolution;
-	}
-
-	/**
-	 * Method to set Solution that should be used.
-	 * 
-	 * @param solution
-	 *            Solution table that should be recombined and mutated.
-	 */
-	public void setSolution(ISolutionTableService solution) {
-		this.solution = solution;
-	}
-
-	/**
-	 * Method to get Solution that should be recombined.
-	 * 
-	 * @return solution Solution table that should be recombined and mutated.
-	 */
-	public ISolutionTableService getSolution() {
-		return solution;
 	}
 
 	/**
@@ -219,8 +205,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 								courses[i][j] = courses[i][roomY];
 								courses[i][roomY] = selectedCourse;
 								// No check neccessary because we only changed
-								// the
-								// room --> soft constraint!?
+								// the room --> soft constraint!?
 							}
 						}
 					}
@@ -228,7 +213,9 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			}
 		}
 
-		ISolution newSolution = this.solution.createNewSolution(courses,
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+		ISolution newSolution = solutionTable.createNewSolution(courses,
 				solution.getProblemInstance());
 		newSolution.setRecombinationCount(solution.getRecombinationCount() + 1);
 		return newSolution;
@@ -244,9 +231,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 * @return recombied solution
 	 */
 	private ISolution recombination2(ISolution solution1, ISolution solution2) {
-		// ICourse[][] oldBestSolution;
-		// ValidatorImpl vi = new ValidatorImpl();
-		// Set<ICourse> savingList = new HashSet<ICourse>();
 		ISolution newSolution = solution1.clone();
 
 		for (int i = 0; i < newSolution.getCoding().length; i++) {
@@ -255,35 +239,34 @@ public class CrazyGenetist implements ICrazyGenetistService {
 				// Fill gap
 				if ((newSolution.getCoding()[i][j] == null)
 						&& (solution2.getCoding()[i][j] != null)) {
-					if (!existsSameCurriculumInPeriod(newSolution, solution2
-							.getCoding()[i][j], i)
-							&& !existsSameTeacherInPeriod(newSolution,
-									solution2.getCoding()[i][j], i)) {
+
+					boolean sameCurriculumInPeriod = existsSameCurriculumInPeriod(
+							newSolution, solution2.getCoding()[i][j], i);
+					boolean sameTeacherInPeriod = existsSameTeacherInPeriod(
+							newSolution, solution2.getCoding()[i][j], i);
+
+					if (!(sameCurriculumInPeriod) && !(sameTeacherInPeriod)) {
 						CoursePosition cp1 = getCoursePositionRandomly(getPositionOfCourse(
 								newSolution, solution2.getCoding()[i][j]));
+						if (cp1 != null) {
+							newSolution.getCoding()[cp1.getX()][cp1.getY()] = null;
+							newSolution.getCoding()[i][j] = solution2
+									.getCoding()[i][j];
+						}
 
-						newSolution.getCoding()[cp1.getX()][cp1.getY()] = null;
-
-						newSolution.getCoding()[i][j] = solution2.getCoding()[i][j];
-
-					} else if (existsSameCurriculumInPeriod(newSolution,
-							solution2.getCoding()[i][j], i)
-							&& existsSameTeacherInPeriod(newSolution, solution2
-									.getCoding()[i][j], i)) {
-
+					} else if (sameCurriculumInPeriod && sameTeacherInPeriod) {
 						CoursePosition cp1 = getCoursePositionRandomly(getPositionOfCourse(
 								newSolution, solution2.getCoding()[i][j]));
 						CoursePosition cp2 = getIfSameCurriculumAndSameTeacher(
 								newSolution, solution2.getCoding()[i][j], i);
-						if (cp2 != null) {
 
+						if (cp2 != null) {
 							newSolution.getCoding()[cp1.getX()][cp1.getY()] = newSolution
 									.getCoding()[cp2.getX()][cp2.getY()];
 
 							newSolution.getCoding()[i][j] = solution2
 									.getCoding()[i][j];
 							newSolution.getCoding()[cp2.getX()][cp2.getY()] = null;
-
 						}
 					}
 				}
@@ -327,15 +310,12 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 * @return randomly selected CoursePosition
 	 */
 	private CoursePosition getCoursePositionRandomly(Set<CoursePosition> set) {
-		int n = (int) (set.size() * Math.random());
-		Iterator<CoursePosition> iter = set.iterator();
-		for (int i = 0; iter.hasNext(); i++) {
-			CoursePosition o = iter.next();
-			if (i == n) {
-				return o;
-			}
+		if (set.size() == 0) {
+			return null;
 		}
-		return null;
+		Random random = new Random();
+		int n = random.nextInt(set.size());
+		return set.toArray(new CoursePosition[set.size()])[n];
 	}
 
 	/**

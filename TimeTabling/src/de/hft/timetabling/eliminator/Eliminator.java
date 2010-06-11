@@ -9,9 +9,6 @@ import de.hft.timetabling.services.ServiceLocator;
  */
 public final class Eliminator implements IEliminatorService {
 
-	/** The percentage of the population to eliminate. */
-	private static final int PERCENTAGE = 30;
-
 	/**
 	 * Eliminates a percentage of the worst solutions from the table.
 	 */
