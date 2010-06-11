@@ -9,11 +9,16 @@ import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.IRoom;
+import de.hft.timetabling.services.ISolutionTableService;
+import de.hft.timetabling.services.ServiceLocator;
+import de.hft.timetabling.solutiontable.SolutionTable;
 
 /**
  * @author Alexander Weickmann
  */
 public class ReaderTest extends TestCase {
+
+	private static final String TEST_INSTANCE_NAME = "test/input/test.ctt";
 
 	private Reader reader;
 
@@ -27,8 +32,11 @@ public class ReaderTest extends TestCase {
 	 * Tests whether a specific problem instance input file is read correctly.
 	 */
 	public void testReadInstance() throws IOException {
-		IProblemInstance instance = reader.readInstance("test/test.ctt");
+		IProblemInstance instance = reader.readInstance(TEST_INSTANCE_NAME);
+		performTestReadInstance(instance);
+	}
 
+	private void performTestReadInstance(IProblemInstance instance) {
 		// # GENERAL INFORMATION
 		assertEquals("ToyExample", instance.getName());
 		assertEquals(4, instance.getNumberOfCourses());
@@ -149,6 +157,22 @@ public class ReaderTest extends TestCase {
 			}
 			reader.readInstance("instances/" + fileName);
 		}
+	}
+
+	public void testReadInstanceUsingInitialSolutionDirectory()
+			throws IOException {
+
+		ServiceLocator.getInstance().setSolutionTableService(
+				new SolutionTable());
+
+		IProblemInstance instance = reader
+				.readInstanceUsingInitialSolutionDirectory(TEST_INSTANCE_NAME,
+						"test/solutions");
+		performTestReadInstance(instance);
+
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+		assertEquals(2, solutionTable.getSize(true));
 	}
 
 	public void testToString() {

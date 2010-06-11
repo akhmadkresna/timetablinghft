@@ -33,7 +33,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 * Iterations to chose one of the recombination algorithms. This number
 	 * means the percentage of the maximum table size.
 	 */
-	private static final int ITERATIONS = 1;
+	private static final int ITERATIONS = 50;
 
 	/**
 	 * public Method to start recombination and mutation process. The solution
@@ -92,11 +92,11 @@ public class CrazyGenetist implements ICrazyGenetistService {
 					 */
 				}
 
-				basicSolution = mutateRoomStability(basicSolution);
-				otherSolution = mutateCourseIsolation(otherSolution);
-
 				ISolution recombinedSolution = recombination2(basicSolution,
 						otherSolution);
+
+				recombinedSolution = mutateRoomStability(recombinedSolution);
+				recombinedSolution = mutateCourseIsolation(recombinedSolution);
 
 				// recombinedSolution =
 				// mutateRoomStability(recombinedSolution);
@@ -112,17 +112,17 @@ public class CrazyGenetist implements ICrazyGenetistService {
 					success++;
 
 					// Call evaluator
-					int iPenalty = ServiceLocator.getInstance()
-							.getEvaluatorService().evaluateSolution(
-									recombinedSolution);
+					// int iPenalty = ServiceLocator.getInstance()
+					// .getEvaluatorService().evaluateSolution(
+					// recombinedSolution);
 					// return true of new solution is better
-					if (getSolution().compareWithWorstSolution(iPenalty)) {
-						getSolution().removeWorstSolution();
-						getSolution().addSolution(recombinedSolution);
-						handedInSolution++;
-					} else {
-						System.out.println("New Solution is worse!!!");
-					}
+					// if (getSolution().compareWithWorstSolution(iPenalty)) {
+					getSolution().removeWorstSolution();
+					getSolution().addSolution(recombinedSolution);
+					handedInSolution++;
+					// } else {
+					// System.out.println("New Solution is worse!!!");
+					// }
 
 				} else {
 					System.out
@@ -199,11 +199,10 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			// "][" + roomY + "] ...");
 			if (courses[periodX][roomY] != null) {
 				Set<ICurriculum> cur = courses[periodX][roomY].getCurricula();
-
-				String curriculumNr = String.format("q%03d",
-						(int) (cur.size() * Math.random()));
-
-				myCurriculum = getCurriculumOutOfSet(cur, curriculumNr);
+				int random = (int) (cur.size() * Math.random());
+				ICurriculum curriculum = cur
+						.toArray(new ICurriculum[cur.size()])[random];
+				myCurriculum = getCurriculumOutOfSet(cur, curriculum.getId());
 			}
 		}
 

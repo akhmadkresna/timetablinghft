@@ -164,7 +164,12 @@ public final class SolutionTable implements ISolutionTableService {
 		voteIndexModification++;
 		ISolution solution = notVotedTable.get(index);
 		notVotedTable.remove(index);
-		solutionTable.add(new WeightedSolution(solution, penalty, fairness));
+		boolean added = solutionTable.add(new WeightedSolution(solution,
+				penalty, fairness));
+		if (!(added)) {
+			System.out
+					.println("SOLUTION TABLE: WARNING - Same vote already in exists in table!");
+		}
 		currentNotVotedCount--;
 	}
 
