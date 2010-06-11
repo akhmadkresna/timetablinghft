@@ -31,10 +31,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 */
 	private static final int RECOMBINE_PERCENTAGE = 50;
 
-	public static int successes = 0;
-
-	public static int failures = 0;
-
 	/**
 	 * public Method to start recombination and mutation process. The solution
 	 * table will get from serviceLocator.getSolutionTableService(). The
