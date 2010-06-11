@@ -56,8 +56,10 @@ public class CrazyGenetist implements ICrazyGenetistService {
 		// The solutions ordered by rank (low to high, highest rank is best)
 		ISolution[] rankedSolutions = new ISolution[solutionTable
 				.getSize(false)];
+		int solutionIndex = 0;
 		for (int i = rankedSolutions.length - 1; i >= 0; i--) {
-			rankedSolutions[i] = solutionTable.getSolution(i);
+			rankedSolutions[i] = solutionTable.getSolution(solutionIndex);
+			solutionIndex++;
 		}
 
 		// Compute slot sum
@@ -92,7 +94,8 @@ public class CrazyGenetist implements ICrazyGenetistService {
 					otherSolution);
 
 			recombinedSolution = mutateRoomStability(recombinedSolution);
-			recombinedSolution = mutateCourseIsolation(recombinedSolution);
+			// Remark: Do not mutate so much!
+			// recombinedSolution = mutateCourseIsolation(recombinedSolution);
 
 			basisSolution.increaseRecombinationCount();
 			otherSolution.increaseRecombinationCount();
