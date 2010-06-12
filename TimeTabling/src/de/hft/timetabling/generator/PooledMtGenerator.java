@@ -11,7 +11,6 @@ import java.util.concurrent.Future;
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
-import de.hft.timetabling.genetist.ValidatorImpl;
 import de.hft.timetabling.services.IGeneratorService;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.ServiceLocator;
@@ -81,8 +80,6 @@ final class SolutionTask implements Callable<ISolution> {
 
 	private final IGeneratorService generator;
 
-	private final ValidatorImpl val = new ValidatorImpl();
-
 	public SolutionTask(final IProblemInstance problemInstance,
 			IGeneratorService generator) {
 		this.problemInstance = problemInstance;
@@ -101,9 +98,6 @@ final class SolutionTask implements Callable<ISolution> {
 				synchronized (CREATE_LOCK) {
 					newSolution = solutionTable.createNewSolution(coding,
 							problemInstance);
-					if (!val.isValidSolution(newSolution)) {
-						System.exit(1);
-					}
 				}
 			} catch (NoFeasibleSolutionFoundException e) {
 				e.printStackTrace();
