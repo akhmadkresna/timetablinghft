@@ -51,12 +51,15 @@ public class CrazyGenetist implements ICrazyGenetistService {
 		int nrRecombinations = (getRecombinationPercentage() * solutionTable
 				.getSize(false)) / 100;
 		for (int i = 0; i < nrRecombinations; i++) {
+
 			int rankingSystemSlotSum = computeRankingSystemSlotSum(rankedSolutions);
 			ISolution firstParentSolution = null;
 			ISolution secondParentSolution = null;
-			while ((firstParentSolution == null)
-					|| (secondParentSolution == null)
-					|| firstParentSolution.equals(secondParentSolution)) {
+
+			while (((firstParentSolution == null)
+					|| (secondParentSolution == null) || firstParentSolution
+					.equals(secondParentSolution))
+					&& (rankedSolutions.size() > 2)) {
 
 				Random random = new Random();
 				int selectedSlot1 = random.nextInt(rankingSystemSlotSum) + 1;
@@ -67,6 +70,11 @@ public class CrazyGenetist implements ICrazyGenetistService {
 				int rank2 = slotToRank(selectedSlot2, rankedSolutions.size(),
 						rankingSystemSlotSum);
 				secondParentSolution = rankedSolutions.get(rank2 - 1);
+			}
+
+			// Not enough solutions left due to elimination.
+			if ((firstParentSolution == null) || (secondParentSolution == null)) {
+				break;
 			}
 
 			// Recombination
