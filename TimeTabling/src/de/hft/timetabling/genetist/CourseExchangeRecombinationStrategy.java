@@ -43,12 +43,12 @@ public final class CourseExchangeRecombinationStrategy extends
 		RecombinationStrategy {
 
 	/** Value between 0 and 100. */
-	private static final int RECOMBINATION_PERCENTAGE = 80;
+	private static final int RECOMBINATION_PERCENTAGE = 85;
 
 	/** Value between 0.0 and 1.0. */
 	private static final double MUTATION_PROBABILITY = 0.15;
 
-	private static final int SOLUTION_TABLE_SIZE = 35;
+	private static final int SOLUTION_TABLE_SIZE = 50;
 
 	/**
 	 * List of lectures that could not be assigned during the first step of the

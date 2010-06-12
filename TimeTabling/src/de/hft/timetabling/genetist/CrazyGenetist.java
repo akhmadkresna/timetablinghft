@@ -22,6 +22,10 @@ import de.hft.timetabling.services.ServiceLocator;
  */
 public class CrazyGenetist implements ICrazyGenetistService {
 
+	public CrazyGenetist() {
+		RECOMBINATION_STRATEGY.configure();
+	}
+
 	@Override
 	public int getRecombinationPercentage() {
 		return RECOMBINATION_STRATEGY.getRecombinationPercentage();
