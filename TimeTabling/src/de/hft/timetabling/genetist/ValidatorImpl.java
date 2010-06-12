@@ -49,11 +49,11 @@ public final class ValidatorImpl implements IValidatorService {
 	private boolean noCurriculaOverlap(final ICourse[][] coding) {
 		final Set<ICurriculum> curriculaInPeriod = new HashSet<ICurriculum>();
 
-		for (int i = 0; i < coding.length; i++) {
+		for (int period = 0; period < coding.length; period++) {
 			curriculaInPeriod.clear();
 
-			for (int j = 0; j < coding[i].length; j++) {
-				final ICourse course = coding[i][j];
+			for (int room = 0; room < coding[period].length; room++) {
+				final ICourse course = coding[period][room];
 
 				if (course != null) {
 					if (curriculaInPeriod.isEmpty()) {
@@ -82,11 +82,11 @@ public final class ValidatorImpl implements IValidatorService {
 	private boolean noTeacherOverlap(final ICourse[][] coding) {
 		Set<String> teachersInPeriod = new HashSet<String>();
 
-		for (int i = 0; i < coding.length; i++) {
+		for (int period = 0; period < coding.length; period++) {
 			teachersInPeriod.clear();
 
-			for (int j = 0; j < coding[i].length; j++) {
-				ICourse course = coding[i][j];
+			for (int room = 0; room < coding[period].length; room++) {
+				ICourse course = coding[period][room];
 
 				if (course != null) {
 					if (teachersInPeriod.contains(course.getTeacher())) {
@@ -139,7 +139,6 @@ public final class ValidatorImpl implements IValidatorService {
 		 * Check if all courses are given at least the specified amount of times
 		 */
 		for (final ICourse course : inst.getCourses()) {
-
 			if (courseCount.get(course) != course.getNumberOfLectures()) {
 				System.out.println("CHECK:---allCoursesHeld2(" + course.getId()
 						+ " " + courseCount.get(course) + " / "
@@ -156,14 +155,14 @@ public final class ValidatorImpl implements IValidatorService {
 	 */
 	private boolean noUnavailabilityViolations(final ICourse[][] coding,
 			final IProblemInstance inst) {
-		for (int i = 0; i < coding.length; i++) {
+		for (int period = 0; period < coding.length; period++) {
 
-			for (int j = 0; j < coding[i].length; j++) {
-				final ICourse course = coding[i][j];
+			for (int room = 0; room < coding[period].length; room++) {
+				final ICourse course = coding[period][room];
 
 				if ((course != null)
 						&& inst.getUnavailabilityConstraints(course)
-								.contains(i)) {
+								.contains(period)) {
 					System.out.println("CHECK:---noUnavailabilityViolations"
 							+ course.getId() + ")");
 					return false;
