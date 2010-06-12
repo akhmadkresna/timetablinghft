@@ -159,12 +159,10 @@ public interface ISolutionTableService {
 	ISolution removeWorstSolution();
 
 	/**
-	 * Removes the solution that has been recombined most often from the
-	 * solution table. Does nothing if the solution table is currently empty.
-	 * Returns the solution that has been removed or <tt>null</tt> if the
-	 * solution table was empty.
+	 * Returns the solution that has been recombined most often. Returns
+	 * <tt>null</tt> if the solution table is currently empty.
 	 */
-	ISolution removeSolutionMostOftenRecombined();
+	ISolution getSolutionMostOftenRecombined();
 
 	/**
 	 * Removes the given solution from the solution table. Does nothing if the

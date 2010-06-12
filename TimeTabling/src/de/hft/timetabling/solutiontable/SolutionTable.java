@@ -221,26 +221,23 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
-	public ISolution removeSolutionMostOftenRecombined() {
+	public ISolution getSolutionMostOftenRecombined() {
 		if (getSize(false) == 0) {
 			return null;
 		}
-		WeightedSolution currentElimination = null;
+		WeightedSolution currentResult = null;
 		for (WeightedSolution weightedSolution : solutionTable) {
-			if (currentElimination == null) {
-				currentElimination = weightedSolution;
+			if (currentResult == null) {
+				currentResult = weightedSolution;
 				continue;
 			}
 			ISolution currentSolution = weightedSolution.getSolution();
-			if (currentSolution.getRecombinationCount() > currentElimination
+			if (currentSolution.getRecombinationCount() > currentResult
 					.getSolution().getRecombinationCount()) {
-				currentElimination = weightedSolution;
+				currentResult = weightedSolution;
 			}
 		}
-
-		solutionTable.remove(currentElimination);
-		return (currentElimination == null) ? null : currentElimination
-				.getSolution();
+		return (currentResult == null) ? null : currentResult.getSolution();
 	}
 
 	@Override

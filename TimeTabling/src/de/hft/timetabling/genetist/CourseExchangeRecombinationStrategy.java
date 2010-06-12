@@ -352,15 +352,25 @@ public final class CourseExchangeRecombinationStrategy extends
 	protected void eliminate(ISolution parent1, ISolution parent2,
 			Set<ISolution> eliminatedSolutions) {
 
-		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-				.getSolutionTableService();
+		ISolution worstSolution = getSolutionTable().removeWorstSolution();
+		eliminatedSolutions.add(worstSolution);
+
+		/*
+		 * With some probability we additionally want to remove an old solution
+		 * (high recombination count)
+		 */
 		if (Math.random() < 0.35) {
-			ISolution toEliminate = solutionTable
-					.removeSolutionMostOftenRecombined();
-			eliminatedSolutions.add(toEliminate);
-		} else {
-			ISolution toEliminate = solutionTable.removeWorstSolution();
-			eliminatedSolutions.add(toEliminate);
+			ISolution oldestSolution = getSolutionTable()
+					.getSolutionMostOftenRecombined();
+			/*
+			 * Only eliminate if the solution is really old cause we don't want
+			 * to loose a good rooster that hasn't got the chance to recombine
+			 * that much yet.
+			 */
+			if (oldestSolution.getRecombinationCount() > (SOLUTION_TABLE_SIZE / 1.5)) {
+				getSolutionTable().remove(oldestSolution);
+				eliminatedSolutions.add(oldestSolution);
+			}
 		}
 	}
 
@@ -371,7 +381,7 @@ public final class CourseExchangeRecombinationStrategy extends
 
 	@Override
 	public String getName() {
-		return "Course Exchange v3";
+		return "Course Exchange v4";
 	}
 
 }
