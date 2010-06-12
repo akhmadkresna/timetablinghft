@@ -136,7 +136,7 @@ public final class Main {
 				.readInstanceUsingInitialSolutionDirectory(fileName,
 						initialSolutionDirectory);
 
-		ServiceLocator.getInstance().getSolutionTableService().clear();
+		getSolutionTable().clear();
 
 		for (int i = 0; i < iterations; i++) {
 			System.out.println("");
@@ -156,17 +156,12 @@ public final class Main {
 
 			printBestSolution();
 			printFairestSolution();
-			printWorstSolution();
-			printUnfairestSolution();
 
 			shortSleep(sleepMilliSeconds);
 		}
 
-		printGeneratorStats();
+		printStatistics();
 		writeBestSolution();
-
-		System.out.println("Genetist success: " + Main.mutateRecombineSuccess);
-		System.out.println("Genetist failure: " + Main.mutateRecombineFailure);
 
 		return System.currentTimeMillis() - startTime;
 	}
@@ -200,57 +195,58 @@ public final class Main {
 	}
 
 	private static void updateSolutionTable() {
-		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-				.getSolutionTableService();
-		solutionTable.update();
+		getSolutionTable().update();
 	}
 
 	private static void printBestSolution() {
-		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-				.getSolutionTableService();
-
 		System.out.println("----------------------------");
 		System.out.println("-- Best Penalty Solution: Penalty: "
-				+ solutionTable.getBestPenaltySolutionPenalty()
+				+ getSolutionTable().getBestPenaltySolutionPenalty()
 				+ ", Fairness: "
-				+ solutionTable.getBestPenaltySolutionFairness());
+				+ getSolutionTable().getBestPenaltySolutionFairness());
 	}
 
 	private static void printFairestSolution() {
-		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-				.getSolutionTableService();
-
 		System.out.print("-- Best Fairness Solution: Penalty: "
-				+ solutionTable.getBestFairnessSolutionPenalty()
+				+ getSolutionTable().getBestFairnessSolutionPenalty()
 				+ ", Fairness: "
-				+ solutionTable.getBestFairnessSolutionFairness() + "\n");
+				+ getSolutionTable().getBestFairnessSolutionFairness() + "\n");
 	}
 
-	private static void printWorstSolution() {
-		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-				.getSolutionTableService();
-		System.out.println("-- Worst Penalty Solution: Penalty: "
-				+ solutionTable.getWorstPenaltySolutionPenalty()
-				+ ", Fairness: "
-				+ solutionTable.getWorstPenaltySolutionFairness());
+	private static ISolutionTableService getSolutionTable() {
+		return ServiceLocator.getInstance().getSolutionTableService();
 	}
 
-	private static void printUnfairestSolution() {
-		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-				.getSolutionTableService();
+	private static void printStatistics() {
+		System.out.println();
+		System.out.println();
 
-		System.out.print("-- Worst Fairness Solution: Penalty: "
-				+ solutionTable.getWorstFairnessSolutionPenalty()
-				+ ", Fairness: "
-				+ solutionTable.getWorstFairnessSolutionFairness() + "\n");
-	}
-
-	private static void printGeneratorStats() {
+		System.out.println("Algorithm terminated.");
 		System.out.println("----------------------------");
-		System.out
-				.println("-- Generator stats: Success: "
-						+ Main.generatorSuccess + ", Failure: "
-						+ Main.generatorFailure);
+		System.out.println("-- Best Penalty Solution (Penalty / Fairness): "
+				+ getSolutionTable().getBestPenaltySolutionPenalty() + " / "
+				+ getSolutionTable().getBestPenaltySolutionFairness());
+		System.out.println("-- Best Fairness Solution (Penalty / Fairness): "
+				+ getSolutionTable().getBestFairnessSolutionPenalty() + " / "
+				+ getSolutionTable().getBestFairnessSolutionFairness());
+
+		System.out.println();
+
+		int generatorSuccessRatio = (Main.generatorSuccess * 100)
+				/ (Main.generatorSuccess + Main.generatorFailure);
+		System.out.println("-- Generator (Success / Failure): "
+				+ Main.generatorSuccess + " / " + Main.generatorFailure + " ("
+				+ generatorSuccessRatio + " %)");
+
+		int genetistSuccessRatio = (Main.mutateRecombineSuccess * 100)
+				/ (Main.mutateRecombineSuccess + Main.mutateRecombineFailure);
+		System.out.println("-- Genetist (Success / Failure): "
+				+ Main.mutateRecombineSuccess + " / "
+				+ Main.mutateRecombineFailure + " (" + genetistSuccessRatio
+				+ " %)");
+		System.out.println("----------------------------");
+
+		System.out.println();
 	}
 
 	private static void shortSleep(final long sleepMilliSeconds) {
@@ -335,8 +331,7 @@ public final class Main {
 	private static void writeResult(final BufferedWriter writer,
 			final File instanceFile, final long duration) throws IOException {
 
-		final ISolutionTableService solutionTable = ServiceLocator
-				.getInstance().getSolutionTableService();
+		final ISolutionTableService solutionTable = getSolutionTable();
 
 		writer.write(instanceFile.getName());
 

@@ -41,12 +41,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			return;
 		}
 
-		int nrRecombinations = (getRecombinationPercentage() * solutionTable
-				.getSize(false)) / 100;
-		System.out.print("CRAZY GENETIST: Starting to create "
-				+ nrRecombinations + " children ("
-				+ getRecombinationPercentage() + "%) ...");
-
 		// The solutions ordered by rank (low to high, highest rank is best)
 		List<ISolution> rankedSolutions = new ArrayList<ISolution>(
 				solutionTable.getSize(false));
@@ -54,6 +48,8 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			rankedSolutions.add(solutionTable.getSolution(i));
 		}
 
+		int nrRecombinations = (getRecombinationPercentage() * solutionTable
+				.getSize(false)) / 100;
 		for (int i = 0; i < nrRecombinations; i++) {
 			int rankingSystemSlotSum = computeRankingSystemSlotSum(rankedSolutions);
 			ISolution firstParentSolution = null;
@@ -78,7 +74,6 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			ISolution recombinedSolution = RECOMBINATION_STRATEGY.recombine(
 					firstParentSolution, secondParentSolution);
 			if (recombinedSolution == null) {
-				System.out.println("CRAZY GENETIST: Failure (recombination).");
 				Main.mutateRecombineFailure++;
 				continue;
 			}
@@ -102,12 +97,9 @@ public class CrazyGenetist implements ICrazyGenetistService {
 				}
 				solutionTable.addSolution(recombinedSolution);
 			} else {
-				System.out.println("CRAZY GENETIST: Failure (validation).");
 				Main.mutateRecombineFailure++;
 			}
 		}
-
-		System.out.print(" done.\n");
 	}
 
 	private int computeRankingSystemSlotSum(List<ISolution> rankedSolutions) {
