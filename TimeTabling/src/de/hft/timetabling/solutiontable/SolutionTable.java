@@ -32,6 +32,8 @@ public final class SolutionTable implements ISolutionTableService {
 
 	private int currentNotVotedCount;
 
+	private int maximumSize;
+
 	/**
 	 * When voting, a solution moves from the not voted list to the real
 	 * solution table. To assure that further indexes of calls to
@@ -41,9 +43,19 @@ public final class SolutionTable implements ISolutionTableService {
 	private int voteIndexModification;
 
 	public SolutionTable() {
+		maximumSize = 50;
 		solutionTable = new TreeSet<WeightedSolution>();
-		notVotedTable = new ArrayList<ISolution>(
-				ISolutionTableService.TABLE_SIZE);
+		notVotedTable = new ArrayList<ISolution>(maximumSize);
+	}
+
+	@Override
+	public int getMaximumSize() {
+		return maximumSize;
+	}
+
+	@Override
+	public void setMaximumSize(int maximumSize) {
+		this.maximumSize = maximumSize;
 	}
 
 	@Override
@@ -74,7 +86,7 @@ public final class SolutionTable implements ISolutionTableService {
 
 	@Override
 	public void addSolution(ISolution solution) {
-		if (getSize(true) == ISolutionTableService.TABLE_SIZE) {
+		if (getSize(true) == maximumSize) {
 			throw new RuntimeException(
 					"Insertion of solution failed because the solution table is full.");
 		}
@@ -182,14 +194,44 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
-	public void removeWorstSolution() {
-		solutionTable.pollLast();
+	public ISolution removeWorstSolution() {
+		return solutionTable.pollLast().getSolution();
+	}
+
+	@Override
+	public boolean remove(ISolution solution) {
+		for (WeightedSolution weightedSolution : solutionTable) {
+			if (weightedSolution.getSolution().equals(solution)) {
+				return solutionTable.remove(weightedSolution);
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public ISolution removeSolutionMostOftenRecombined() {
+		WeightedSolution currentElimination = null;
+		for (WeightedSolution weightedSolution : solutionTable) {
+			if (currentElimination == null) {
+				currentElimination = weightedSolution;
+				continue;
+			}
+			ISolution currentSolution = weightedSolution.getSolution();
+			if (currentSolution.getRecombinationCount() > currentElimination
+					.getSolution().getRecombinationCount()) {
+				currentElimination = weightedSolution;
+			}
+		}
+
+		solutionTable.remove(currentElimination);
+		return (currentElimination == null) ? null : currentElimination
+				.getSolution();
 	}
 
 	@Override
 	public int getNumberOfEmptySlots() {
 		// Not voted solutions count not as empty slots.
-		return TABLE_SIZE - getSize(true);
+		return maximumSize - getSize(true);
 	}
 
 	@Override

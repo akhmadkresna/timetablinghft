@@ -9,6 +9,8 @@ import java.util.Set;
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
+import de.hft.timetabling.services.ISolutionTableService;
+import de.hft.timetabling.services.ServiceLocator;
 
 /**
  * This recombination strategy performs recombination by taking one half of all
@@ -39,6 +41,14 @@ import de.hft.timetabling.common.ISolution;
  */
 public final class CourseExchangeRecombinationStrategy extends
 		RecombinationStrategy {
+
+	/** Value between 0 and 100. */
+	private static final int RECOMBINATION_PERCENTAGE = 80;
+
+	/** Value between 0.0 and 1.0. */
+	private static final double MUTATION_PROBABILITY = 0.15;
+
+	private static final int SOLUTION_TABLE_SIZE = 35;
 
 	private IProblemInstance instance;
 
@@ -318,8 +328,45 @@ public final class CourseExchangeRecombinationStrategy extends
 	}
 
 	@Override
+	protected ISolution mutate(ISolution recombinedSolution) {
+		if (Math.random() <= MUTATION_PROBABILITY) {
+			recombinedSolution = MutationOperators
+					.mutateRoomStability(recombinedSolution);
+		}
+		return recombinedSolution;
+	}
+
+	@Override
+	protected void configure() {
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+		solutionTable.setMaximumSize(SOLUTION_TABLE_SIZE);
+	}
+
+	@Override
+	protected void eliminate(ISolution parent1, ISolution parent2,
+			Set<ISolution> eliminatedSolutions) {
+
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+		if (Math.random() < 0.35) {
+			ISolution toEliminate = solutionTable
+					.removeSolutionMostOftenRecombined();
+			eliminatedSolutions.add(toEliminate);
+		} else {
+			ISolution toEliminate = solutionTable.removeWorstSolution();
+			eliminatedSolutions.add(toEliminate);
+		}
+	}
+
+	@Override
+	public int getRecombinationPercentage() {
+		return RECOMBINATION_PERCENTAGE;
+	}
+
+	@Override
 	public String getName() {
-		return "Course Exchange v1";
+		return "Course Exchange v3";
 	}
 
 	private static class Slot {

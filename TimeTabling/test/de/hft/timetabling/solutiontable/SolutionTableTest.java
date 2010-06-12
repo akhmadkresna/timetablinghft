@@ -4,7 +4,6 @@ import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.services.AbstractServicesTest;
 import de.hft.timetabling.services.ISolutionTableService;
-import de.hft.timetabling.solutiontable.SolutionTable;
 
 /**
  * @author Alexander Weickmann
@@ -47,7 +46,7 @@ public class SolutionTableTest extends AbstractServicesTest {
 
 	public void testGetSolution() {
 		try {
-			solutionTable.getSolution(ISolutionTableService.TABLE_SIZE + 1);
+			solutionTable.getSolution(solutionTable.getMaximumSize() + 1);
 			fail();
 		} catch (IndexOutOfBoundsException e) {
 			// Expected exception (solution number out of range).

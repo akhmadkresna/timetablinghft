@@ -7,6 +7,8 @@ import java.util.Set;
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.ISolution;
+import de.hft.timetabling.services.ISolutionTableService;
+import de.hft.timetabling.services.ServiceLocator;
 
 /**
  * Recombination strategy from Sotiris and Steffen. This recombination strategy
@@ -18,6 +20,11 @@ import de.hft.timetabling.common.ISolution;
  */
 public final class NeighborhoodRecombinationStrategy extends
 		RecombinationStrategy {
+
+	/** Value between 0 and 100. */
+	private static final int RECOMBINATION_PERCENTAGE = 10;
+
+	private static final int SOLUTION_TABLE_SIZE = 100;
 
 	@Override
 	public ISolution recombine(ISolution solution1, ISolution solution2) {
@@ -144,6 +151,36 @@ public final class NeighborhoodRecombinationStrategy extends
 			}
 		}
 		return null;
+	}
+
+	@Override
+	protected ISolution mutate(ISolution recombinedSolution) {
+		recombinedSolution = MutationOperators
+				.mutateRoomStability(recombinedSolution);
+		recombinedSolution = MutationOperators
+				.mutateCourseIsolation(recombinedSolution);
+		return recombinedSolution;
+	}
+
+	@Override
+	protected void configure() {
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+		solutionTable.setMaximumSize(SOLUTION_TABLE_SIZE);
+	}
+
+	@Override
+	public int getRecombinationPercentage() {
+		return RECOMBINATION_PERCENTAGE;
+	}
+
+	@Override
+	protected void eliminate(ISolution parent1, ISolution parent2,
+			Set<ISolution> eliminatedSolutions) {
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+		ISolution worstSolution = solutionTable.removeWorstSolution();
+		eliminatedSolutions.add(worstSolution);
 	}
 
 	@Override

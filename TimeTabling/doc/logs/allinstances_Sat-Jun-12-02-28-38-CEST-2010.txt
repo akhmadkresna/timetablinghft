@@ -1,0 +1,345 @@
+Log file created on Sat Jun 12 02:28:38 CEST 2010
+--------------------------------------------------
+
+Maximum Solution Table Size: 50
+Iterations: 200
+Reproduction: 80%
+Strategy: Course Exchange v3
+
+comp01.ctt (Duration: 0 h, 0 m, 4 s):
+--------------
+Best penalty/penalty: 245
+Best penalty/fairness: 153
+Best fairness/penalty: 255
+Best fairness/fairness: 152
+Worst penalty/penalty: 4579
+Worst penalty/fairness: 1647
+Worst fairness/penalty: 3903
+Worst fairness/fairness: 1771
+Generator success: 2114
+Generator failure: 15
+Mutation/recombination success: 7820
+Mutation/recombination failure: 180
+
+
+comp02.ctt (Duration: 0 h, 0 m, 18 s):
+--------------
+Best penalty/penalty: 5483
+Best penalty/fairness: 3396
+Best fairness/penalty: 5483
+Best fairness/fairness: 3396
+Worst penalty/penalty: 52952
+Worst penalty/fairness: 27405
+Worst fairness/penalty: 52577
+Worst fairness/fairness: 27686
+Generator success: 131
+Generator failure: 35
+Mutation/recombination success: 4728
+Mutation/recombination failure: 3272
+
+
+comp03.ctt (Duration: 0 h, 0 m, 16 s):
+--------------
+Best penalty/penalty: 5230
+Best penalty/fairness: 3142
+Best fairness/penalty: 5230
+Best fairness/fairness: 3142
+Worst penalty/penalty: 41338
+Worst penalty/fairness: 21438
+Worst fairness/penalty: 41338
+Worst fairness/fairness: 21438
+Generator success: 394
+Generator failure: 0
+Mutation/recombination success: 5281
+Mutation/recombination failure: 2719
+
+
+comp04.ctt (Duration: 0 h, 0 m, 22 s):
+--------------
+Best penalty/penalty: 2898
+Best penalty/fairness: 1774
+Best fairness/penalty: 3045
+Best fairness/fairness: 1730
+Worst penalty/penalty: 16195
+Worst penalty/fairness: 9102
+Worst fairness/penalty: 15495
+Worst fairness/fairness: 9106
+Generator success: 790
+Generator failure: 0
+Mutation/recombination success: 7975
+Mutation/recombination failure: 25
+
+
+comp05.ctt (Duration: 0 h, 0 m, 29 s):
+--------------
+Best penalty/penalty: 24014
+Best penalty/fairness: 13294
+Best fairness/penalty: 24309
+Best fairness/fairness: 12285
+Worst penalty/penalty: 232321
+Worst penalty/fairness: 130096
+Worst fairness/penalty: 232321
+Worst fairness/fairness: 130096
+Generator success: 635
+Generator failure: 3544
+Mutation/recombination success: 4936
+Mutation/recombination failure: 3064
+
+
+comp06.ctt (Duration: 0 h, 0 m, 26 s):
+--------------
+Best penalty/penalty: 3219
+Best penalty/fairness: 1772
+Best fairness/penalty: 3346
+Best fairness/fairness: 1688
+Worst penalty/penalty: 25950
+Worst penalty/fairness: 15070
+Worst fairness/penalty: 25950
+Worst fairness/fairness: 15070
+Generator success: 269
+Generator failure: 0
+Mutation/recombination success: 6860
+Mutation/recombination failure: 1140
+
+
+comp07.ctt (Duration: 0 h, 0 m, 32 s):
+--------------
+Best penalty/penalty: 3871
+Best penalty/fairness: 2163
+Best fairness/penalty: 3910
+Best fairness/fairness: 2159
+Worst penalty/penalty: 21121
+Worst penalty/fairness: 11750
+Worst fairness/penalty: 20772
+Worst fairness/fairness: 12434
+Generator success: 310
+Generator failure: 3
+Mutation/recombination success: 6385
+Mutation/recombination failure: 1615
+
+
+comp08.ctt (Duration: 0 h, 0 m, 23 s):
+--------------
+Best penalty/penalty: 2215
+Best penalty/fairness: 1277
+Best fairness/penalty: 2433
+Best fairness/fairness: 1149
+Worst penalty/penalty: 15153
+Worst penalty/fairness: 8367
+Worst fairness/penalty: 15153
+Worst fairness/fairness: 8367
+Generator success: 757
+Generator failure: 4
+Mutation/recombination success: 7683
+Mutation/recombination failure: 317
+
+
+comp09.ctt (Duration: 0 h, 0 m, 27 s):
+--------------
+Best penalty/penalty: 2937
+Best penalty/fairness: 1584
+Best fairness/penalty: 2987
+Best fairness/fairness: 1572
+Worst penalty/penalty: 22376
+Worst penalty/fairness: 11949
+Worst fairness/penalty: 22376
+Worst fairness/fairness: 11949
+Generator success: 676
+Generator failure: 0
+Mutation/recombination success: 7612
+Mutation/recombination failure: 388
+
+
+comp10.ctt (Duration: 0 h, 0 m, 27 s):
+--------------
+Best penalty/penalty: 2311
+Best penalty/fairness: 1293
+Best fairness/penalty: 2321
+Best fairness/fairness: 1279
+Worst penalty/penalty: 20886
+Worst penalty/fairness: 12288
+Worst fairness/penalty: 20886
+Worst fairness/fairness: 12288
+Generator success: 403
+Generator failure: 0
+Mutation/recombination success: 7103
+Mutation/recombination failure: 897
+
+
+comp11.ctt (Duration: 0 h, 0 m, 4 s):
+--------------
+Best penalty/penalty: 645
+Best penalty/fairness: 367
+Best fairness/penalty: 723
+Best fairness/fairness: 266
+Worst penalty/penalty: 4795
+Worst penalty/fairness: 2651
+Worst fairness/penalty: 4533
+Worst fairness/fairness: 2703
+Generator success: 2077
+Generator failure: 0
+Mutation/recombination success: 8000
+Mutation/recombination failure: 0
+
+
+comp12.ctt (Duration: 0 h, 0 m, 44 s):
+--------------
+Best penalty/penalty: 3327
+Best penalty/fairness: 1787
+Best fairness/penalty: 3327
+Best fairness/fairness: 1787
+Worst penalty/penalty: 30450
+Worst penalty/fairness: 17169
+Worst fairness/penalty: 30342
+Worst fairness/fairness: 17327
+Generator success: 831
+Generator failure: 0
+Mutation/recombination success: 6618
+Mutation/recombination failure: 1382
+
+
+comp13.ctt (Duration: 0 h, 0 m, 26 s):
+--------------
+Best penalty/penalty: 3059
+Best penalty/fairness: 1711
+Best fairness/penalty: 3126
+Best fairness/fairness: 1678
+Worst penalty/penalty: 20743
+Worst penalty/fairness: 11608
+Worst fairness/penalty: 20104
+Worst fairness/fairness: 11652
+Generator success: 693
+Generator failure: 0
+Mutation/recombination success: 7892
+Mutation/recombination failure: 108
+
+
+comp14.ctt (Duration: 0 h, 0 m, 21 s):
+--------------
+Best penalty/penalty: 2659
+Best penalty/fairness: 1554
+Best fairness/penalty: 2726
+Best fairness/fairness: 1547
+Worst penalty/penalty: 14948
+Worst penalty/fairness: 8953
+Worst fairness/penalty: 14948
+Worst fairness/fairness: 8953
+Generator success: 671
+Generator failure: 0
+Mutation/recombination success: 7459
+Mutation/recombination failure: 541
+
+
+comp15.ctt (Duration: 0 h, 0 m, 16 s):
+--------------
+Best penalty/penalty: 3044
+Best penalty/fairness: 1817
+Best fairness/penalty: 3044
+Best fairness/fairness: 1817
+Worst penalty/penalty: 39025
+Worst penalty/fairness: 20347
+Worst fairness/penalty: 38014
+Worst fairness/fairness: 20520
+Generator success: 215
+Generator failure: 0
+Mutation/recombination success: 5309
+Mutation/recombination failure: 2691
+
+
+comp16.ctt (Duration: 0 h, 0 m, 29 s):
+--------------
+Best penalty/penalty: 2555
+Best penalty/fairness: 1479
+Best fairness/penalty: 2888
+Best fairness/fairness: 1461
+Worst penalty/penalty: 18832
+Worst penalty/fairness: 11517
+Worst fairness/penalty: 18832
+Worst fairness/fairness: 11517
+Generator success: 366
+Generator failure: 0
+Mutation/recombination success: 7178
+Mutation/recombination failure: 822
+
+
+comp17.ctt (Duration: 0 h, 0 m, 23 s):
+--------------
+Best penalty/penalty: 2696
+Best penalty/fairness: 1662
+Best fairness/penalty: 2778
+Best fairness/fairness: 1645
+Worst penalty/penalty: 19362
+Worst penalty/fairness: 12381
+Worst fairness/penalty: 19362
+Worst fairness/fairness: 12381
+Generator success: 189
+Generator failure: 0
+Mutation/recombination success: 6457
+Mutation/recombination failure: 1543
+
+
+comp18.ctt (Duration: 0 h, 0 m, 14 s):
+--------------
+Best penalty/penalty: 1041
+Best penalty/fairness: 518
+Best fairness/penalty: 1041
+Best fairness/fairness: 518
+Worst penalty/penalty: 11714
+Worst penalty/fairness: 5835
+Worst fairness/penalty: 11714
+Worst fairness/fairness: 5835
+Generator success: 1582
+Generator failure: 0
+Mutation/recombination success: 7946
+Mutation/recombination failure: 54
+
+
+comp19.ctt (Duration: 0 h, 0 m, 20 s):
+--------------
+Best penalty/penalty: 2632
+Best penalty/fairness: 1319
+Best fairness/penalty: 2632
+Best fairness/fairness: 1319
+Worst penalty/penalty: 29582
+Worst penalty/fairness: 14857
+Worst fairness/penalty: 27557
+Worst fairness/fairness: 15604
+Generator success: 520
+Generator failure: 242
+Mutation/recombination success: 6534
+Mutation/recombination failure: 1466
+
+
+comp20.ctt (Duration: 0 h, 0 m, 31 s):
+--------------
+Best penalty/penalty: 5293
+Best penalty/fairness: 2782
+Best fairness/penalty: 5295
+Best fairness/fairness: 2777
+Worst penalty/penalty: 29519
+Worst penalty/fairness: 16862
+Worst fairness/penalty: 29337
+Worst fairness/fairness: 17466
+Generator success: 289
+Generator failure: 1
+Mutation/recombination success: 6872
+Mutation/recombination failure: 1128
+
+
+comp21.ctt (Duration: 0 h, 0 m, 18 s):
+--------------
+Best penalty/penalty: 3505
+Best penalty/fairness: 1775
+Best fairness/penalty: 3505
+Best fairness/fairness: 1775
+Worst penalty/penalty: 29358
+Worst penalty/fairness: 17773
+Worst fairness/penalty: 29358
+Worst fairness/fairness: 17773
+Generator success: 123
+Generator failure: 0
+Mutation/recombination success: 4169
+Mutation/recombination failure: 3831
+
+
+Total duration: 0 h, 7 m, 59 s

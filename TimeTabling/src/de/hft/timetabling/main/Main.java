@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import de.hft.timetabling.common.IProblemInstance;
-import de.hft.timetabling.eliminator.Eliminator;
 import de.hft.timetabling.evaluator.Evaluator;
 import de.hft.timetabling.generator.PooledMtGenerator;
 import de.hft.timetabling.generator.YetAnotherGenerator;
@@ -17,7 +16,6 @@ import de.hft.timetabling.genetist.CrazyGenetist;
 import de.hft.timetabling.genetist.ValidatorImpl;
 import de.hft.timetabling.reader.Reader;
 import de.hft.timetabling.services.ICrazyGenetistService;
-import de.hft.timetabling.services.IEliminatorService;
 import de.hft.timetabling.services.IReaderService;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.IWriterService;
@@ -113,7 +111,6 @@ public final class Main {
 		serviceLocator.setValidatorService(new ValidatorImpl());
 		serviceLocator.setCrazyGenetistService(new CrazyGenetist());
 		serviceLocator.setEvaluatorService(new Evaluator());
-		serviceLocator.setEliminatorService(new Eliminator());
 	}
 
 	/**
@@ -154,8 +151,6 @@ public final class Main {
 
 			updateSolutionTable();
 
-			callEliminator();
-
 			printBestSolution();
 			printFairestSolution();
 			printWorstSolution();
@@ -174,7 +169,6 @@ public final class Main {
 	}
 
 	private static void callGenerator(IProblemInstance instance) {
-
 		long startMillis = System.currentTimeMillis();
 		ServiceLocator.getInstance().getGeneratorService().fillSolutionTable(
 				instance);
@@ -195,15 +189,6 @@ public final class Main {
 		ServiceLocator.getInstance().getEvaluatorService().evaluateSolutions();
 		long time = System.currentTimeMillis() - startMillis;
 		System.out.println("EVALUATOR: Finished after " + time + "ms.");
-	}
-
-	private static void callEliminator() {
-		long startMillis = System.currentTimeMillis();
-		IEliminatorService eliminatorService = ServiceLocator.getInstance()
-				.getEliminatorService();
-		eliminatorService.eliminateSolutions();
-		long time = System.currentTimeMillis() - startMillis;
-		System.out.println("ELIMINATOR: Finished after " + time + "ms.");
 	}
 
 	private static void writeBestSolution() throws IOException {
@@ -320,18 +305,21 @@ public final class Main {
 	private static void createLogFileHeader(final BufferedWriter writer)
 			throws IOException {
 
+		ServiceLocator serviceLocator = ServiceLocator.getInstance();
+
 		writer.write("Log file created on " + new Date());
 		writer.newLine();
 		writer.write("--------------------------------------------------");
 		writer.newLine();
 		writer.newLine();
-		writer.write("Table size: " + ISolutionTableService.TABLE_SIZE);
+		writer.write("Maximum Solution Table Size: "
+				+ serviceLocator.getSolutionTableService().getMaximumSize());
 		writer.newLine();
 		writer.write("Iterations: " + iterations);
 		writer.newLine();
-		writer.write("Elimination: " + IEliminatorService.PERCENTAGE + "%");
-		writer.newLine();
-		writer.write("Reproduction: " + ICrazyGenetistService.PERCENTAGE + "%");
+		writer.write("Reproduction: "
+				+ serviceLocator.getCrazyGenetistService()
+						.getRecombinationPercentage() + "%");
 		writer.newLine();
 		writer.write("Strategy: "
 				+ ICrazyGenetistService.RECOMBINATION_STRATEGY.getName());

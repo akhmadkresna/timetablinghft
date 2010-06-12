@@ -15,7 +15,7 @@ public interface ICrazyGenetistService {
 	 * Iterations to chose one of the recombination algorithms. This number
 	 * means the percentage of the maximum table size.
 	 */
-	int PERCENTAGE = 50;
+	int getRecombinationPercentage();
 
 	/** The strategy to use for recombination. */
 	RecombinationStrategy RECOMBINATION_STRATEGY = new CourseExchangeRecombinationStrategy();

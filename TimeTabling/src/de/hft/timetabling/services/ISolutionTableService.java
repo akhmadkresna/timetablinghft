@@ -8,8 +8,8 @@ import de.hft.timetabling.common.ISolution;
 
 /**
  * The solution table service holds the central solution table. The number of
- * solutions that are held in the table simultaneously is defined by the
- * constant {@link #TABLE_SIZE}.
+ * solutions that are held in the table simultaneously can be set by the method
+ * {@link #setMaximumSize(int)}.
  * <p>
  * The service interface provides ways to set the solutions in the table and
  * retrieve information about them. It also enables clients to vote for the
@@ -22,8 +22,13 @@ import de.hft.timetabling.common.ISolution;
  */
 public interface ISolutionTableService {
 
-	/** Defines how many solution are held in the solution table. */
-	int TABLE_SIZE = 50;
+	/**
+	 * Returns what is the maximum of how many solutions are held in the
+	 * solution table simultaneously.
+	 */
+	int getMaximumSize();
+
+	void setMaximumSize(int maximumSize);
 
 	/**
 	 * Returns how many solution slots are currently empty.
@@ -113,9 +118,24 @@ public interface ISolutionTableService {
 	int getSize(boolean includeNotVotedSolutions);
 
 	/**
-	 * Deletes the current worst solution.
+	 * Removes the current worst solution from the solution table. Does nothing
+	 * if the solution table is currently empty. Returns the solution that has
+	 * been removed.
 	 */
-	void removeWorstSolution();
+	ISolution removeWorstSolution();
+
+	ISolution removeSolutionMostOftenRecombined();
+
+	/**
+	 * Removes the given solution from the solution table. Does nothing if the
+	 * given solution is not contained in the solution table at this time.
+	 * Returns whether the operation did indeed remove a solution from the table
+	 * or not.
+	 * 
+	 * @param solution
+	 *            The solution to remove from the solution table.
+	 */
+	boolean remove(ISolution solution);
 
 	/**
 	 * Returns the solution at the given index.

@@ -42,7 +42,9 @@ public final class PooledMtGenerator implements IGeneratorService {
 			taskGroup.clear();
 			int taskCount = 0;
 
-			for (int i = 0; i < ISolutionTableService.TABLE_SIZE; i++) {
+			ISolutionTableService solutionTable = ServiceLocator.getInstance()
+					.getSolutionTableService();
+			for (int i = 0; i < solutionTable.getMaximumSize(); i++) {
 				taskGroup.add(new SolutionTask(problemInstance,
 						new YetAnotherGenerator(), taskCount++));
 			}
