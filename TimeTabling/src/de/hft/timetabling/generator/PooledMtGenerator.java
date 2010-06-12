@@ -14,7 +14,6 @@ import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.genetist.ValidatorImpl;
 import de.hft.timetabling.services.IGeneratorService;
 import de.hft.timetabling.services.ISolutionTableService;
-import de.hft.timetabling.services.IValidatorService;
 import de.hft.timetabling.services.ServiceLocator;
 
 public final class PooledMtGenerator implements IGeneratorService {
@@ -40,13 +39,12 @@ public final class PooledMtGenerator implements IGeneratorService {
 		if (this.problemInstance != problemInstance) {
 			this.problemInstance = problemInstance;
 			taskGroup.clear();
-			int taskCount = 0;
+			final ISolutionTableService solutionTable = ServiceLocator
+					.getInstance().getSolutionTableService();
 
-			ISolutionTableService solutionTable = ServiceLocator.getInstance()
-					.getSolutionTableService();
 			for (int i = 0; i < solutionTable.getMaximumSize(); i++) {
 				taskGroup.add(new SolutionTask(problemInstance,
-						new YetAnotherGenerator(), taskCount++));
+						new YetAnotherGenerator()));
 			}
 		}
 
@@ -76,50 +74,41 @@ final class SolutionTask implements Callable<ISolution> {
 
 	public static final Object CREATE_LOCK = new Object();
 
-	private final IProblemInstance instance;
+	private IProblemInstance problemInstance;
 
 	private final ISolutionTableService solutionTable = ServiceLocator
 			.getInstance().getSolutionTableService();
 
 	private final IGeneratorService generator;
 
-	private final int id;
+	private final ValidatorImpl val = new ValidatorImpl();
 
-	private IValidatorService validator = new ValidatorImpl();
-
-	public SolutionTask(final IProblemInstance instance,
-			IGeneratorService generator, int id) {
-		this.instance = instance;
+	public SolutionTask(final IProblemInstance problemInstance,
+			IGeneratorService generator) {
+		this.problemInstance = problemInstance;
 		this.generator = generator;
-		this.id = id;
 	}
 
 	@Override
 	public ISolution call() {
+		ISolution newSolution = null;
 
-		ISolution sol = null;
-
-		while (sol == null) {
-			// System.out.println("Task " + id);
-
+		while (newSolution == null) {
 			try {
 				ICourse[][] coding = generator
-						.generateFeasibleSolution(instance);
+						.generateFeasibleSolution(problemInstance);
 
 				synchronized (CREATE_LOCK) {
-					sol = solutionTable.createNewSolution(coding, instance);
-					// if (validator.isValidSolution(sol)) {
-					// System.out.println("Valid!");
-					// } else {
-					// System.err.println("Invalid :-( ("
-					// + instance.getFileName() + ")");
-					// System.exit(1);
-					// }
+					newSolution = solutionTable.createNewSolution(coding,
+							problemInstance);
+					if (!val.isValidSolution(newSolution)) {
+						System.exit(1);
+					}
 				}
 			} catch (NoFeasibleSolutionFoundException e) {
-				// nothing to do
+				e.printStackTrace();
 			}
 		}
-		return sol;
+		return newSolution;
 	}
 }

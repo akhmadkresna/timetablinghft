@@ -330,7 +330,7 @@ public final class Main {
 	}
 
 	private static void writeResult(final BufferedWriter writer,
-			final File instanceFile, long duration) throws IOException {
+			final File instanceFile, final long duration) throws IOException {
 
 		final ISolutionTableService solutionTable = ServiceLocator
 				.getInstance().getSolutionTableService();

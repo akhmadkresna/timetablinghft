@@ -16,9 +16,9 @@ import de.hft.timetabling.services.IValidatorService;
  * the amount of hard constraint violations is zero.
  * 
  * A solution is valid if 1) No two courses from the same curriculum are in the
- * same period 2) A teacher is not assigned to two courses in the same period 3)
- * No unavailability constraints are violated 4) All courses are held the
- * specified amount of times
+ * same period 2) No teacher is not assigned to more than one course in the same
+ * period 3) No unavailability constraints are violated 4) All courses are held
+ * the specified amount of times
  * 
  * @author Matthias Ruszala
  */
@@ -31,17 +31,15 @@ public final class ValidatorImpl implements IValidatorService {
 		return isValidSolution(sol.getProblemInstance(), sol.getCoding());
 	}
 
-	public boolean isValidSolution(final IProblemInstance instance,
+	public boolean isValidSolution(final IProblemInstance problemInstance,
 			final ICourse[][] coding) {
-
-		boolean noUnavailabilityViolations = noUnavailabilityViolations(coding,
-				instance);
-		boolean noCurriculaOverlap = noCurriculaOverlap(coding);
-		boolean noTeacherOverlap = noTeacherOverlap(coding);
-		boolean allCoursesHeld = allCoursesHeld(coding, instance);
-
-		return noUnavailabilityViolations && noCurriculaOverlap
-				&& noTeacherOverlap && allCoursesHeld;
+		/*
+		 * Calling the individual functions this way will enable premature
+		 * abortion of the check if result can be safely determined.
+		 */
+		return noUnavailabilityViolations(coding, problemInstance)
+				&& noCurriculaOverlap(coding) && noTeacherOverlap(coding)
+				&& allCoursesHeld(coding, problemInstance);
 	}
 
 	/**
@@ -49,31 +47,28 @@ public final class ValidatorImpl implements IValidatorService {
 	 * period.
 	 */
 	private boolean noCurriculaOverlap(final ICourse[][] coding) {
-
 		final Set<ICurriculum> curriculaInPeriod = new HashSet<ICurriculum>();
 
 		for (int i = 0; i < coding.length; i++) {
-
 			curriculaInPeriod.clear();
 
 			for (int j = 0; j < coding[i].length; j++) {
-				ICourse course = coding[i][j];
+				final ICourse course = coding[i][j];
 
 				if (course != null) {
 					if (curriculaInPeriod.isEmpty()) {
 						curriculaInPeriod.addAll(course.getCurricula());
 					} else {
-						Set<ICurriculum> intersection = new HashSet<ICurriculum>();
-						intersection.addAll(curriculaInPeriod);
-						intersection.retainAll(course.getCurricula());
-
-						if (intersection.size() > 0) {
-							System.out.println("CHECK:--noCurriculaOverlap("
-									+ course.getId() + ")");
-							return false;
+						for (final ICurriculum curriculum : course
+								.getCurricula()) {
+							if (curriculaInPeriod.contains(curriculum)) {
+								System.out
+										.println("CHECK:--noCurriculaOverlap("
+												+ course.getId() + ")");
+								return false;
+							}
+							curriculaInPeriod.add(curriculum);
 						}
-
-						curriculaInPeriod.addAll(course.getCurricula());
 					}
 				}
 			}
@@ -85,11 +80,9 @@ public final class ValidatorImpl implements IValidatorService {
 	 * Checks whether a teacher gives more than one lecture in the same period.
 	 */
 	private boolean noTeacherOverlap(final ICourse[][] coding) {
-
 		Set<String> teachersInPeriod = new HashSet<String>();
 
 		for (int i = 0; i < coding.length; i++) {
-
 			teachersInPeriod.clear();
 
 			for (int j = 0; j < coding[i].length; j++) {
@@ -101,13 +94,10 @@ public final class ValidatorImpl implements IValidatorService {
 								+ course.getId() + ")");
 						return false;
 					}
-
 					teachersInPeriod.add(course.getTeacher());
 				}
 			}
-
 		}
-
 		return true;
 	}
 
@@ -120,8 +110,7 @@ public final class ValidatorImpl implements IValidatorService {
 
 		for (int period = 0; period < coding.length; period++) {
 			for (int room = 0; room < coding[period].length; room++) {
-
-				ICourse course = coding[period][room];
+				final ICourse course = coding[period][room];
 
 				if (course != null) {
 					/*
@@ -138,32 +127,26 @@ public final class ValidatorImpl implements IValidatorService {
 				}
 			}
 		}
-
 		/*
 		 * Check if all courses are assigned at least once
 		 */
-		Set<ICourse> difference = new HashSet<ICourse>();
-		difference.addAll(inst.getCourses());
-		difference.removeAll(courseCount.keySet());
-
-		if (difference.size() > 0) {
-			System.out.println("CHECK:---allCoursesHeld1(" + difference.size()
-					+ " > 0)");
+		if (!courseCount.keySet().containsAll(inst.getCourses())) {
+			System.out.println("CHECK:---allCoursesHeld1");
 			return false;
 		}
 
 		/*
 		 * Check if all courses are given at least the specified amount of times
 		 */
-		for (ICourse course : inst.getCourses()) {
-			if (courseCount.get(course) < course.getNumberOfLectures()) {
+		for (final ICourse course : inst.getCourses()) {
+
+			if (courseCount.get(course) != course.getNumberOfLectures()) {
 				System.out.println("CHECK:---allCoursesHeld2(" + course.getId()
 						+ " " + courseCount.get(course) + " / "
 						+ course.getNumberOfLectures() + ")");
 				return false;
 			}
 		}
-
 		return true;
 	}
 
@@ -173,11 +156,10 @@ public final class ValidatorImpl implements IValidatorService {
 	 */
 	private boolean noUnavailabilityViolations(final ICourse[][] coding,
 			final IProblemInstance inst) {
-
 		for (int i = 0; i < coding.length; i++) {
-			for (int j = 0; j < coding[i].length; j++) {
 
-				ICourse course = coding[i][j];
+			for (int j = 0; j < coding[i].length; j++) {
+				final ICourse course = coding[i][j];
 
 				if ((course != null)
 						&& inst.getUnavailabilityConstraints(course)
@@ -190,5 +172,4 @@ public final class ValidatorImpl implements IValidatorService {
 		}
 		return true;
 	}
-
 }

@@ -29,12 +29,12 @@ public final class YetAnotherGenerator implements IGeneratorService {
 	 * the amount of iterations which will be performed before the algorithm
 	 * gives up trying to create a feasible solution
 	 */
-	private final int MAX_ITERATIONS = 30;
+	private final int MAX_ITERATIONS = 50;
 	/**
 	 * the amount of loops during each iteration. Higher loop counts increase
 	 * the likelihood of a feasible solution to be found
 	 */
-	private final int MAX_LOOPS = 20;
+	private final int MAX_LOOPS = 10;
 
 	/**
 	 * This method tries to construct a feasible solution for the given problem
@@ -101,10 +101,9 @@ public final class YetAnotherGenerator implements IGeneratorService {
 		Set<ICourse> unassigned = new HashSet<ICourse>();
 
 		while (!courses.isEmpty()) {
-
 			ICourse critical = session.getMostCriticalEvent(courses);
 
-			if (session.assignable(critical)) {
+			if (session.isAssignable(critical)) {
 				session.assignRandomViableSlots(critical);
 			} else {
 				unassigned.add(critical);
@@ -146,14 +145,15 @@ public final class YetAnotherGenerator implements IGeneratorService {
  * 
  * @author Matthias Ruszala
  */
-class YetAnotherSessionObject {
+final class YetAnotherSessionObject {
+
 	private final IProblemInstance instance;
 
 	private final HashMap<ICourse, Set<Integer>> availablePeriods = new HashMap<ICourse, Set<Integer>>();
 
-	private final ICourse[][] schedule;
-
 	private final List<Set<Integer>> availableRooms = new ArrayList<Set<Integer>>();
+
+	private final ICourse[][] schedule;
 
 	public YetAnotherSessionObject(final IProblemInstance instance) {
 		this.instance = instance;
@@ -162,7 +162,6 @@ class YetAnotherSessionObject {
 
 		for (ICourse course : instance.getCourses()) {
 			for (int period = 0; period < instance.getNumberOfPeriods(); period++) {
-
 				if (availablePeriods.get(course) == null) {
 					availablePeriods.put(course, new HashSet<Integer>());
 				}
@@ -175,7 +174,6 @@ class YetAnotherSessionObject {
 		}
 
 		for (int period = 0; period < instance.getNumberOfPeriods(); period++) {
-
 			availableRooms.add(new HashSet<Integer>());
 
 			for (int room = 0; room < instance.getNumberOfRooms(); room++) {
@@ -185,25 +183,30 @@ class YetAnotherSessionObject {
 	}
 
 	public ICourse getMostCriticalEvent(final Set<ICourse> courses) {
-		ICourse critical = null;
 		int minimum = Integer.MAX_VALUE;
+		List<ICourse> criticalCourses = new ArrayList<ICourse>();
 
 		for (ICourse course : courses) {
 			int periods = availablePeriods.get(course).size();
 
 			if (periods < minimum) {
 				minimum = periods;
-				critical = course;
+				criticalCourses.clear();
+				criticalCourses.add(course);
+			} else if (periods == minimum) {
+				criticalCourses.add(course);
 			}
 		}
-		return critical;
+		Collections.shuffle(criticalCourses);
+
+		return criticalCourses.get(0);
 	}
 
 	public ICourse[][] getCoding() {
 		return schedule;
 	}
 
-	public boolean assignable(final ICourse course) {
+	public boolean isAssignable(final ICourse course) {
 		return availablePeriods.get(course).size() >= course
 				.getNumberOfLectures();
 	}
@@ -211,11 +214,10 @@ class YetAnotherSessionObject {
 	public void assignRandomViableSlots(final ICourse critical) {
 		final List<Integer> periods = new ArrayList<Integer>();
 		periods.addAll(availablePeriods.get(critical));
-		final Set<Integer> occupiedPeriods = new HashSet<Integer>();
+		final Set<Integer> assignedPeriods = new HashSet<Integer>();
 
 		for (int i = 0; i < critical.getNumberOfLectures(); i++) {
 			Collections.shuffle(periods);
-
 			int randomPeriod = periods.get(0);
 
 			final List<Integer> rooms = new ArrayList<Integer>();
@@ -226,25 +228,25 @@ class YetAnotherSessionObject {
 					availablePeriods.get(course).remove(randomPeriod);
 				}
 			}
-
 			Collections.shuffle(rooms);
 			int randomRoom = rooms.get(0);
 			schedule[randomPeriod][randomRoom] = critical;
 
 			availableRooms.get(randomPeriod).remove(randomRoom);
-
 			periods.remove(0);
-			occupiedPeriods.add(randomPeriod);
+
+			assignedPeriods.add(randomPeriod);
 		}
+
 		for (ICurriculum curriculum : critical.getCurricula()) {
 			for (ICourse course : curriculum.getCourses()) {
-				availablePeriods.get(course).removeAll(occupiedPeriods);
+				availablePeriods.get(course).removeAll(assignedPeriods);
 			}
 		}
 
 		for (ICourse course : instance.getCoursesForTeacher(critical
 				.getTeacher())) {
-			availablePeriods.get(course).removeAll(occupiedPeriods);
+			availablePeriods.get(course).removeAll(assignedPeriods);
 		}
 	}
 }
