@@ -9,4 +9,5 @@ public interface IValidatorService {
 	boolean isValidSolution(ISolution sol);
 
 	boolean isValidSolution(IProblemInstance instance, ICourse[][] coding);
+
 }

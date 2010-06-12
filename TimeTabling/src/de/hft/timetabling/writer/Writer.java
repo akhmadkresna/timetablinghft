@@ -79,4 +79,5 @@ public final class Writer implements IWriterService {
 
 		System.out.print(" ... success.\n");
 	}
+
 }

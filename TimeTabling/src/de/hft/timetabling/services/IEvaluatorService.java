@@ -7,7 +7,6 @@ public interface IEvaluatorService {
 	/**
 	 * Evaluates penalty and fairness of the solutions from solutionTable and
 	 * adds them to the table
-	 * 
 	 */
 	void evaluateSolutions();
 
@@ -16,7 +15,6 @@ public interface IEvaluatorService {
 	 * 
 	 * @param newSolution
 	 * @return Returns the penalty of given solution
-	 * 
 	 */
 	int evaluateSolution(ISolution newSolution);
 

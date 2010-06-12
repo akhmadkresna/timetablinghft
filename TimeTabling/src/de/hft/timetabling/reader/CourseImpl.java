@@ -120,10 +120,4 @@ final class CourseImpl implements ICourse {
 		return "Course: " + id + " (" + teacher + ")";
 	}
 
-	@Override
-	public ICourse clone() {
-		return new CourseImpl(getId(), getMinWorkingDays(),
-				getNumberOfLectures(), getNumberOfStudents(), getTeacher(),
-				getProblemInstance());
-	}
 }

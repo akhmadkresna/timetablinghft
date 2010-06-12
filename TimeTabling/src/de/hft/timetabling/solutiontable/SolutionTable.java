@@ -210,6 +210,9 @@ public final class SolutionTable implements ISolutionTableService {
 
 	@Override
 	public ISolution removeSolutionMostOftenRecombined() {
+		if (getSize(false) == 0) {
+			return null;
+		}
 		WeightedSolution currentElimination = null;
 		for (WeightedSolution weightedSolution : solutionTable) {
 			if (currentElimination == null) {
@@ -322,7 +325,7 @@ public final class SolutionTable implements ISolutionTableService {
 		if (worstFairnessSolution == null) {
 			worstFairnessSolution = worstFairnessInTable;
 		}
-		// case when fairness is same, eg. fairness=0
+		// case when fairness is same, e.g. fairness = 0
 		else if (worstFairnessSolution.getFairness() == worstFairnessInTable
 				.getFairness()) {
 			if (worstFairnessInTable.getPenalty() > worstFairnessSolution

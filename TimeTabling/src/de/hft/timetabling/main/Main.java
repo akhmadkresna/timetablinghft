@@ -31,8 +31,11 @@ import de.hft.timetabling.writer.Writer;
 public final class Main {
 
 	public static int generatorSuccess = 0;
+
 	public static int generatorFailure = 0;
+
 	public static int mutateRecombineSuccess = 0;
+
 	public static int mutateRecombineFailure = 0;
 
 	/**
@@ -395,4 +398,5 @@ public final class Main {
 
 		return String.format("%d h, %d m, %d s", hours, minutes, seconds);
 	}
+
 }

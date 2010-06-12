@@ -14,7 +14,7 @@ import de.hft.timetabling.services.IValidatorService;
 import de.hft.timetabling.services.ServiceLocator;
 
 /**
- * The CrazyGenetist class is for recombinating and mutating a solution table.
+ * The CrazyGenetist is responsible for recombining and mutating solutions.
  * 
  * @author Steffen
  * @author Sotiris

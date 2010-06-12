@@ -24,7 +24,6 @@ public interface ICrazyGenetistService {
 	 * Method to start one iteration of recombination.
 	 * 
 	 * @author SteffenKremer
-	 * 
 	 */
 	void recombineAndMutate();
 

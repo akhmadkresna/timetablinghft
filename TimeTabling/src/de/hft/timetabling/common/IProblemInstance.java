@@ -76,6 +76,15 @@ public interface IProblemInstance {
 	ICourse getCourseById(String courseId);
 
 	/**
+	 * Returns the room identified by the given room ID or <tt>null</tt> if
+	 * there is no room with the given ID.
+	 * 
+	 * @param roomId
+	 *            The ID identifying the room to retrieve.
+	 */
+	IRoom getRoomById(String roomId);
+
+	/**
 	 * Returns the set of unavailability constraints for the given course. If a
 	 * course does not have any unavailability constraints then an empty list
 	 * will be returned.
@@ -108,7 +117,5 @@ public interface IProblemInstance {
 	 * @return the courses held by the teacher
 	 */
 	Set<ICourse> getCoursesForTeacher(String teacher);
-
-	IRoom getRoomById(String roomId);
 
 }

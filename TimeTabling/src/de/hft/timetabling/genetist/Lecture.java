@@ -7,7 +7,7 @@ import de.hft.timetabling.common.ICourse;
  * 
  * @author Alexander Weickmann
  */
-class Lecture {
+final class Lecture {
 
 	private final ICourse course;
 
@@ -24,6 +24,12 @@ class Lecture {
 
 	public TimeTableSlot getSlot() {
 		return slot;
+	}
+
+	@Override
+	public String toString() {
+		return "Lecture of " + course.getId() + " in period "
+				+ slot.getPeriod() + " and room " + slot.getRoom();
 	}
 
 }

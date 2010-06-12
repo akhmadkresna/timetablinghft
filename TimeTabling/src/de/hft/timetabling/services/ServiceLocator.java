@@ -31,8 +31,6 @@ public final class ServiceLocator {
 
 	private IEvaluatorService evaluatorService;
 
-	private IEliminatorService eliminatorService;
-
 	private ServiceLocator() {
 		// Singleton constructor.
 	}
@@ -86,13 +84,6 @@ public final class ServiceLocator {
 		return evaluatorService;
 	}
 
-	public IEliminatorService getEliminatorService() {
-		if (eliminatorService == null) {
-			throw new RuntimeException("Eliminator service not available.");
-		}
-		return eliminatorService;
-	}
-
 	public void setSolutionTableService(
 			ISolutionTableService solutionTableService) {
 		this.solutionTableService = solutionTableService;
@@ -121,10 +112,6 @@ public final class ServiceLocator {
 
 	public void setEvaluatorService(IEvaluatorService evaluatorService) {
 		this.evaluatorService = evaluatorService;
-	}
-
-	public void setEliminatorService(IEliminatorService eliminatorService) {
-		this.eliminatorService = eliminatorService;
 	}
 
 	@Override

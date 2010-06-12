@@ -5,7 +5,7 @@ package de.hft.timetabling.genetist;
  * 
  * @author Alexander Weickmann
  */
-class TimeTableSlot {
+final class TimeTableSlot {
 
 	private final int period;
 

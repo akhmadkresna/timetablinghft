@@ -48,11 +48,4 @@ public interface ICourse {
 	 */
 	IProblemInstance getProblemInstance();
 
-	/**
-	 * Method to clone a ICourse element.
-	 * 
-	 * @return Clone of this ICourse.
-	 * @author Steffen
-	 */
-	ICourse clone();
 }

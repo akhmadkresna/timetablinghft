@@ -153,6 +153,10 @@ public abstract class RecombinationStrategy {
 	 */
 	protected abstract void configure();
 
+	/**
+	 * Returns the percentage of how many solutions are recombined per
+	 * iteration.
+	 */
 	public abstract int getRecombinationPercentage();
 
 }

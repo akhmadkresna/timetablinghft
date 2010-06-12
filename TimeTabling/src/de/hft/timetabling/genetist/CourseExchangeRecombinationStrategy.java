@@ -50,13 +50,19 @@ public final class CourseExchangeRecombinationStrategy extends
 
 	private static final int SOLUTION_TABLE_SIZE = 35;
 
-	private IProblemInstance instance;
+	/**
+	 * List of lectures that could not be assigned during the first step of the
+	 * algorithm.
+	 */
+	private final List<Lecture> notAssignedLectures;
 
 	/** Set of courses that shall be provided by solution 1. */
-	private Set<ICourse> courses1;
+	private final Set<ICourse> courses1;
 
 	/** Set of courses that shall be provided by solution 2. */
-	private Set<ICourse> courses2;
+	private final Set<ICourse> courses2;
+
+	private IProblemInstance instance;
 
 	private ICourse[][] solution1Coding;
 
@@ -64,12 +70,6 @@ public final class CourseExchangeRecombinationStrategy extends
 
 	/** The coding that is being build during the algorithm. */
 	private ICourse[][] childCoding;
-
-	/**
-	 * List of lectures that could not be assigned during the first step of the
-	 * algorithm.
-	 */
-	List<Lecture> notAssignedLectures;
 
 	public CourseExchangeRecombinationStrategy() {
 		courses1 = new HashSet<ICourse>();
@@ -253,7 +253,8 @@ public final class CourseExchangeRecombinationStrategy extends
 		return true;
 	}
 
-	private TimeTableSlot findNearestFreeValidSlot(TimeTableSlot baseSlot, ICourse course) {
+	private TimeTableSlot findNearestFreeValidSlot(TimeTableSlot baseSlot,
+			ICourse course) {
 		// TODO AW: Not yet really finished as for now only one direction is
 		// checked (finds a free slot but not necessarily the nearest).
 		int startPeriod = baseSlot.getPeriod();
@@ -273,6 +274,7 @@ public final class CourseExchangeRecombinationStrategy extends
 		return (basePeriod + 1) % instance.getNumberOfPeriods();
 	}
 
+	/** Tries to assign the given course to some room in the given period. */
 	private boolean assignToFreeValidSlotInPeriod(int period, ICourse course) {
 		boolean success = false;
 		for (int room = 0; room < childCoding[period].length; room++) {

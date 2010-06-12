@@ -28,6 +28,13 @@ public interface ISolutionTableService {
 	 */
 	int getMaximumSize();
 
+	/**
+	 * Sets the maximum of how many solutions are held in the solution table at
+	 * the same time.
+	 * 
+	 * @param maximumSize
+	 *            The maximum size of the solution table.
+	 */
 	void setMaximumSize(int maximumSize);
 
 	/**
@@ -35,6 +42,11 @@ public interface ISolutionTableService {
 	 */
 	int getNumberOfEmptySlots();
 
+	/**
+	 * Returns whether the solution table is currently full which is the case if
+	 * the value returned by <tt>getSize(true)</tt> equals the maximum table
+	 * size.
+	 */
 	boolean isFull();
 
 	/**
@@ -105,6 +117,9 @@ public interface ISolutionTableService {
 
 	void voteForSolution(int index, int penalty, int fairness);
 
+	/**
+	 * Returns a list containing all solutions that have not been voted yet.
+	 */
 	List<ISolution> getNotVotedSolutions();
 
 	/**
@@ -115,15 +130,28 @@ public interface ISolutionTableService {
 	 */
 	void update();
 
+	/**
+	 * Returns how many solutions are currently stored in the solution table.
+	 * 
+	 * @param includeNotVotedSolutions
+	 *            Flag indicating whether solutions that are not yet voted
+	 *            should be counted as well.
+	 */
 	int getSize(boolean includeNotVotedSolutions);
 
 	/**
 	 * Removes the current worst solution from the solution table. Does nothing
 	 * if the solution table is currently empty. Returns the solution that has
-	 * been removed.
+	 * been removed or <tt>null</tt> if the solution table was empty.
 	 */
 	ISolution removeWorstSolution();
 
+	/**
+	 * Removes the solution that has been recombined most often from the
+	 * solution table. Does nothing if the solution table is currently empty.
+	 * Returns the solution that has been removed or <tt>null</tt> if the
+	 * solution table was empty.
+	 */
 	ISolution removeSolutionMostOftenRecombined();
 
 	/**
