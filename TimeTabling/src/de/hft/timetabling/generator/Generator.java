@@ -145,7 +145,6 @@ public final class Generator implements IGeneratorService {
 						problemInstance);
 				solutionTable.addSolution(newSolution);
 			} catch (NoFeasibleSolutionFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

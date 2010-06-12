@@ -23,7 +23,11 @@ final class MutationOperators {
 	 * @return mutated solution
 	 */
 	public static ISolution mutateCourseIsolation(ISolution solution) {
-		ISolution newSolution = solution.clone();
+		ISolutionTableService solutionTable = ServiceLocator.getInstance()
+				.getSolutionTableService();
+		ISolution newSolution = solutionTable.createNewSolution(solution
+				.getCoding(), solution.getParentSolutions(), solution
+				.getProblemInstance());
 
 		int n1 = 0, n2 = 0;
 		while (n1 == n2) {
@@ -89,7 +93,7 @@ final class MutationOperators {
 		ISolutionTableService solutionTable = ServiceLocator.getInstance()
 				.getSolutionTableService();
 		ISolution newSolution = solutionTable.createNewSolution(courses,
-				solution.getProblemInstance());
+				solution.getParentSolutions(), solution.getProblemInstance());
 		newSolution.setRecombinationCount(solution.getRecombinationCount() + 1);
 		return newSolution;
 	}

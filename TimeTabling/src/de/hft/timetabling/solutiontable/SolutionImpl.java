@@ -1,6 +1,9 @@
 package de.hft.timetabling.solutiontable;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
@@ -21,13 +24,25 @@ final class SolutionImpl implements ISolution {
 	 */
 	private final ICourse[][] coding;
 
+	private final Set<ISolution> parentSolutions;
+
 	private final IProblemInstance problemInstance;
 
 	private int recombinations = 0;
 
-	SolutionImpl(ICourse[][] coding, IProblemInstance problemInstance) {
+	SolutionImpl(ICourse[][] coding, Set<ISolution> parentSolutions,
+			IProblemInstance problemInstance) {
+
 		this.coding = coding;
 		this.problemInstance = problemInstance;
+		Set<ISolution> copyParents = new HashSet<ISolution>();
+		copyParents.addAll(parentSolutions);
+		this.parentSolutions = copyParents;
+	}
+
+	@Override
+	public Set<ISolution> getParentSolutions() {
+		return Collections.unmodifiableSet(parentSolutions);
 	}
 
 	@Override
@@ -58,13 +73,6 @@ final class SolutionImpl implements ISolution {
 	@Override
 	public void setRecombinationCount(int nrOfRecombinations) {
 		recombinations = nrOfRecombinations;
-	}
-
-	@Override
-	public ISolution clone() {
-		ISolution object = new SolutionImpl(getCoding().clone(),
-				getProblemInstance());
-		return object;
 	}
 
 	@Override

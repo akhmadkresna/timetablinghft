@@ -105,8 +105,11 @@ public final class CourseExchangeRecombinationStrategy extends
 		ISolution childSolution = null;
 		boolean success = assignNotAssignedLectures();
 		if (success) {
+			Set<ISolution> parentSolutions = new HashSet<ISolution>();
+			parentSolutions.add(solution1);
+			parentSolutions.add(solution2);
 			childSolution = getSolutionTable().createNewSolution(childCoding,
-					instance);
+					parentSolutions, instance);
 		}
 
 		return childSolution;

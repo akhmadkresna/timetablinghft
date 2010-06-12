@@ -1,6 +1,7 @@
 package de.hft.timetabling.services;
 
 import java.util.List;
+import java.util.Set;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
@@ -57,6 +58,8 @@ public interface ISolutionTableService {
 	 *            array represents periods, while the y-dimension of the array
 	 *            represents rooms. Each room has a unique number which can be
 	 *            used as array index.
+	 * @param parentSolutions
+	 *            A set containing the parents of the new solution.
 	 * @param problemInstance
 	 *            The {@link IProblemInstance} the new solution is for.
 	 * 
@@ -66,6 +69,15 @@ public interface ISolutionTableService {
 	 *             room y and additionally, every period is contained in the
 	 *             array. That means, if for example there are 10 periods and 2
 	 *             rooms in total, the array's dimension must be 10-2.
+	 */
+	ISolution createNewSolution(ICourse[][] coding,
+			Set<ISolution> parentSolutions, IProblemInstance problemInstance);
+
+	/**
+	 * Factory method allowing to create new solution instances without any
+	 * parent solutions.
+	 * 
+	 * @see #createNewSolution(ICourse[][], Set, IProblemInstance)
 	 */
 	ISolution createNewSolution(ICourse[][] coding,
 			IProblemInstance problemInstance);
