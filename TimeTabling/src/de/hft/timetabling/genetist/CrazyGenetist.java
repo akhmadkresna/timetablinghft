@@ -37,9 +37,11 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 * Solutions that are recombined and mutated are chosen randomly.
 	 */
 	@Override
-	public void recombineAndMutate() {
+	public void recombineAndMutate(int iteration, int totalIterations) {
+		RECOMBINATION_STRATEGY.newInterationStarted(iteration, totalIterations);
 		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-				.getSolutionTableService();
+
+		.getSolutionTableService();
 
 		if (solutionTable.getSize(false) <= 2) {
 			return;

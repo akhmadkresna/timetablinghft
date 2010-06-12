@@ -192,6 +192,11 @@ public final class NeighborhoodRecombinationStrategy extends
 	}
 
 	@Override
+	protected void newInterationStarted(int interation, int totalIterations) {
+		// Nothing to do
+	}
+
+	@Override
 	public String getName() {
 		return "Neighborhood v1";
 	}

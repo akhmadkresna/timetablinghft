@@ -154,6 +154,18 @@ public abstract class RecombinationStrategy {
 	protected abstract void configure();
 
 	/**
+	 * Called before each new iteration. Might be used to change some parameters
+	 * over time.
+	 * 
+	 * @param The
+	 *            number of the current iteration.
+	 * @param The
+	 *            total number of iterations.
+	 */
+	protected abstract void newInterationStarted(int iteration,
+			int totalIterations);
+
+	/**
 	 * Returns the percentage of how many solutions are recombined per
 	 * iteration.
 	 */

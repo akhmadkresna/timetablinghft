@@ -42,13 +42,15 @@ import de.hft.timetabling.services.ServiceLocator;
 public final class CourseExchangeRecombinationStrategy extends
 		RecombinationStrategy {
 
+	/** Value between 0.0 and 1.0. */
+	private static final double START_MUTATION_PROBABILITY = 0.05;
+
 	/** Value between 0 and 100. */
 	private static final int RECOMBINATION_PERCENTAGE = 85;
 
-	/** Value between 0.0 and 1.0. */
-	private static final double MUTATION_PROBABILITY = 0.15;
-
 	private static final int SOLUTION_TABLE_SIZE = 50;
+
+	private double mutationProbability;
 
 	/**
 	 * List of lectures that could not be assigned during the first step of the
@@ -334,7 +336,7 @@ public final class CourseExchangeRecombinationStrategy extends
 
 	@Override
 	protected ISolution mutate(ISolution recombinedSolution) {
-		if (Math.random() <= MUTATION_PROBABILITY) {
+		if (Math.random() <= mutationProbability) {
 			recombinedSolution = MutationOperators
 					.mutateRoomStability(recombinedSolution);
 		}
@@ -346,6 +348,19 @@ public final class CourseExchangeRecombinationStrategy extends
 		ISolutionTableService solutionTable = ServiceLocator.getInstance()
 				.getSolutionTableService();
 		solutionTable.setMaximumSize(SOLUTION_TABLE_SIZE);
+		mutationProbability = START_MUTATION_PROBABILITY;
+	}
+
+	@Override
+	protected void newInterationStarted(int iteration, int totalIterations) {
+		/*
+		 * Slightly increasing the probability to mutate as the time goes on so
+		 * we explore new things. At some time we need to stop increasing the
+		 * probability however.
+		 */
+		if (mutationProbability < 0.40) {
+			mutationProbability += 0.0025;
+		}
 	}
 
 	@Override
@@ -381,7 +396,7 @@ public final class CourseExchangeRecombinationStrategy extends
 
 	@Override
 	public String getName() {
-		return "Course Exchange v4";
+		return "Course Exchange v5";
 	}
 
 }

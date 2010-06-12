@@ -150,7 +150,7 @@ public final class Main {
 
 			updateSolutionTable();
 
-			callCrazyGenetist();
+			callCrazyGenetist(i + 1);
 
 			callEvaluator();
 
@@ -185,10 +185,10 @@ public final class Main {
 		System.out.println("GENERATOR: Finished after " + time + "ms.");
 	}
 
-	private static void callCrazyGenetist() {
+	private static void callCrazyGenetist(int iteration) {
 		long startMillis = System.currentTimeMillis();
 		ServiceLocator.getInstance().getCrazyGenetistService()
-				.recombineAndMutate();
+				.recombineAndMutate(iteration, iterations);
 		long time = System.currentTimeMillis() - startMillis;
 		System.out.println("CRAZY GENETIST: Finished after " + time + "ms.");
 	}

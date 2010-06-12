@@ -25,6 +25,6 @@ public interface ICrazyGenetistService {
 	 * 
 	 * @author SteffenKremer
 	 */
-	void recombineAndMutate();
+	void recombineAndMutate(int iteration, int totalIterations);
 
 }
