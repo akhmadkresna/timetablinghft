@@ -38,6 +38,10 @@ public final class Main {
 
 	public static int mutateRecombineFailure = 0;
 
+	public static int solutionTableInsertionSuccess = 0;
+
+	public static int solutionTableInsertionFailure = 0;
+
 	/**
 	 * The number of iterations to perform until the best solution will be
 	 * printed.
@@ -123,11 +127,9 @@ public final class Main {
 	private static long run(String fileName, String initialSolutionDirectory,
 			long sleepMilliSeconds) throws IOException {
 
+		resetStatistics();
+
 		long startTime = System.currentTimeMillis();
-		Main.generatorSuccess = 0;
-		Main.generatorFailure = 0;
-		Main.mutateRecombineSuccess = 0;
-		Main.mutateRecombineFailure = 0;
 
 		ServiceLocator locator = ServiceLocator.getInstance();
 		IReaderService reader = locator.getReaderService();
@@ -166,6 +168,15 @@ public final class Main {
 		return System.currentTimeMillis() - startTime;
 	}
 
+	private static void resetStatistics() {
+		generatorSuccess = 0;
+		generatorFailure = 0;
+		mutateRecombineSuccess = 0;
+		mutateRecombineFailure = 0;
+		solutionTableInsertionFailure = 0;
+		solutionTableInsertionSuccess = 0;
+	}
+
 	private static void callGenerator(IProblemInstance instance) {
 		long startMillis = System.currentTimeMillis();
 		ServiceLocator.getInstance().getGeneratorService().fillSolutionTable(
@@ -200,16 +211,14 @@ public final class Main {
 
 	private static void printBestSolution() {
 		System.out.println("----------------------------");
-		System.out.println("-- Best Penalty Solution: Penalty: "
-				+ getSolutionTable().getBestPenaltySolutionPenalty()
-				+ ", Fairness: "
+		System.out.println("-- Best Penalty Solution (Penalty / Fairness): "
+				+ getSolutionTable().getBestPenaltySolutionPenalty() + " / "
 				+ getSolutionTable().getBestPenaltySolutionFairness());
 	}
 
 	private static void printFairestSolution() {
-		System.out.print("-- Best Fairness Solution: Penalty: "
-				+ getSolutionTable().getBestFairnessSolutionPenalty()
-				+ ", Fairness: "
+		System.out.print("-- Best Fairness Solution (Penalty / Fairness): "
+				+ getSolutionTable().getBestFairnessSolutionPenalty() + " / "
 				+ getSolutionTable().getBestFairnessSolutionFairness() + "\n");
 	}
 
@@ -244,6 +253,13 @@ public final class Main {
 				+ Main.mutateRecombineSuccess + " / "
 				+ Main.mutateRecombineFailure + " (" + genetistSuccessRatio
 				+ " %)");
+
+		int solutionTableSuccessRatio = (Main.solutionTableInsertionSuccess * 100)
+				/ (Main.solutionTableInsertionSuccess + Main.solutionTableInsertionFailure);
+		System.out.println("-- Solution Table Insertion (Success / Failure): "
+				+ Main.solutionTableInsertionSuccess + " / "
+				+ Main.solutionTableInsertionFailure + " ("
+				+ solutionTableSuccessRatio + "%)");
 		System.out.println("----------------------------");
 
 		System.out.println();

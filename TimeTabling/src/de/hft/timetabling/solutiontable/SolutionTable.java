@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
+import de.hft.timetabling.main.Main;
 import de.hft.timetabling.services.ISolutionTableService;
 
 /**
@@ -186,8 +187,13 @@ public final class SolutionTable implements ISolutionTableService {
 		voteIndexModification++;
 		ISolution solution = notVotedTable.get(index);
 		notVotedTable.remove(index);
-		solutionTable.add(new WeightedSolution(solution, penalty, fairness));
-		// TODO AW: Output failure stats
+		boolean added = solutionTable.add(new WeightedSolution(solution,
+				penalty, fairness));
+		if (added) {
+			Main.solutionTableInsertionSuccess++;
+		} else {
+			Main.solutionTableInsertionFailure++;
+		}
 		currentNotVotedCount--;
 	}
 
