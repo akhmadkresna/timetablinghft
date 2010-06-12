@@ -3,6 +3,7 @@ package de.hft.timetabling.writer;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.IProblemInstance;
@@ -29,11 +30,13 @@ public final class Writer implements IWriterService {
 		ISolution bestSolution = solutionTableService.getBestPenaltySolution();
 		IProblemInstance problemInstance = bestSolution.getProblemInstance();
 
-		long timestamp = System.currentTimeMillis() / 1000;
+		String dateString = new Date().toString();
+		dateString = dateString.replaceAll(" ", "-");
+		dateString = dateString.replaceAll(":", "-");
 		String fileName = problemInstance.getFileName();
 		fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
 		fileName = fileName.substring(0, fileName.lastIndexOf('.'));
-		fileName = "output/" + fileName + "_" + timestamp + ".ctt";
+		fileName = "output/" + fileName + "_" + dateString + ".ctt";
 		outputSolution(fileName, bestSolution, problemInstance);
 	}
 

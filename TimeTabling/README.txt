@@ -10,7 +10,7 @@
 	
 	2)	Number of iterations to perform													optional
 	
-			defaults to 1000
+			defaults to 200
 	
 			
 	3)	Sleep time between iterations to be able to better follow console output		optional

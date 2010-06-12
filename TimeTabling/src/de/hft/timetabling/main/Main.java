@@ -46,7 +46,7 @@ public final class Main {
 	 * The number of iterations to perform until the best solution will be
 	 * printed.
 	 */
-	private static int iterations = 1000;
+	private static int iterations = 200;
 
 	/**
 	 * Runs the program.
@@ -142,7 +142,7 @@ public final class Main {
 
 		for (int i = 0; i < iterations; i++) {
 			System.out.println("");
-			System.out.println("------ ITERATION " + i + " ------");
+			System.out.println("------ ITERATION " + (i + 1) + " ------");
 
 			callGenerator(instance);
 
