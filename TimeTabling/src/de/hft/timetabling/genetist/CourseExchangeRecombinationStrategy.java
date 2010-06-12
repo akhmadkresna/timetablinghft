@@ -229,7 +229,7 @@ public final class CourseExchangeRecombinationStrategy extends
 	private boolean assignNotAssignedLectures() {
 		for (Lecture lecture : notAssignedLectures) {
 			ICourse course = lecture.getCourse();
-			Slot slot = lecture.getSlot();
+			TimeTableSlot slot = lecture.getSlot();
 
 			/*
 			 * First try to assign the lecture to another room in the same
@@ -244,7 +244,7 @@ public final class CourseExchangeRecombinationStrategy extends
 				continue;
 			}
 
-			Slot newSlot = findNearestFreeValidSlot(slot, course);
+			TimeTableSlot newSlot = findNearestFreeValidSlot(slot, course);
 			if (newSlot == null) {
 				return false;
 			}
@@ -253,7 +253,7 @@ public final class CourseExchangeRecombinationStrategy extends
 		return true;
 	}
 
-	private Slot findNearestFreeValidSlot(Slot baseSlot, ICourse course) {
+	private TimeTableSlot findNearestFreeValidSlot(TimeTableSlot baseSlot, ICourse course) {
 		// TODO AW: Not yet really finished as for now only one direction is
 		// checked (finds a free slot but not necessarily the nearest).
 		int startPeriod = baseSlot.getPeriod();
@@ -261,7 +261,7 @@ public final class CourseExchangeRecombinationStrategy extends
 		while (!(nextPeriod == startPeriod)) {
 			for (int room = 0; room < instance.getNumberOfRooms(); room++) {
 				if (isValidToAssign(course, nextPeriod, room)) {
-					return new Slot(nextPeriod, room);
+					return new TimeTableSlot(nextPeriod, room);
 				}
 			}
 			nextPeriod = getNextPeriod(nextPeriod);
@@ -292,7 +292,7 @@ public final class CourseExchangeRecombinationStrategy extends
 	 */
 	private boolean assign(ICourse course, int period, int room) {
 		if (isValidToAssign(course, period, room)) {
-			safeAssign(course, new Slot(period, room));
+			safeAssign(course, new TimeTableSlot(period, room));
 			return true;
 		}
 		return false;
@@ -302,7 +302,7 @@ public final class CourseExchangeRecombinationStrategy extends
 	 * This method is based on the assumption that it is called only when it is
 	 * safe to assign the given course to the given slot.
 	 */
-	private void safeAssign(ICourse course, Slot slot) {
+	private void safeAssign(ICourse course, TimeTableSlot slot) {
 		if (course == null) {
 			throw new NullPointerException();
 		}
@@ -367,53 +367,6 @@ public final class CourseExchangeRecombinationStrategy extends
 	@Override
 	public String getName() {
 		return "Course Exchange v3";
-	}
-
-	private static class Slot {
-
-		private final int period;
-
-		private final int room;
-
-		public Slot(int period, int room) {
-			this.period = period;
-			this.room = room;
-		}
-
-		public int getPeriod() {
-			return period;
-		}
-
-		public int getRoom() {
-			return room;
-		}
-
-		@Override
-		public String toString() {
-			return "Period: " + period + ", Room: " + room;
-		}
-
-	}
-
-	private static class Lecture {
-
-		private final ICourse course;
-
-		private final Slot slot;
-
-		public Lecture(ICourse course, int period, int room) {
-			this.course = course;
-			slot = new Slot(period, room);
-		}
-
-		public ICourse getCourse() {
-			return course;
-		}
-
-		public Slot getSlot() {
-			return slot;
-		}
-
 	}
 
 }

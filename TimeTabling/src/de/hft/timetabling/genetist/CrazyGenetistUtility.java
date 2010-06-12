@@ -35,15 +35,16 @@ public class CrazyGenetistUtility {
 	 * @return Map which contains the ICourse element and the position where it
 	 *         was found.
 	 */
-	public static Map<ICourse, CoursePosition> countLectures(
-			ICourse[][] course, String id) {
+	public static Map<ICourse, Lecture> countLectures(ICourse[][] course,
+			String id) {
 
-		Map<ICourse, CoursePosition> positions = new HashMap<ICourse, CoursePosition>();
+		Map<ICourse, Lecture> positions = new HashMap<ICourse, Lecture>();
 
 		for (int i = 0; i < course.length; i++) {
 			for (int j = 0; j < course[i].length; j++) {
 				if ((course[i][j] != null) && course[i][j].getId().equals(id)) {
-					positions.put(course[i][j], new CoursePosition(i, j));
+					positions
+							.put(course[i][j], new Lecture(course[i][j], i, j));
 				}
 			}
 		}

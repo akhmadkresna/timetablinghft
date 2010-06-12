@@ -1,4 +1,4 @@
-package de.hft.timetabling.genetist;
+package de.hft.timetabling.validator;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,7 +22,7 @@ import de.hft.timetabling.services.IValidatorService;
  * 
  * @author Matthias Ruszala
  */
-public final class ValidatorImpl implements IValidatorService {
+public final class Validator implements IValidatorService {
 
 	/**
 	 * Evaluates if a solution violates any hard constraints.

@@ -45,27 +45,31 @@ public final class NeighborhoodRecombinationStrategy extends
 							solution2.getCoding()[i][j].getTeacher(), i);
 
 					if (!(sameCurriculumInPeriod) && !(sameTeacherInPeriod)) {
-						CoursePosition cp1 = getCoursePositionRandomly(getPositionOfCourse(
+						Lecture cp1 = getCoursePositionRandomly(getPositionOfCourse(
 								newSolution, solution2.getCoding()[i][j]));
 						if (cp1 != null) {
-							newSolution.getCoding()[cp1.getX()][cp1.getY()] = null;
+							newSolution.getCoding()[cp1.getSlot().getPeriod()][cp1
+									.getSlot().getRoom()] = null;
 							newSolution.getCoding()[i][j] = solution2
 									.getCoding()[i][j];
 						}
 
 					} else if (sameCurriculumInPeriod && sameTeacherInPeriod) {
-						CoursePosition cp1 = getCoursePositionRandomly(getPositionOfCourse(
+						Lecture cp1 = getCoursePositionRandomly(getPositionOfCourse(
 								newSolution, solution2.getCoding()[i][j]));
-						CoursePosition cp2 = getIfSameCurriculumAndSameTeacher(
+						Lecture cp2 = getIfSameCurriculumAndSameTeacher(
 								newSolution, solution2.getCoding()[i][j], i);
 
 						if (cp2 != null) {
-							newSolution.getCoding()[cp1.getX()][cp1.getY()] = newSolution
-									.getCoding()[cp2.getX()][cp2.getY()];
+							newSolution.getCoding()[cp1.getSlot().getPeriod()][cp1
+									.getSlot().getRoom()] = newSolution
+									.getCoding()[cp2.getSlot().getPeriod()][cp2
+									.getSlot().getRoom()];
 
 							newSolution.getCoding()[i][j] = solution2
 									.getCoding()[i][j];
-							newSolution.getCoding()[cp2.getX()][cp2.getY()] = null;
+							newSolution.getCoding()[cp2.getSlot().getPeriod()][cp2
+									.getSlot().getRoom()] = null;
 						}
 					}
 				}
@@ -90,15 +94,14 @@ public final class NeighborhoodRecombinationStrategy extends
 	 *            Searched course
 	 * @return Set of the position of found courses
 	 */
-	private Set<CoursePosition> getPositionOfCourse(ISolution courses,
-			ICourse course) {
-		Set<CoursePosition> positions = new HashSet<CoursePosition>();
+	private Set<Lecture> getPositionOfCourse(ISolution courses, ICourse course) {
+		Set<Lecture> positions = new HashSet<Lecture>();
 		for (int i = 0; i < courses.getCoding().length; i++) {
 			for (int j = 0; j < courses.getCoding()[i].length; j++) {
 				if (courses.getCoding()[i][j] != null) {
 					if (courses.getCoding()[i][j].getId()
 							.equals(course.getId())) {
-						positions.add(new CoursePosition(i, j));
+						positions.add(new Lecture(course, i, j));
 					}
 				}
 			}
@@ -113,13 +116,13 @@ public final class NeighborhoodRecombinationStrategy extends
 	 *            Set of CoursePositions
 	 * @return randomly selected CoursePosition
 	 */
-	private CoursePosition getCoursePositionRandomly(Set<CoursePosition> set) {
+	private Lecture getCoursePositionRandomly(Set<Lecture> set) {
 		if (set.size() == 0) {
 			return null;
 		}
 		Random random = new Random();
 		int n = random.nextInt(set.size());
-		return set.toArray(new CoursePosition[set.size()])[n];
+		return set.toArray(new Lecture[set.size()])[n];
 	}
 
 	/**
@@ -135,7 +138,7 @@ public final class NeighborhoodRecombinationStrategy extends
 	 *            period in which that course should be
 	 * @return Position of found course
 	 */
-	private CoursePosition getIfSameCurriculumAndSameTeacher(ISolution courses,
+	private Lecture getIfSameCurriculumAndSameTeacher(ISolution courses,
 			ICourse givenCourse, int period) {
 		for (int i = 0; i < courses.getCoding()[period].length; i++) {
 			if ((courses.getCoding()[period][i] != null)
@@ -146,7 +149,7 @@ public final class NeighborhoodRecombinationStrategy extends
 
 				if ((tmpCur.size() == givenCourse.getCurricula().size())
 						&& tmpCur.containsAll(givenCourse.getCurricula())) {
-					return new CoursePosition(period, i);
+					return new Lecture(givenCourse, period, i);
 				}
 			}
 		}

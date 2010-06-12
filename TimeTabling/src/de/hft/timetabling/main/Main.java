@@ -13,7 +13,6 @@ import de.hft.timetabling.evaluator.Evaluator;
 import de.hft.timetabling.generator.PooledMtGenerator;
 import de.hft.timetabling.generator.YetAnotherGenerator;
 import de.hft.timetabling.genetist.CrazyGenetist;
-import de.hft.timetabling.genetist.ValidatorImpl;
 import de.hft.timetabling.reader.Reader;
 import de.hft.timetabling.services.ICrazyGenetistService;
 import de.hft.timetabling.services.IReaderService;
@@ -21,6 +20,7 @@ import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.IWriterService;
 import de.hft.timetabling.services.ServiceLocator;
 import de.hft.timetabling.solutiontable.SolutionTable;
+import de.hft.timetabling.validator.Validator;
 import de.hft.timetabling.writer.Writer;
 
 /**
@@ -108,7 +108,7 @@ public final class Main {
 		serviceLocator.setWriterService(new Writer());
 		serviceLocator.setGeneratorService(new PooledMtGenerator(
 				new YetAnotherGenerator()));
-		serviceLocator.setValidatorService(new ValidatorImpl());
+		serviceLocator.setValidatorService(new Validator());
 		serviceLocator.setCrazyGenetistService(new CrazyGenetist());
 		serviceLocator.setEvaluatorService(new Evaluator());
 	}
