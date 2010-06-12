@@ -16,7 +16,7 @@ import de.hft.timetabling.services.IValidatorService;
  * the amount of hard constraint violations is zero.
  * 
  * A solution is valid if 1) No two courses from the same curriculum are in the
- * same period 2) No teacher is not assigned to more than one course in the same
+ * same period 2) No teacher is assigned to more than one course in the same
  * period 3) No unavailability constraints are violated 4) All courses are held
  * the specified amount of times
  * 
