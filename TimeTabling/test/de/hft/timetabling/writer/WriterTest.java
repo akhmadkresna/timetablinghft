@@ -105,11 +105,15 @@ public class WriterTest extends TestCase {
 		assertEquals("TecCos B 4 3", lines.get(15));
 
 		/*
-		 * Delete the temporary output file again as it was only created for
+		 * Delete the temporary output files again as they were only created for
 		 * testing purposes.
 		 */
 		File file = new File(fileName);
 		file.delete();
+		File htmlFile = new File("test/html/temp.html");
+		htmlFile.delete();
+		File htmlDirectory = new File("test/html");
+		htmlDirectory.delete();
 	}
 
 }
