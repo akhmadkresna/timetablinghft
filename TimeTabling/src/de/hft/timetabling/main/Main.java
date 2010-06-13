@@ -474,7 +474,7 @@ public final class Main {
 		writer.newLine();
 		writer.write("Mutation success: " + Main.mutationSuccess);
 		writer.newLine();
-		writer.write("Mutatoin failure: " + Main.mutationFailure);
+		writer.write("Mutation failure: " + Main.mutationFailure);
 		writer.newLine();
 		writer.newLine();
 		writer.newLine();
