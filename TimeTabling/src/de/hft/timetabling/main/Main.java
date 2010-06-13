@@ -6,9 +6,9 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import de.hft.timetabling.common.IProblemInstance;
+import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.evaluator.Evaluator;
 import de.hft.timetabling.generator.PooledMtGenerator;
 import de.hft.timetabling.generator.YetAnotherGenerator;
@@ -17,9 +17,11 @@ import de.hft.timetabling.reader.Reader;
 import de.hft.timetabling.services.ICrazyGenetistService;
 import de.hft.timetabling.services.IReaderService;
 import de.hft.timetabling.services.ISolutionTableService;
+import de.hft.timetabling.services.IValidatorService;
 import de.hft.timetabling.services.IWriterService;
 import de.hft.timetabling.services.ServiceLocator;
 import de.hft.timetabling.solutiontable.SolutionTable;
+import de.hft.timetabling.util.DateUtil;
 import de.hft.timetabling.validator.Validator;
 import de.hft.timetabling.writer.Writer;
 
@@ -34,19 +36,23 @@ public final class Main {
 
 	public static int generatorFailure = 0;
 
-	public static int mutateRecombineSuccess = 0;
+	public static int genetistSuccess = 0;
 
-	public static int mutateRecombineFailure = 0;
+	public static int genetistFailure = 0;
 
 	public static int solutionTableInsertionSuccess = 0;
 
 	public static int solutionTableInsertionFailure = 0;
 
+	public static long duration = 0;
+
 	/**
 	 * The number of iterations to perform until the best solution will be
 	 * printed.
 	 */
-	private static int iterations = 200;
+	public static int iterations = 200;
+
+	public static String initialSolutionDirectory = "";
 
 	/**
 	 * Runs the program.
@@ -72,8 +78,6 @@ public final class Main {
 		}
 
 		long sleepTime = 0;
-		String initialSolutionDirectory = null;
-
 		if (args.length >= 2) {
 			iterations = Integer.valueOf(args[1]);
 			if (args.length >= 3) {
@@ -121,10 +125,9 @@ public final class Main {
 	}
 
 	/**
-	 * Runs the main loop of the program. Returns the duration of the program in
-	 * milliseconds.
+	 * Runs the main loop of the program.
 	 */
-	private static long run(String fileName, String initialSolutionDirectory,
+	private static void run(String fileName, String initialSolutionDirectory,
 			long sleepMilliSeconds) throws IOException {
 
 		resetStatistics();
@@ -133,9 +136,9 @@ public final class Main {
 
 		ServiceLocator locator = ServiceLocator.getInstance();
 		IReaderService reader = locator.getReaderService();
-		IProblemInstance instance = (initialSolutionDirectory == null) ? reader
-				.readInstance(fileName) : reader
-				.readInstanceUsingInitialSolutionDirectory(fileName,
+		IProblemInstance instance = (initialSolutionDirectory.length() == 0) ? reader
+				.readInstance(fileName)
+				: reader.readInstanceUsingInitialSolutionDirectory(fileName,
 						initialSolutionDirectory);
 
 		getSolutionTable().clear();
@@ -163,16 +166,30 @@ public final class Main {
 		}
 
 		printStatistics();
-		writeBestSolution();
 
-		return System.currentTimeMillis() - startTime;
+		checkBestSolutionForValidity();
+
+		duration = System.currentTimeMillis() - startTime;
+
+		outputBestSolution();
+	}
+
+	private static void checkBestSolutionForValidity() {
+		ServiceLocator locator = ServiceLocator.getInstance();
+		ISolutionTableService solutionTable = locator.getSolutionTableService();
+		ISolution bestSolution = solutionTable.getBestPenaltySolution();
+		IValidatorService validator = locator.getValidatorService();
+		if (!(validator.isValidSolution(bestSolution))) {
+			System.out.println("VALIDATOR: Ups, the solution is not valid!");
+		}
 	}
 
 	private static void resetStatistics() {
+		duration = 0;
 		generatorSuccess = 0;
 		generatorFailure = 0;
-		mutateRecombineSuccess = 0;
-		mutateRecombineFailure = 0;
+		genetistSuccess = 0;
+		genetistFailure = 0;
 		solutionTableInsertionFailure = 0;
 		solutionTableInsertionSuccess = 0;
 	}
@@ -200,7 +217,7 @@ public final class Main {
 		System.out.println("EVALUATOR: Finished after " + time + "ms.");
 	}
 
-	private static void writeBestSolution() throws IOException {
+	private static void outputBestSolution() throws IOException {
 		IWriterService writer = ServiceLocator.getInstance().getWriterService();
 		writer.outputBestSolution();
 	}
@@ -241,28 +258,34 @@ public final class Main {
 
 		System.out.println();
 
-		int generatorSuccessRatio = (Main.generatorSuccess * 100)
-				/ (Main.generatorSuccess + Main.generatorFailure);
 		System.out.println("-- Generator (Success / Failure): "
-				+ Main.generatorSuccess + " / " + Main.generatorFailure + " ("
-				+ generatorSuccessRatio + " %)");
+				+ generatorSuccess + " / " + generatorFailure + " ("
+				+ getGeneratorSuccessRatio() + " %)");
 
-		int genetistSuccessRatio = (Main.mutateRecombineSuccess * 100)
-				/ (Main.mutateRecombineSuccess + Main.mutateRecombineFailure);
 		System.out.println("-- Genetist (Success / Failure): "
-				+ Main.mutateRecombineSuccess + " / "
-				+ Main.mutateRecombineFailure + " (" + genetistSuccessRatio
-				+ " %)");
+				+ genetistSuccess + " / " + genetistFailure + " ("
+				+ getGenetistSuccessRatio() + " %)");
 
-		int solutionTableSuccessRatio = (Main.solutionTableInsertionSuccess * 100)
-				/ (Main.solutionTableInsertionSuccess + Main.solutionTableInsertionFailure);
 		System.out.println("-- Solution Table Insertion (Success / Failure): "
-				+ Main.solutionTableInsertionSuccess + " / "
-				+ Main.solutionTableInsertionFailure + " ("
-				+ solutionTableSuccessRatio + "%)");
+				+ solutionTableInsertionSuccess + " / "
+				+ solutionTableInsertionFailure + " ("
+				+ getSolutionTableInsertionSuccessRatio() + "%)");
 		System.out.println("----------------------------");
 
 		System.out.println();
+	}
+
+	public static int getSolutionTableInsertionSuccessRatio() {
+		return (solutionTableInsertionSuccess * 100)
+				/ (solutionTableInsertionSuccess + solutionTableInsertionFailure);
+	}
+
+	public static int getGeneratorSuccessRatio() {
+		return (generatorSuccess * 100) / (generatorSuccess + generatorFailure);
+	}
+
+	public static int getGenetistSuccessRatio() {
+		return (genetistSuccess * 100) / (genetistSuccess + genetistFailure);
 	}
 
 	private static void shortSleep(final long sleepMilliSeconds) {
@@ -276,11 +299,8 @@ public final class Main {
 	private static void runAllInstances(String initialSolutionsDirectory)
 			throws IOException {
 
-		String dateString = new Date().toString();
-		dateString = dateString.replaceAll(" ", "-");
-		dateString = dateString.replaceAll(":", "-");
-		final String logFileName = "doc/logs/allinstances_" + dateString
-				+ ".txt";
+		final String logFileName = "doc/logs/allinstances_"
+				+ DateUtil.getTimeStamp(new Date()) + ".txt";
 
 		final File logFile = new File(logFileName);
 		if (logFile.exists()) {
@@ -304,9 +324,8 @@ public final class Main {
 		createLogFileHeader(writer);
 
 		long totalDuration = 0;
-
 		for (int i = 0; i < instanceFiles.length; i++) {
-			long duration = run("instances/" + instanceFiles[i].getName(),
+			run("instances/" + instanceFiles[i].getName(),
 					initialSolutionsDirectory, 0);
 			totalDuration += duration;
 			writeResult(writer, instanceFiles[i], duration);
@@ -351,7 +370,7 @@ public final class Main {
 
 		writer.write(instanceFile.getName());
 
-		writer.write(" (Duration: " + toTimeString(duration) + "):");
+		writer.write(" (Duration: " + DateUtil.toTimeString(duration) + "):");
 		writer.newLine();
 		writer.write("--------------");
 		writer.newLine();
@@ -383,11 +402,9 @@ public final class Main {
 		writer.newLine();
 		writer.write("Generator failure: " + Main.generatorFailure);
 		writer.newLine();
-		writer.write("Mutation/recombination success: "
-				+ Main.mutateRecombineSuccess);
+		writer.write("Mutation/recombination success: " + Main.genetistSuccess);
 		writer.newLine();
-		writer.write("Mutation/recombination failure: "
-				+ Main.mutateRecombineFailure);
+		writer.write("Mutation/recombination failure: " + Main.genetistFailure);
 		writer.newLine();
 		writer.newLine();
 		writer.newLine();
@@ -397,17 +414,7 @@ public final class Main {
 
 	private static void createLogFileFooter(BufferedWriter writer,
 			long totalDuration) throws IOException {
-		writer.write("Total duration: " + toTimeString(totalDuration));
-	}
-
-	private static String toTimeString(long timeInMillis) {
-		final long hours = TimeUnit.MILLISECONDS.toHours(timeInMillis);
-		final long minutes = TimeUnit.MILLISECONDS.toMinutes(timeInMillis)
-				- TimeUnit.HOURS.toMinutes(hours);
-		final long seconds = TimeUnit.MILLISECONDS.toSeconds(timeInMillis)
-				- TimeUnit.MINUTES.toSeconds(minutes);
-
-		return String.format("%d h, %d m, %d s", hours, minutes, seconds);
+		writer.write("Total duration: " + DateUtil.toTimeString(totalDuration));
 	}
 
 }

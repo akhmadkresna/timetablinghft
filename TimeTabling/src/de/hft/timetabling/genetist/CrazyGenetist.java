@@ -88,7 +88,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			ISolution recombinedSolution = RECOMBINATION_STRATEGY.recombine(
 					firstParentSolution, secondParentSolution);
 			if (recombinedSolution == null) {
-				Main.mutateRecombineFailure++;
+				Main.genetistFailure++;
 				continue;
 			}
 
@@ -100,7 +100,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			IValidatorService validatorService = ServiceLocator.getInstance()
 					.getValidatorService();
 			if (validatorService.isValidSolution(recombinedSolution)) {
-				Main.mutateRecombineSuccess++;
+				Main.genetistSuccess++;
 				firstParentSolution.increaseRecombinationCount();
 				secondParentSolution.increaseRecombinationCount();
 				Set<ISolution> eliminatedSolutions = new HashSet<ISolution>();
@@ -111,7 +111,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 				}
 				solutionTable.addSolution(recombinedSolution);
 			} else {
-				Main.mutateRecombineFailure++;
+				Main.genetistFailure++;
 			}
 		}
 	}

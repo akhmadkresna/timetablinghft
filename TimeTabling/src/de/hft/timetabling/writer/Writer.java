@@ -1,17 +1,22 @@
 package de.hft.timetabling.writer;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 
 import de.hft.timetabling.common.ICourse;
+import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.IRoom;
 import de.hft.timetabling.common.ISolution;
+import de.hft.timetabling.main.Main;
+import de.hft.timetabling.services.ICrazyGenetistService;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.IWriterService;
 import de.hft.timetabling.services.ServiceLocator;
+import de.hft.timetabling.util.DateUtil;
 import de.hft.timetabling.util.PeriodUtil;
 
 /**
@@ -30,13 +35,11 @@ public final class Writer implements IWriterService {
 		ISolution bestSolution = solutionTableService.getBestPenaltySolution();
 		IProblemInstance problemInstance = bestSolution.getProblemInstance();
 
-		String dateString = new Date().toString();
-		dateString = dateString.replaceAll(" ", "-");
-		dateString = dateString.replaceAll(":", "-");
 		String fileName = problemInstance.getFileName();
 		fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
 		fileName = fileName.substring(0, fileName.lastIndexOf('.'));
-		fileName = "output/" + fileName + "_" + dateString + ".ctt";
+		fileName = "output/" + fileName + "_"
+				+ DateUtil.getTimeStamp(new Date()) + ".ctt";
 		outputSolution(fileName, bestSolution, problemInstance);
 	}
 
@@ -80,7 +83,170 @@ public final class Writer implements IWriterService {
 
 		bufferedWriter.close();
 
+		outputHtmlFile(fileName, solution, problemInstance);
+
 		System.out.print(" ... success.\n");
+	}
+
+	private void outputHtmlFile(String fileName, ISolution solution,
+			IProblemInstance problemInstance) throws IOException {
+
+		fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+		fileName = fileName + ".html";
+		int lastSlashPos = fileName.lastIndexOf('/');
+		String pathName = "";
+		if (lastSlashPos != -1) {
+			pathName = fileName.substring(0, lastSlashPos);
+		}
+		pathName = pathName + "/html";
+		File htmlDirectory = new File(pathName);
+		if (!(htmlDirectory.exists())) {
+			htmlDirectory.mkdir();
+		}
+		fileName = pathName + "/" + fileName.substring(lastSlashPos + 1);
+		FileWriter fileWriter = new FileWriter(fileName);
+		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+		writeHtmlHeader(fileName, bufferedWriter);
+
+		ICourse[][] coding = solution.getCoding();
+
+		writeln(bufferedWriter, "<body>");
+		writeln(bufferedWriter, "<h1>" + problemInstance.getName() + "</h1>");
+		writeln(bufferedWriter, "<h2>General Information and Statistics</h2>");
+		writeln(bufferedWriter,
+				"<table width=\"620\" style=\"border: 1px solid black;\">");
+		writeln(bufferedWriter, "<tr><td>Created:</td><td>"
+				+ new Date().toString() + "</td></tr>");
+		writeln(bufferedWriter, "<tr><td>Iterations:</td><td>"
+				+ Main.iterations + "</td></tr>");
+		writeln(bufferedWriter, "<tr><td>Duration:</td><td>"
+				+ DateUtil.toTimeString(Main.duration) + "</td></tr>");
+		writeln(bufferedWriter, "<tr><td>Recombination Strategy:</td><td>"
+				+ ICrazyGenetistService.RECOMBINATION_STRATEGY.getName()
+				+ "</td></tr>");
+		String directory = (Main.initialSolutionDirectory.length() == 0) ? "None"
+				: Main.initialSolutionDirectory;
+		writeln(bufferedWriter, "<tr><td>Initial Solution Directory:</td><td>"
+				+ directory + "</td></tr>");
+		writeln(bufferedWriter, "<tr><td>&nbsp;</td></tr>");
+
+		writeln(bufferedWriter, "<tr><td>Solution Penalty:</td><td>"
+				+ getSolutionTable().getBestPenaltySolutionPenalty()
+				+ "</td></tr>");
+		writeln(bufferedWriter, "<tr><td>Solution Fairness:</td><td>"
+				+ getSolutionTable().getBestPenaltySolutionFairness()
+				+ "</td></tr>");
+		writeln(bufferedWriter, "<tr><td>&nbsp;</td></tr>");
+
+		writeln(bufferedWriter,
+				"<tr><td>Generator (Success / Failure):</td><td>"
+						+ Main.generatorSuccess + " / " + Main.generatorFailure
+						+ " (" + Main.getGeneratorSuccessRatio()
+						+ "%)</td></tr>");
+		writeln(bufferedWriter,
+				"<tr><td>Genetist (Success / Failure):</td><td>"
+						+ Main.genetistSuccess + " / " + Main.genetistFailure
+						+ " (" + Main.getGenetistSuccessRatio()
+						+ "%)</td></tr>");
+		writeln(bufferedWriter,
+				"<tr><td>Solution Table Insertion (Success / Failure):</td><td>"
+						+ Main.solutionTableInsertionSuccess + " / "
+						+ Main.solutionTableInsertionFailure + " ("
+						+ Main.getSolutionTableInsertionSuccessRatio()
+						+ "%)</td></tr>");
+		writeln(bufferedWriter, "</table>");
+		writeln(bufferedWriter, "<br /><hr size=\"1\" />");
+
+		// Write one table for each curriculum
+		for (ICurriculum curriculum : problemInstance.getCurricula()) {
+
+			writeln(bufferedWriter, "<h2>" + curriculum.getId() + "</h2>");
+			writeln(bufferedWriter,
+					"<table width=\"100%\" style=\"border: 1px solid black;\">");
+
+			// Write table header
+			bufferedWriter.write("<tr>");
+			bufferedWriter.newLine();
+			for (int day = 0; day < problemInstance.getNumberOfDays(); day++) {
+				writeln(bufferedWriter,
+						"<th style=\"border: 1px solid black; padding:2px;\">Day "
+								+ (day + 1) + "</th>");
+			}
+			writeln(bufferedWriter, "</tr>");
+
+			for (int period = 0; period < problemInstance.getPeriodsPerDay(); period++) {
+				bufferedWriter.write("<tr>");
+				bufferedWriter.newLine();
+
+				for (int day = 0; day < problemInstance.getNumberOfDays(); day++) {
+					String courseString = "&nbsp;";
+					String roomString = "";
+					int convertedPeriod = PeriodUtil.convertToPeriodOnly(day,
+							period, problemInstance.getPeriodsPerDay());
+					for (int room = 0; room < problemInstance
+							.getNumberOfRooms(); room++) {
+						ICourse course = coding[convertedPeriod][room];
+						if (course != null) {
+							if (course.getCurricula().contains(curriculum)) {
+								courseString = course.getId();
+								IRoom roomObj = problemInstance
+										.getRoomByUniqueNumber(room);
+								roomString = "<br /><em>- " + roomObj.getId()
+										+ " [" + course.getNumberOfStudents()
+										+ " / " + roomObj.getCapacity()
+										+ "] -</em>";
+								break;
+							}
+						}
+					}
+
+					bufferedWriter
+							.write("<td style=\"border: 1px solid black; text-align:center; padding:2px;\">");
+					bufferedWriter.write(courseString + roomString);
+
+					writeln(bufferedWriter, "</td>");
+				}
+
+				writeln(bufferedWriter, "</tr>");
+			}
+
+			writeln(bufferedWriter, "</table><br />&nbsp;");
+
+		}
+
+		writeln(bufferedWriter, "</body>");
+
+		writeHtmlFooter(bufferedWriter);
+
+		bufferedWriter.close();
+	}
+
+	private void writeHtmlFooter(BufferedWriter bufferedWriter)
+			throws IOException {
+
+		bufferedWriter.write("</html>");
+	}
+
+	private void writeHtmlHeader(String fileName, BufferedWriter bufferedWriter)
+			throws IOException {
+
+		writeln(bufferedWriter, "<html>");
+		writeln(bufferedWriter, "<head>");
+		writeln(bufferedWriter, "<title>" + fileName + "</title>");
+		writeln(bufferedWriter, "</head>");
+		bufferedWriter.newLine();
+	}
+
+	private void writeln(BufferedWriter bufferedWriter, String text)
+			throws IOException {
+
+		bufferedWriter.write(text);
+		bufferedWriter.newLine();
+	}
+
+	private ISolutionTableService getSolutionTable() {
+		return ServiceLocator.getInstance().getSolutionTableService();
 	}
 
 }
