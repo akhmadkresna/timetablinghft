@@ -264,20 +264,36 @@ public final class CourseExchangeRecombinationStrategy extends
 	private TimeTableSlot findNearestFreeValidSlot(TimeTableSlot baseSlot,
 			ICourse course) {
 
-		/*
-		 * TODO AW: Not yet really finished as for now only one direction is
-		 * checked (finds a free slot but not necessarily the nearest).
-		 */
+		TimeTableSlot nextFree = findNextFreeValidSlot(baseSlot, course, true);
+		if (nextFree == null) {
+			return null;
+		}
+		TimeTableSlot previousFree = findNextFreeValidSlot(baseSlot, course,
+				false);
+		if (Math.abs(baseSlot.getPeriod() - nextFree.getPeriod()) > Math
+				.abs(baseSlot.getPeriod() - previousFree.getPeriod())) {
+			return previousFree;
+		}
+		return nextFree;
+	}
+
+	private TimeTableSlot findNextFreeValidSlot(TimeTableSlot baseSlot,
+			ICourse course, boolean directionNext) {
+
 		int startPeriod = baseSlot.getPeriod();
 		int numberOfPeriods = instance.getNumberOfPeriods();
-		int nextPeriod = PeriodUtil.getNextPeriod(startPeriod, numberOfPeriods);
+		int nextPeriod = directionNext ? PeriodUtil.getNextPeriod(startPeriod,
+				numberOfPeriods) : PeriodUtil.getPreviousPeriod(startPeriod,
+				numberOfPeriods);
 		while (!(nextPeriod == startPeriod)) {
 			for (int room = 0; room < instance.getNumberOfRooms(); room++) {
 				if (isValidToAssign(course, nextPeriod, room)) {
 					return new TimeTableSlot(nextPeriod, room);
 				}
 			}
-			nextPeriod = PeriodUtil.getNextPeriod(nextPeriod, numberOfPeriods);
+			nextPeriod = directionNext ? PeriodUtil.getNextPeriod(nextPeriod,
+					numberOfPeriods) : PeriodUtil.getPreviousPeriod(nextPeriod,
+					numberOfPeriods);
 		}
 		return null;
 	}
@@ -388,8 +404,9 @@ public final class CourseExchangeRecombinationStrategy extends
 		eliminatedSolutions.add(worstSolution);
 
 		/*
-		 * With some probability we additionally want to remove an old solution
-		 * (high recombination count)
+		 * With some probability we additionally want to remove a solution with
+		 * a high recombination count. This way we want to avoid that the
+		 * solutions get too one-sided.
 		 */
 		if (Math.random() < 0.40) {
 			ISolution mostRecombinedSolution = getSolutionTable()
@@ -413,7 +430,7 @@ public final class CourseExchangeRecombinationStrategy extends
 
 	@Override
 	public String getName() {
-		return "Course Exchange v7";
+		return "Course Exchange v8";
 	}
 
 }
