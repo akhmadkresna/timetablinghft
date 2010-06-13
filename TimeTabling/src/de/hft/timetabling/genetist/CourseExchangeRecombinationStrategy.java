@@ -243,11 +243,6 @@ public final class CourseExchangeRecombinationStrategy extends
 			 * First try to assign the lecture to another room in the same
 			 * period.
 			 */
-			/*
-			 * TODO AW: Improvement - I think it's more important in regard to
-			 * soft constraints to have a constant room rather than to have a
-			 * constant period.
-			 */
 			if (assignToFreeValidSlotInPeriod(slot.getPeriod(), course)) {
 				continue;
 			}

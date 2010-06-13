@@ -109,16 +109,16 @@ public final class Main {
 
 		setUpServices();
 
-		try {
-			if (args[0].equals("ALL")) {
-				runAllInstances(initialSolutionDirectory);
-			} else {
-				for (int i = 0; i < nrExecutions; i++) {
+		for (int i = 0; i < nrExecutions; i++) {
+			try {
+				if (args[0].equals("ALL")) {
+					runAllInstances(initialSolutionDirectory);
+				} else {
 					run(args[0], initialSolutionDirectory, sleepTime);
 				}
+			} catch (IOException e) {
+				handleException(e);
 			}
-		} catch (IOException e) {
-			handleException(e);
 		}
 
 		// MR: band-aid fix until I find out why the app does not terminate
@@ -387,16 +387,14 @@ public final class Main {
 		int totalPenalty = 0;
 		int totalFairness = 0;
 		for (int i = 0; i < instanceFiles.length; i++) {
-			for (int execution = 0; execution < nrExecutions; execution++) {
-				run("instances/" + instanceFiles[i].getName(),
-						initialSolutionsDirectory, 0);
-				totalDuration += duration;
-				totalPenalty += getSolutionTable().getBestPenaltySolution()
-						.getPenalty();
-				totalFairness += getSolutionTable().getBestPenaltySolution()
-						.getFairness();
-				writeResult(writer, instanceFiles[i], duration);
-			}
+			run("instances/" + instanceFiles[i].getName(),
+					initialSolutionsDirectory, 0);
+			totalDuration += duration;
+			totalPenalty += getSolutionTable().getBestPenaltySolution()
+					.getPenalty();
+			totalFairness += getSolutionTable().getBestPenaltySolution()
+					.getFairness();
+			writeResult(writer, instanceFiles[i], duration);
 		}
 
 		createLogFileFooter(writer, totalDuration, totalPenalty, totalFairness);
