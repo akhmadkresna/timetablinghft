@@ -185,6 +185,8 @@ public final class Writer implements IWriterService {
 				+ new Date().toString() + "</td></tr>");
 		writeln(bufferedWriter, "<tr><td>Iterations:</td><td>"
 				+ Main.iterations + "</td></tr>");
+		writeln(bufferedWriter, "<tr><td>Solution Table Size:</td><td>"
+				+ getSolutionTable().getMaximumSize() + "</td></tr>");
 		writeln(bufferedWriter, "<tr><td>Duration:</td><td>"
 				+ DateUtil.toTimeString(Main.duration) + "</td></tr>");
 		writeln(bufferedWriter, "<tr><td>Recombination Strategy:</td><td>"
@@ -210,10 +212,10 @@ public final class Writer implements IWriterService {
 						+ " (" + Main.getGeneratorSuccessRatio()
 						+ "%)</td></tr>");
 		writeln(bufferedWriter,
-				"<tr><td>Genetist (Success / Failure):</td><td>"
-						+ Main.genetistSuccess + " / " + Main.genetistFailure
-						+ " (" + Main.getGenetistSuccessRatio()
-						+ "%)</td></tr>");
+				"<tr><td>Recombination (Success / Failure):</td><td>"
+						+ Main.recombinationSuccess + " / "
+						+ Main.recombinationFailure + " ("
+						+ Main.getRecombinationSuccessRatio() + "%)</td></tr>");
 		writeln(bufferedWriter,
 				"<tr><td>Solution Table Insertion (Success / Failure):</td><td>"
 						+ Main.solutionTableInsertionSuccess + " / "

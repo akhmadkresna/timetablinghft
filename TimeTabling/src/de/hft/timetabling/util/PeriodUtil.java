@@ -56,6 +56,36 @@ public final class PeriodUtil {
 		return day;
 	}
 
+	/**
+	 * Returns the next period following the given base period. If the base
+	 * period is the last period then the first period will be returned again.
+	 * 
+	 * @param basePeriod
+	 *            The period to start from.
+	 * @param numberOfPeriods
+	 *            The number of periods in total.
+	 */
+	public static int getNextPeriod(int basePeriod, int numberOfPeriods) {
+		return (basePeriod + 1) % numberOfPeriods;
+	}
+
+	/**
+	 * Returns the previous period preceding the given base period. If the base
+	 * period is the first period then the last period will be returned again.
+	 * 
+	 * @param basePeriod
+	 *            The period to start from.
+	 * @param numberOfPeriods
+	 *            The number of periods in total.
+	 */
+	public static int getPreviousPeriod(int basePeriod, int numberOfPeriods) {
+		int previous = basePeriod - 1;
+		if (previous < 0) {
+			previous = numberOfPeriods - 1;
+		}
+		return previous;
+	}
+
 	private PeriodUtil() {
 		// Utility class not to be instantiated.
 	}

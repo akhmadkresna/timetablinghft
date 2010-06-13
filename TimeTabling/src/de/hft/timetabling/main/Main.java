@@ -36,9 +36,13 @@ public final class Main {
 
 	public static int generatorFailure = 0;
 
-	public static int genetistSuccess = 0;
+	public static int recombinationSuccess = 0;
 
-	public static int genetistFailure = 0;
+	public static int recombinationFailure = 0;
+
+	public static int mutationSuccess = 0;
+
+	public static int mutationFailure = 0;
 
 	public static int solutionTableInsertionSuccess = 0;
 
@@ -202,8 +206,8 @@ public final class Main {
 		duration = 0;
 		generatorSuccess = 0;
 		generatorFailure = 0;
-		genetistSuccess = 0;
-		genetistFailure = 0;
+		recombinationSuccess = 0;
+		recombinationFailure = 0;
 		solutionTableInsertionFailure = 0;
 		solutionTableInsertionSuccess = 0;
 	}
@@ -287,9 +291,9 @@ public final class Main {
 				+ generatorSuccess + " / " + generatorFailure + " ("
 				+ getGeneratorSuccessRatio() + " %)");
 
-		System.out.println("-- Genetist (Success / Failure): "
-				+ genetistSuccess + " / " + genetistFailure + " ("
-				+ getGenetistSuccessRatio() + " %)");
+		System.out.println("-- Recombination (Success / Failure): "
+				+ recombinationSuccess + " / " + recombinationFailure + " ("
+				+ getRecombinationSuccessRatio() + " %)");
 
 		System.out.println("-- Solution Table Insertion (Success / Failure): "
 				+ solutionTableInsertionSuccess + " / "
@@ -317,12 +321,12 @@ public final class Main {
 		return (generatorSuccess * 100) / total;
 	}
 
-	public static int getGenetistSuccessRatio() {
-		int total = genetistSuccess + genetistFailure;
+	public static int getRecombinationSuccessRatio() {
+		int total = recombinationSuccess + recombinationFailure;
 		if (total == 0) {
 			return 0;
 		}
-		return (genetistSuccess * 100) / total;
+		return (recombinationSuccess * 100) / total;
 	}
 
 	private static void shortSleep(final long sleepMilliSeconds) {
@@ -361,14 +365,19 @@ public final class Main {
 		createLogFileHeader(writer);
 
 		long totalDuration = 0;
+		int totalPenalty = 0;
+		int totalFairness = 0;
 		for (int i = 0; i < instanceFiles.length; i++) {
 			run("instances/" + instanceFiles[i].getName(),
 					initialSolutionsDirectory, 0);
 			totalDuration += duration;
+			totalPenalty += getSolutionTable().getBestPenaltySolutionPenalty();
+			totalFairness += getSolutionTable()
+					.getBestPenaltySolutionFairness();
 			writeResult(writer, instanceFiles[i], duration);
 		}
 
-		createLogFileFooter(writer, totalDuration);
+		createLogFileFooter(writer, totalDuration, totalPenalty, totalFairness);
 
 		writer.close();
 	}
@@ -439,9 +448,9 @@ public final class Main {
 		writer.newLine();
 		writer.write("Generator failure: " + Main.generatorFailure);
 		writer.newLine();
-		writer.write("Mutation/recombination success: " + Main.genetistSuccess);
+		writer.write("Recombination success: " + Main.recombinationSuccess);
 		writer.newLine();
-		writer.write("Mutation/recombination failure: " + Main.genetistFailure);
+		writer.write("Recombination failure: " + Main.recombinationFailure);
 		writer.newLine();
 		writer.newLine();
 		writer.newLine();
@@ -450,8 +459,14 @@ public final class Main {
 	}
 
 	private static void createLogFileFooter(BufferedWriter writer,
-			long totalDuration) throws IOException {
+			long totalDuration, int totalPenalty, int totalFairness)
+			throws IOException {
+
 		writer.write("Total duration: " + DateUtil.toTimeString(totalDuration));
+		writer.newLine();
+		writer.write("Total penalty: " + totalPenalty);
+		writer.newLine();
+		writer.write("Total fairness: " + totalFairness);
 	}
 
 }

@@ -11,6 +11,8 @@ import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.ServiceLocator;
+import de.hft.timetabling.util.HardConstraintUtil;
+import de.hft.timetabling.util.PeriodUtil;
 
 /**
  * This recombination strategy performs recombination by taking one half of all
@@ -257,23 +259,23 @@ public final class CourseExchangeRecombinationStrategy extends
 
 	private TimeTableSlot findNearestFreeValidSlot(TimeTableSlot baseSlot,
 			ICourse course) {
-		// TODO AW: Not yet really finished as for now only one direction is
-		// checked (finds a free slot but not necessarily the nearest).
+
+		/*
+		 * TODO AW: Not yet really finished as for now only one direction is
+		 * checked (finds a free slot but not necessarily the nearest).
+		 */
 		int startPeriod = baseSlot.getPeriod();
-		int nextPeriod = getNextPeriod(startPeriod);
+		int numberOfPeriods = instance.getNumberOfPeriods();
+		int nextPeriod = PeriodUtil.getNextPeriod(startPeriod, numberOfPeriods);
 		while (!(nextPeriod == startPeriod)) {
 			for (int room = 0; room < instance.getNumberOfRooms(); room++) {
 				if (isValidToAssign(course, nextPeriod, room)) {
 					return new TimeTableSlot(nextPeriod, room);
 				}
 			}
-			nextPeriod = getNextPeriod(nextPeriod);
+			nextPeriod = PeriodUtil.getNextPeriod(nextPeriod, numberOfPeriods);
 		}
 		return null;
-	}
-
-	private int getNextPeriod(int basePeriod) {
-		return (basePeriod + 1) % instance.getNumberOfPeriods();
 	}
 
 	/** Tries to assign the given course to some room in the given period. */
@@ -322,20 +324,25 @@ public final class CourseExchangeRecombinationStrategy extends
 		if (childCoding[period][room] != null) {
 			return false;
 		}
-		boolean teacherViolated = existsTeacherInPeriod(childCoding, course
-				.getTeacher(), period);
-		boolean curriculaViolated = existsCurriculaInPeriod(childCoding, course
-				.getCurricula(), period);
-		boolean unavailabilityConstraintViolated = existsUnavailabilityConstraint(
-				course, period);
+		boolean teacherViolated = HardConstraintUtil.existsTeacherInPeriod(
+				childCoding, course.getTeacher(), period);
+		boolean curriculaViolated = HardConstraintUtil.existsCurriculaInPeriod(
+				childCoding, course.getCurricula(), period);
+		boolean unavailabilityConstraintViolated = HardConstraintUtil
+				.existsUnavailabilityConstraint(course, period);
 		return !(teacherViolated || unavailabilityConstraintViolated || curriculaViolated);
 	}
 
 	@Override
 	protected ISolution mutate(ISolution recombinedSolution) {
-		if (Math.random() <= mutationProbability) {
+		if (Math.random() < mutationProbability) {
 			recombinedSolution = MutationOperators
 					.mutateRoomStability(recombinedSolution);
+			double randomValue = Math.random();
+			if (randomValue < 0.10) {
+				recombinedSolution = MutationOperators
+						.mutateCourseIsolation(recombinedSolution);
+			}
 		}
 		return recombinedSolution;
 	}
@@ -358,7 +365,7 @@ public final class CourseExchangeRecombinationStrategy extends
 		 * we explore new things. At some time we need to stop increasing the
 		 * probability however.
 		 */
-		if (mutationProbability < 0.40) {
+		if (mutationProbability < 0.42) {
 			mutationProbability += 0.0025;
 		}
 	}
@@ -396,7 +403,7 @@ public final class CourseExchangeRecombinationStrategy extends
 
 	@Override
 	public String getName() {
-		return "Course Exchange v5";
+		return "Course Exchange v6";
 	}
 
 }

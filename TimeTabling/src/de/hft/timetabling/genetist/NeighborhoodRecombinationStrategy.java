@@ -9,6 +9,7 @@ import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.ServiceLocator;
+import de.hft.timetabling.util.HardConstraintUtil;
 
 /**
  * Recombination strategy from Sotiris and Steffen. This recombination strategy
@@ -38,12 +39,13 @@ public final class NeighborhoodRecombinationStrategy extends
 				if ((newSolution.getCoding()[i][j] == null)
 						&& (solution2.getCoding()[i][j] != null)) {
 
-					boolean sameCurriculumInPeriod = existsCurriculaInPeriod(
-							newSolution.getCoding(),
-							solution2.getCoding()[i][j].getCurricula(), i);
-					boolean sameTeacherInPeriod = existsTeacherInPeriod(
-							newSolution.getCoding(),
-							solution2.getCoding()[i][j].getTeacher(), i);
+					boolean sameCurriculumInPeriod = HardConstraintUtil
+							.existsCurriculaInPeriod(newSolution.getCoding(),
+									solution2.getCoding()[i][j].getCurricula(),
+									i);
+					boolean sameTeacherInPeriod = HardConstraintUtil
+							.existsTeacherInPeriod(newSolution.getCoding(),
+									solution2.getCoding()[i][j].getTeacher(), i);
 
 					if (!(sameCurriculumInPeriod) && !(sameTeacherInPeriod)) {
 						Lecture cp1 = getCoursePositionRandomly(getPositionOfCourse(

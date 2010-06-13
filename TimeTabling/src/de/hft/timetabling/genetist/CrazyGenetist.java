@@ -10,7 +10,6 @@ import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.main.Main;
 import de.hft.timetabling.services.ICrazyGenetistService;
 import de.hft.timetabling.services.ISolutionTableService;
-import de.hft.timetabling.services.IValidatorService;
 import de.hft.timetabling.services.ServiceLocator;
 
 /**
@@ -87,31 +86,31 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			ISolution recombinedSolution = RECOMBINATION_STRATEGY.recombine(
 					firstParentSolution, secondParentSolution);
 			if (recombinedSolution == null) {
-				Main.genetistFailure++;
+				Main.recombinationFailure++;
 				continue;
 			}
+			Main.recombinationSuccess++;
 
 			// Mutation
-			recombinedSolution = RECOMBINATION_STRATEGY
+			ISolution mutatedSolution = RECOMBINATION_STRATEGY
 					.mutate(recombinedSolution);
-
-			// Hand in solution if valid
-			IValidatorService validatorService = ServiceLocator.getInstance()
-					.getValidatorService();
-			if (validatorService.isValidSolution(recombinedSolution)) {
-				Main.genetistSuccess++;
-				firstParentSolution.increaseRecombinationCount();
-				secondParentSolution.increaseRecombinationCount();
-				Set<ISolution> eliminatedSolutions = new HashSet<ISolution>();
-				RECOMBINATION_STRATEGY.eliminate(firstParentSolution,
-						secondParentSolution, eliminatedSolutions);
-				for (ISolution eliminatedSolution : eliminatedSolutions) {
-					rankedSolutions.remove(eliminatedSolution);
-				}
-				solutionTable.addSolution(recombinedSolution);
+			if (mutatedSolution != null) {
+				recombinedSolution = mutatedSolution;
+				Main.mutationSuccess++;
 			} else {
-				Main.genetistFailure++;
+				Main.mutationFailure++;
 			}
+
+			// Hand in solution
+			firstParentSolution.increaseRecombinationCount();
+			secondParentSolution.increaseRecombinationCount();
+			Set<ISolution> eliminatedSolutions = new HashSet<ISolution>();
+			RECOMBINATION_STRATEGY.eliminate(firstParentSolution,
+					secondParentSolution, eliminatedSolutions);
+			for (ISolution eliminatedSolution : eliminatedSolutions) {
+				rankedSolutions.remove(eliminatedSolution);
+			}
+			solutionTable.addSolution(recombinedSolution);
 		}
 	}
 
