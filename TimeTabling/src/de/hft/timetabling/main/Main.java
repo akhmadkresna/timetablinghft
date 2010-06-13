@@ -54,6 +54,8 @@ public final class Main {
 
 	public static String initialSolutionDirectory = "";
 
+	public static boolean outputAllSolutions = false;
+
 	/**
 	 * Runs the program.
 	 * 
@@ -64,8 +66,11 @@ public final class Main {
 	 *            is available it's treated as the number of times to batch-run
 	 *            the program 4) If a fourth argument is available it's treated
 	 *            as the amount of milliseconds to sleep between each iteration.
-	 *            5) If a fifth argument is provided it is treated as the name
-	 *            of the directory where initial solutions shall be read from.
+	 *            5) If a fifth argument is provided it is treated as a flag
+	 *            specifying whether to output only the best solutions (0) or
+	 *            all solutions (1) 6) If a sixth argument is provided it is
+	 *            treated as the name of the directory where initial solutions
+	 *            shall be read from.
 	 * 
 	 * @throws IllegalArgumentException
 	 *             If the length of <tt>args</tt> is smaller than 1.
@@ -86,8 +91,11 @@ public final class Main {
 				nrExecutions = Integer.valueOf(args[2]);
 				if (args.length >= 4) {
 					sleepTime = Long.valueOf(args[3]);
-					if (args.length == 5) {
-						initialSolutionDirectory = args[4];
+					if (args.length >= 5) {
+						outputAllSolutions = Integer.valueOf(args[4]) > 0;
+						if (args.length == 6) {
+							initialSolutionDirectory = args[5];
+						}
 					}
 				}
 			}
@@ -177,7 +185,7 @@ public final class Main {
 
 		duration = System.currentTimeMillis() - startTime;
 
-		outputBestSolution();
+		outputSolutions();
 	}
 
 	private static void checkBestSolutionForValidity() {
@@ -223,9 +231,20 @@ public final class Main {
 		System.out.println("EVALUATOR: Finished after " + time + "ms.");
 	}
 
-	private static void outputBestSolution() throws IOException {
+	private static void outputSolutions() throws IOException {
 		IWriterService writer = ServiceLocator.getInstance().getWriterService();
-		writer.outputBestSolution();
+		if (outputAllSolutions) {
+			for (int i = 0; i < getSolutionTable().getSize(false); i++) {
+				writer.outputSolution(getSolutionTable().getSolution(i));
+				/*
+				 * Sleep for 1 second to ensure that the time stamp for the file
+				 * name is a new one.
+				 */
+				shortSleep(1000);
+			}
+		} else {
+			writer.outputBestSolution();
+		}
 	}
 
 	private static void updateSolutionTable() {

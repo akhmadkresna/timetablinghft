@@ -33,25 +33,30 @@ public final class Writer implements IWriterService {
 		ISolutionTableService solutionTableService = ServiceLocator
 				.getInstance().getSolutionTableService();
 		ISolution bestSolution = solutionTableService.getBestPenaltySolution();
-		IProblemInstance problemInstance = bestSolution.getProblemInstance();
+		outputSolution(bestSolution);
+	}
 
+	@Override
+	public void outputSolution(ISolution solution) throws IOException {
+		IProblemInstance problemInstance = solution.getProblemInstance();
 		String fileName = problemInstance.getFileName();
 		fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
 		fileName = fileName.substring(0, fileName.lastIndexOf('.'));
 		fileName = "output/" + fileName + "_"
 				+ DateUtil.getTimeStamp(new Date()) + ".ctt";
-		outputSolution(fileName, bestSolution, problemInstance);
+		outputSolution(fileName, solution);
 	}
 
 	@Override
-	public void outputSolution(String fileName, ISolution solution,
-			IProblemInstance problemInstance) throws IOException {
+	public void outputSolution(String fileName, ISolution solution)
+			throws IOException {
 
-		System.out.print("WRITER: Writing best solution to '" + fileName + "'");
+		System.out.print("WRITER: Writing solution to '" + fileName + "'");
 
 		FileWriter fileWriter = new FileWriter(fileName);
 		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
+		IProblemInstance problemInstance = solution.getProblemInstance();
 		ICourse[][] coding = solution.getCoding();
 		int numberOfPeriods = problemInstance.getNumberOfPeriods();
 		int numberOfRooms = problemInstance.getNumberOfRooms();
@@ -91,27 +96,87 @@ public final class Writer implements IWriterService {
 	private void outputHtmlFile(String fileName, ISolution solution,
 			IProblemInstance problemInstance) throws IOException {
 
-		fileName = fileName.substring(0, fileName.lastIndexOf('.'));
-		fileName = fileName + ".html";
+		fileName = getHtmlFileName(fileName);
 		int lastSlashPos = fileName.lastIndexOf('/');
-		String pathName = "";
-		if (lastSlashPos != -1) {
-			pathName = fileName.substring(0, lastSlashPos);
-		}
-		pathName = pathName + "/html";
-		File htmlDirectory = new File(pathName);
-		if (!(htmlDirectory.exists())) {
-			htmlDirectory.mkdir();
-		}
-		fileName = pathName + "/" + fileName.substring(lastSlashPos + 1);
+		String htmlPathName = getHtmlDirectoryPathName(fileName, lastSlashPos);
+		createHtmlDirectoryIfNonExistent(htmlPathName);
+		fileName = htmlPathName + "/" + fileName.substring(lastSlashPos + 1);
 		FileWriter fileWriter = new FileWriter(fileName);
 		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
 		writeHtmlHeader(fileName, bufferedWriter);
 
-		ICourse[][] coding = solution.getCoding();
-
 		writeln(bufferedWriter, "<body>");
+
+		writeStatistics(problemInstance, bufferedWriter);
+
+		// Write one table for each curriculum
+		for (ICurriculum curriculum : problemInstance.getCurricula()) {
+
+			writeln(bufferedWriter, "<h2>" + curriculum.getId() + "</h2>");
+			writeln(bufferedWriter,
+					"<table width=\"100%\" style=\"border: 1px solid black;\">");
+
+			// Write table header
+			bufferedWriter.write("<tr>");
+			bufferedWriter.newLine();
+			for (int day = 0; day < problemInstance.getNumberOfDays(); day++) {
+				writeln(bufferedWriter,
+						"<th style=\"border: 1px solid black; padding:2px;\">Day "
+								+ (day + 1) + "</th>");
+			}
+			writeln(bufferedWriter, "</tr>");
+
+			for (int period = 0; period < problemInstance.getPeriodsPerDay(); period++) {
+				bufferedWriter.write("<tr>");
+				bufferedWriter.newLine();
+
+				for (int day = 0; day < problemInstance.getNumberOfDays(); day++) {
+					String courseString = "&nbsp;";
+					String roomString = "";
+					int convertedPeriod = PeriodUtil.convertToPeriodOnly(day,
+							period, problemInstance.getPeriodsPerDay());
+					for (int room = 0; room < problemInstance
+							.getNumberOfRooms(); room++) {
+						ICourse course = solution.getCoding()[convertedPeriod][room];
+						if (course != null) {
+							if (course.getCurricula().contains(curriculum)) {
+								courseString = course.getId();
+								IRoom roomObj = problemInstance
+										.getRoomByUniqueNumber(room);
+								roomString = "<br /><em>- " + roomObj.getId()
+										+ " [" + course.getNumberOfStudents()
+										+ " / " + roomObj.getCapacity()
+										+ "] -</em>";
+								break;
+							}
+						}
+					}
+
+					bufferedWriter
+							.write("<td style=\"border: 1px solid black; text-align:center; padding:2px;\">");
+					bufferedWriter.write(courseString + roomString);
+
+					writeln(bufferedWriter, "</td>");
+				}
+
+				writeln(bufferedWriter, "</tr>");
+			}
+
+			writeln(bufferedWriter, "</table><br />&nbsp;");
+
+		}
+
+		writeln(bufferedWriter, "</body>");
+
+		writeHtmlFooter(bufferedWriter);
+
+		bufferedWriter.close();
+	}
+
+	private void writeStatistics(IProblemInstance problemInstance,
+			BufferedWriter bufferedWriter) throws IOException {
+
 		writeln(bufferedWriter, "<h1>" + problemInstance.getName() + "</h1>");
 		writeln(bufferedWriter, "<h2>General Information and Statistics</h2>");
 		writeln(bufferedWriter,
@@ -157,69 +222,28 @@ public final class Writer implements IWriterService {
 						+ "%)</td></tr>");
 		writeln(bufferedWriter, "</table>");
 		writeln(bufferedWriter, "<br /><hr size=\"1\" />");
+	}
 
-		// Write one table for each curriculum
-		for (ICurriculum curriculum : problemInstance.getCurricula()) {
-
-			writeln(bufferedWriter, "<h2>" + curriculum.getId() + "</h2>");
-			writeln(bufferedWriter,
-					"<table width=\"100%\" style=\"border: 1px solid black;\">");
-
-			// Write table header
-			bufferedWriter.write("<tr>");
-			bufferedWriter.newLine();
-			for (int day = 0; day < problemInstance.getNumberOfDays(); day++) {
-				writeln(bufferedWriter,
-						"<th style=\"border: 1px solid black; padding:2px;\">Day "
-								+ (day + 1) + "</th>");
-			}
-			writeln(bufferedWriter, "</tr>");
-
-			for (int period = 0; period < problemInstance.getPeriodsPerDay(); period++) {
-				bufferedWriter.write("<tr>");
-				bufferedWriter.newLine();
-
-				for (int day = 0; day < problemInstance.getNumberOfDays(); day++) {
-					String courseString = "&nbsp;";
-					String roomString = "";
-					int convertedPeriod = PeriodUtil.convertToPeriodOnly(day,
-							period, problemInstance.getPeriodsPerDay());
-					for (int room = 0; room < problemInstance
-							.getNumberOfRooms(); room++) {
-						ICourse course = coding[convertedPeriod][room];
-						if (course != null) {
-							if (course.getCurricula().contains(curriculum)) {
-								courseString = course.getId();
-								IRoom roomObj = problemInstance
-										.getRoomByUniqueNumber(room);
-								roomString = "<br /><em>- " + roomObj.getId()
-										+ " [" + course.getNumberOfStudents()
-										+ " / " + roomObj.getCapacity()
-										+ "] -</em>";
-								break;
-							}
-						}
-					}
-
-					bufferedWriter
-							.write("<td style=\"border: 1px solid black; text-align:center; padding:2px;\">");
-					bufferedWriter.write(courseString + roomString);
-
-					writeln(bufferedWriter, "</td>");
-				}
-
-				writeln(bufferedWriter, "</tr>");
-			}
-
-			writeln(bufferedWriter, "</table><br />&nbsp;");
-
+	private void createHtmlDirectoryIfNonExistent(String htmlPathName) {
+		File htmlDirectory = new File(htmlPathName);
+		if (!(htmlDirectory.exists())) {
+			htmlDirectory.mkdir();
 		}
+	}
 
-		writeln(bufferedWriter, "</body>");
+	private String getHtmlDirectoryPathName(String fileName, int lastSlashPos) {
+		String pathName = "";
+		if (lastSlashPos != -1) {
+			pathName = fileName.substring(0, lastSlashPos);
+		}
+		pathName = pathName + "/html";
+		return pathName;
+	}
 
-		writeHtmlFooter(bufferedWriter);
-
-		bufferedWriter.close();
+	private String getHtmlFileName(String fileName) {
+		fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+		fileName = fileName + ".html";
+		return fileName;
 	}
 
 	private void writeHtmlFooter(BufferedWriter bufferedWriter)

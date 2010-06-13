@@ -72,8 +72,7 @@ public class WriterTest extends TestCase {
 
 	public void testOutputBestSolution() throws IOException {
 		String fileName = "test/temp.ctt";
-		writer.outputSolution(fileName, solutionTable.getBestPenaltySolution(),
-				instance);
+		writer.outputSolution(fileName, solutionTable.getBestPenaltySolution());
 
 		FileInputStream fileStream = new FileInputStream(fileName);
 		DataInputStream dataStream = new DataInputStream(fileStream);

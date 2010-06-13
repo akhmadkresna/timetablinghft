@@ -21,8 +21,14 @@
 	4)	Sleep time between iterations to be able to better follow console output		optional
 	
 			defaults to 0
+			
+	
+	5)	Flag indicating whether only the best solution (0) or							optional
+		all solutions (1) are written to output
+		
+			defaults to 0
 	
 	
-	5)	Name of the directory to read initial solutions from							optional
+	6)	Name of the directory to read initial solutions from							optional
 	
 			feature will not be used if not specified

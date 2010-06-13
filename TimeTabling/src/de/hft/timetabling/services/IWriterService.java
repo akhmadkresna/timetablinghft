@@ -2,7 +2,6 @@ package de.hft.timetabling.services;
 
 import java.io.IOException;
 
-import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
 
 /**
@@ -31,14 +30,13 @@ public interface IWriterService {
 	 *            The file name of the output file.
 	 * @param solution
 	 *            The solution that has to be written to the output file.
-	 * @param problemInstance
-	 *            The problem instance that the solution is solving.
 	 * 
 	 * @throws IOException
 	 *             If any I/O error occurs while trying to write the output
 	 *             file.
 	 */
-	void outputSolution(String fileName, ISolution solution,
-			IProblemInstance problemInstance) throws IOException;
+	void outputSolution(String fileName, ISolution solution) throws IOException;
+
+	void outputSolution(ISolution solution) throws IOException;
 
 }
