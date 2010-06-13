@@ -15,7 +15,7 @@ import de.hft.timetabling.services.IGeneratorService;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.ServiceLocator;
 
-public final class PooledMtGenerator implements IGeneratorService {
+public final class MultiThreadedGenerator implements IGeneratorService {
 
 	private IProblemInstance problemInstance;
 
@@ -29,7 +29,7 @@ public final class PooledMtGenerator implements IGeneratorService {
 
 	private final IGeneratorService generator;
 
-	public PooledMtGenerator(IGeneratorService generator) {
+	public MultiThreadedGenerator(IGeneratorService generator) {
 		this.generator = generator;
 	}
 
@@ -43,7 +43,7 @@ public final class PooledMtGenerator implements IGeneratorService {
 
 			for (int i = 0; i < solutionTable.getMaximumSize(); i++) {
 				taskGroup.add(new SolutionTask(problemInstance,
-						new YetAnotherGenerator()));
+						new Generator()));
 			}
 		}
 

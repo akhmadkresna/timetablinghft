@@ -10,8 +10,8 @@ import java.util.Date;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.evaluator.Evaluator;
-import de.hft.timetabling.generator.PooledMtGenerator;
-import de.hft.timetabling.generator.YetAnotherGenerator;
+import de.hft.timetabling.generator.MultiThreadedGenerator;
+import de.hft.timetabling.generator.Generator;
 import de.hft.timetabling.genetist.CrazyGenetist;
 import de.hft.timetabling.reader.Reader;
 import de.hft.timetabling.services.ICrazyGenetistService;
@@ -132,8 +132,8 @@ public final class Main {
 		serviceLocator.setReaderService(new Reader());
 		serviceLocator.setSolutionTableService(new SolutionTable());
 		serviceLocator.setWriterService(new Writer());
-		serviceLocator.setGeneratorService(new PooledMtGenerator(
-				new YetAnotherGenerator()));
+		serviceLocator.setGeneratorService(new MultiThreadedGenerator(
+				new Generator()));
 		serviceLocator.setValidatorService(new Validator());
 		serviceLocator.setCrazyGenetistService(new CrazyGenetist());
 		serviceLocator.setEvaluatorService(new Evaluator());
