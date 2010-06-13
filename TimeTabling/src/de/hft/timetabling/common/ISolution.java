@@ -1,6 +1,5 @@
 package de.hft.timetabling.common;
 
-import java.util.Set;
 
 /**
  * A solution is a result of the program. Feasible solutions are created by the
@@ -19,11 +18,6 @@ public interface ISolution {
 	 * associated to a specific period and room.
 	 */
 	ICourse[][] getCoding();
-
-	/**
-	 * Returns the parent solutions of this solution.
-	 */
-	Set<ISolution> getParentSolutions();
 
 	/**
 	 * Returns the problem instance this is a solution for.

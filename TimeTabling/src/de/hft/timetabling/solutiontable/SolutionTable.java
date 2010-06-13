@@ -1,9 +1,7 @@
 package de.hft.timetabling.solutiontable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 
 import de.hft.timetabling.common.ICourse;
@@ -65,14 +63,6 @@ public final class SolutionTable implements ISolutionTableService {
 	public ISolution createNewSolution(ICourse[][] coding,
 			IProblemInstance problemInstance) {
 
-		return createNewSolution(coding, new HashSet<ISolution>(),
-				problemInstance);
-	}
-
-	@Override
-	public ISolution createNewSolution(ICourse[][] coding,
-			Set<ISolution> parentSolutions, IProblemInstance problemInstance) {
-
 		int numberOfPeriods = problemInstance.getNumberOfDays()
 				* problemInstance.getPeriodsPerDay();
 		if (coding.length != numberOfPeriods) {
@@ -87,7 +77,7 @@ public final class SolutionTable implements ISolutionTableService {
 								+ period + ".");
 			}
 		}
-		return new SolutionImpl(coding, parentSolutions, problemInstance);
+		return new SolutionImpl(coding, problemInstance);
 	}
 
 	@Override

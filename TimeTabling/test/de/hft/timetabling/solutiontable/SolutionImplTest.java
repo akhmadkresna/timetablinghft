@@ -1,7 +1,5 @@
 package de.hft.timetabling.solutiontable;
 
-import java.util.HashSet;
-
 import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.services.AbstractServicesTest;
@@ -18,7 +16,7 @@ public class SolutionImplTest extends AbstractServicesTest {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		solution = new SolutionImpl(CODING, new HashSet<ISolution>(), instance);
+		solution = new SolutionImpl(CODING, instance);
 	}
 
 	public void testGetProblemInstance() {

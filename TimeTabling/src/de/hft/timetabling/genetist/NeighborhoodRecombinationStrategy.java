@@ -28,12 +28,8 @@ public final class NeighborhoodRecombinationStrategy extends
 
 	@Override
 	public ISolution recombine(ISolution solution1, ISolution solution2) {
-		Set<ISolution> parentSolutions = new HashSet<ISolution>();
-		parentSolutions.add(solution1);
-		parentSolutions.add(solution2);
 		ISolution newSolution = getSolutionTable().createNewSolution(
-				solution1.getCoding(), parentSolutions,
-				solution1.getProblemInstance());
+				solution1.getCoding(), solution1.getProblemInstance());
 
 		for (int i = 0; i < newSolution.getCoding().length; i++) {
 			for (int j = 0; j < newSolution.getCoding()[i].length; j++) {
