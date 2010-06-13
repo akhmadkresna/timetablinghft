@@ -42,8 +42,8 @@ public final class MultiThreadedGenerator implements IGeneratorService {
 					.getInstance().getSolutionTableService();
 
 			for (int i = 0; i < solutionTable.getMaximumSize(); i++) {
-				taskGroup.add(new SolutionTask(problemInstance,
-						new Generator()));
+				taskGroup
+						.add(new SolutionTask(problemInstance, new Generator()));
 			}
 		}
 
@@ -71,7 +71,7 @@ public final class MultiThreadedGenerator implements IGeneratorService {
 
 final class SolutionTask implements Callable<ISolution> {
 
-	public static final Object CREATE_LOCK = new Object();
+	private static final Object CREATE_LOCK = new Object();
 
 	private IProblemInstance problemInstance;
 

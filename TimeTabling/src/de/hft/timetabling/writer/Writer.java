@@ -178,7 +178,8 @@ public final class Writer implements IWriterService {
 			IProblemInstance problemInstance, BufferedWriter bufferedWriter)
 			throws IOException {
 
-		writeln(bufferedWriter, "<h1>" + problemInstance.getName() + "</h1>");
+		writeln(bufferedWriter, "<h1>" + problemInstance.getName() + "("
+				+ problemInstance.getFileName() + ")</h1>");
 		writeln(bufferedWriter, "<h2>General Information and Statistics</h2>");
 		writeln(bufferedWriter,
 				"<table width=\"620\" style=\"border: 1px solid black;\">");

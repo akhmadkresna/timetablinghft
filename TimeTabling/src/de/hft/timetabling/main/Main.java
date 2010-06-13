@@ -9,7 +9,7 @@ import java.util.Date;
 
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
-import de.hft.timetabling.evaluator.Evaluator;
+import de.hft.timetabling.evaluator.NewEvaluator;
 import de.hft.timetabling.generator.Generator;
 import de.hft.timetabling.generator.MultiThreadedGenerator;
 import de.hft.timetabling.genetist.CrazyGenetist;
@@ -115,6 +115,7 @@ public final class Main {
 					runAllInstances(initialSolutionDirectory);
 				} else {
 					run(args[0], initialSolutionDirectory, sleepTime);
+
 				}
 			} catch (IOException e) {
 				handleException(e);
@@ -142,7 +143,7 @@ public final class Main {
 				new Generator()));
 		serviceLocator.setValidatorService(new Validator());
 		serviceLocator.setCrazyGenetistService(new CrazyGenetist());
-		serviceLocator.setEvaluatorService(new Evaluator());
+		serviceLocator.setEvaluatorService(new NewEvaluator());
 	}
 
 	/**
@@ -190,6 +191,7 @@ public final class Main {
 		checkBestSolutionForValidity();
 
 		duration = System.currentTimeMillis() - startTime;
+		System.out.println("Duration: " + DateUtil.toTimeString(duration));
 
 		outputSolutions();
 	}

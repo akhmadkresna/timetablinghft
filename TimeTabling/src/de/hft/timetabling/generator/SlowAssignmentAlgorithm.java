@@ -11,7 +11,7 @@ import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 
-public class SlowGeneratorAlgorithm implements GeneratorAlgorithm {
+public class SlowAssignmentAlgorithm implements GeneratorAlgorithm {
 
 	private final IProblemInstance instance;
 
@@ -29,7 +29,7 @@ public class SlowGeneratorAlgorithm implements GeneratorAlgorithm {
 
 	private final List<ICourse> priorityList = new ArrayList<ICourse>();
 
-	public SlowGeneratorAlgorithm(final IProblemInstance instance) {
+	public SlowAssignmentAlgorithm(final IProblemInstance instance) {
 
 		this.instance = instance;
 		int slots = instance.getNumberOfPeriods() * instance.getNumberOfRooms();
