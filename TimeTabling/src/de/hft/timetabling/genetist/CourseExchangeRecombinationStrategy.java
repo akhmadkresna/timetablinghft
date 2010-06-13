@@ -47,10 +47,10 @@ public final class CourseExchangeRecombinationStrategy extends
 	/** Value between 0.0 and 1.0. */
 	private static final double START_MUTATION_PROBABILITY = 0.05;
 
-	private static final int START_MIN_ELIMINATION_AGE = 5;
+	private static final int START_MIN_ELIMINATION_AGE = 4;
 
 	/** Value between 0 and 100. */
-	private static final int RECOMBINATION_PERCENTAGE = 75;
+	private static final int RECOMBINATION_PERCENTAGE = 85;
 
 	private static final int SOLUTION_TABLE_SIZE = 50;
 
@@ -343,7 +343,7 @@ public final class CourseExchangeRecombinationStrategy extends
 			recombinedSolution = MutationOperators
 					.mutateRoomStability(recombinedSolution);
 			double randomValue = Math.random();
-			if (randomValue < 0.10) {
+			if (randomValue < 0.05) {
 				recombinedSolution = MutationOperators
 						.mutateCourseIsolation(recombinedSolution);
 			}
@@ -365,7 +365,7 @@ public final class CourseExchangeRecombinationStrategy extends
 			minEliminationAge = START_MIN_ELIMINATION_AGE;
 		}
 
-		if (iteration % (totalIterations / 5) == 0) {
+		if (iteration % (totalIterations / 6) == 0) {
 			minEliminationAge--;
 		}
 
