@@ -40,8 +40,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	public void recombineAndMutate(int iteration, int totalIterations) {
 		RECOMBINATION_STRATEGY.newInterationStarted(iteration, totalIterations);
 		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-
-		.getSolutionTableService();
+				.getSolutionTableService();
 
 		if (solutionTable.getSize(false) <= 2) {
 			return;

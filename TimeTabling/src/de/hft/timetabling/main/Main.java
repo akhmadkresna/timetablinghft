@@ -61,10 +61,11 @@ public final class Main {
 	 *            1) The first argument is the name of the problem instance file
 	 *            to solve. 2) If a second argument is available it is treated
 	 *            as the number of iterations to perform. 3) If a third argument
-	 *            is available it's treated as the amount of milliseconds to
-	 *            sleep between each iteration. 4) If a fourth argument is
-	 *            provided it is treated as the name of the directory where
-	 *            initial solutions shall be read from.
+	 *            is available it's treated as the number of times to batch-run
+	 *            the program 4) If a fourth argument is available it's treated
+	 *            as the amount of milliseconds to sleep between each iteration.
+	 *            5) If a fifth argument is provided it is treated as the name
+	 *            of the directory where initial solutions shall be read from.
 	 * 
 	 * @throws IllegalArgumentException
 	 *             If the length of <tt>args</tt> is smaller than 1.
@@ -78,26 +79,32 @@ public final class Main {
 		}
 
 		long sleepTime = 0;
+		int nrExecutions = 1;
 		if (args.length >= 2) {
 			iterations = Integer.valueOf(args[1]);
 			if (args.length >= 3) {
-				sleepTime = Long.valueOf(args[2]);
-				if (args.length == 4) {
-					initialSolutionDirectory = args[3];
+				nrExecutions = Integer.valueOf(args[2]);
+				if (args.length >= 4) {
+					sleepTime = Long.valueOf(args[3]);
+					if (args.length == 5) {
+						initialSolutionDirectory = args[4];
+					}
 				}
 			}
 		}
 
 		setUpServices();
 
-		try {
-			if (args[0].equals("ALL")) {
-				runAllInstances(initialSolutionDirectory);
-			} else {
-				run(args[0], initialSolutionDirectory, sleepTime);
+		for (int i = 0; i < nrExecutions; i++) {
+			try {
+				if (args[0].equals("ALL")) {
+					runAllInstances(initialSolutionDirectory);
+				} else {
+					run(args[0], initialSolutionDirectory, sleepTime);
+				}
+			} catch (IOException e) {
+				handleException(e);
 			}
-		} catch (IOException e) {
-			handleException(e);
 		}
 
 		// MR: band-aid fix until I find out why the app does not terminate
@@ -131,6 +138,7 @@ public final class Main {
 			long sleepMilliSeconds) throws IOException {
 
 		resetStatistics();
+		getSolutionTable().clear();
 
 		long startTime = System.currentTimeMillis();
 
@@ -140,8 +148,6 @@ public final class Main {
 				.readInstance(fileName)
 				: reader.readInstanceUsingInitialSolutionDirectory(fileName,
 						initialSolutionDirectory);
-
-		getSolutionTable().clear();
 
 		for (int i = 0; i < iterations; i++) {
 			System.out.println("");
@@ -276,16 +282,28 @@ public final class Main {
 	}
 
 	public static int getSolutionTableInsertionSuccessRatio() {
-		return (solutionTableInsertionSuccess * 100)
-				/ (solutionTableInsertionSuccess + solutionTableInsertionFailure);
+		int total = solutionTableInsertionSuccess
+				+ solutionTableInsertionFailure;
+		if (total == 0) {
+			return 0;
+		}
+		return (solutionTableInsertionSuccess * 100) / total;
 	}
 
 	public static int getGeneratorSuccessRatio() {
-		return (generatorSuccess * 100) / (generatorSuccess + generatorFailure);
+		int total = generatorSuccess + generatorFailure;
+		if (total == 0) {
+			return 0;
+		}
+		return (generatorSuccess * 100) / total;
 	}
 
 	public static int getGenetistSuccessRatio() {
-		return (genetistSuccess * 100) / (genetistSuccess + genetistFailure);
+		int total = genetistSuccess + genetistFailure;
+		if (total == 0) {
+			return 0;
+		}
+		return (genetistSuccess * 100) / total;
 	}
 
 	private static void shortSleep(final long sleepMilliSeconds) {

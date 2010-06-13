@@ -348,11 +348,14 @@ public final class CourseExchangeRecombinationStrategy extends
 		ISolutionTableService solutionTable = ServiceLocator.getInstance()
 				.getSolutionTableService();
 		solutionTable.setMaximumSize(SOLUTION_TABLE_SIZE);
-		mutationProbability = START_MUTATION_PROBABILITY;
 	}
 
 	@Override
 	protected void newInterationStarted(int iteration, int totalIterations) {
+		if (iteration == 1) {
+			mutationProbability = START_MUTATION_PROBABILITY;
+		}
+
 		/*
 		 * Slightly increasing the probability to mutate as the time goes on so
 		 * we explore new things. At some time we need to stop increasing the

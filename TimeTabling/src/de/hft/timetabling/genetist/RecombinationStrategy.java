@@ -150,6 +150,9 @@ public abstract class RecombinationStrategy {
 	 * Called before the whole recombination process is started. The meaning of
 	 * this operation is to enable the recombination strategy to set up
 	 * different parameters like for example solution table size.
+	 * <p>
+	 * This method is only called once per program execution, so this method
+	 * cannot be used to reset parameters to starting values.
 	 */
 	protected abstract void configure();
 

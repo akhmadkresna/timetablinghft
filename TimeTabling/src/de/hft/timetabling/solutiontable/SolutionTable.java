@@ -287,7 +287,7 @@ public final class SolutionTable implements ISolutionTableService {
 		if (bestFairnessSolution == null) {
 			bestFairnessSolution = bestFairnessInTable;
 		}
-		// case when fairness is same, eg. fairness=0
+		// case when fairness is same, e.g. fairness = 0
 		else if (bestFairnessSolution.getFairness() == bestFairnessInTable
 				.getFairness()) {
 			if (bestFairnessInTable.getPenalty() < bestFairnessSolution
