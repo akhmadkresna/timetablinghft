@@ -23,7 +23,13 @@ final class SolutionImpl implements ISolution {
 
 	private final IProblemInstance problemInstance;
 
-	private int recombinations = 0;
+	private int recombinations;
+
+	private int age;
+
+	private int penalty;
+
+	private int fairness;
 
 	SolutionImpl(ICourse[][] coding, IProblemInstance problemInstance) {
 		this.coding = coding;
@@ -58,6 +64,33 @@ final class SolutionImpl implements ISolution {
 	@Override
 	public void setRecombinationCount(int nrOfRecombinations) {
 		recombinations = nrOfRecombinations;
+	}
+
+	@Override
+	public int getAge() {
+		return age;
+	}
+
+	void increaseAge() {
+		age++;
+	}
+
+	@Override
+	public int getFairness() {
+		return fairness;
+	}
+
+	void setFairness(int fairness) {
+		this.fairness = fairness;
+	}
+
+	@Override
+	public int getPenalty() {
+		return penalty;
+	}
+
+	void setPenalty(int penalty) {
+		this.penalty = penalty;
 	}
 
 	@Override

@@ -108,7 +108,7 @@ public final class Writer implements IWriterService {
 
 		writeln(bufferedWriter, "<body>");
 
-		writeStatistics(problemInstance, bufferedWriter);
+		writeStatistics(solution, problemInstance, bufferedWriter);
 
 		// Write one table for each curriculum
 		for (ICurriculum curriculum : problemInstance.getCurricula()) {
@@ -174,8 +174,9 @@ public final class Writer implements IWriterService {
 		bufferedWriter.close();
 	}
 
-	private void writeStatistics(IProblemInstance problemInstance,
-			BufferedWriter bufferedWriter) throws IOException {
+	private void writeStatistics(ISolution solution,
+			IProblemInstance problemInstance, BufferedWriter bufferedWriter)
+			throws IOException {
 
 		writeln(bufferedWriter, "<h1>" + problemInstance.getName() + "</h1>");
 		writeln(bufferedWriter, "<h2>General Information and Statistics</h2>");
@@ -199,11 +200,9 @@ public final class Writer implements IWriterService {
 		writeln(bufferedWriter, "<tr><td>&nbsp;</td></tr>");
 
 		writeln(bufferedWriter, "<tr><td>Solution Penalty:</td><td>"
-				+ getSolutionTable().getBestPenaltySolutionPenalty()
-				+ "</td></tr>");
+				+ solution.getPenalty() + "</td></tr>");
 		writeln(bufferedWriter, "<tr><td>Solution Fairness:</td><td>"
-				+ getSolutionTable().getBestPenaltySolutionFairness()
-				+ "</td></tr>");
+				+ solution.getFairness() + "</td></tr>");
 		writeln(bufferedWriter, "<tr><td>&nbsp;</td></tr>");
 
 		writeln(bufferedWriter,
@@ -216,6 +215,11 @@ public final class Writer implements IWriterService {
 						+ Main.recombinationSuccess + " / "
 						+ Main.recombinationFailure + " ("
 						+ Main.getRecombinationSuccessRatio() + "%)</td></tr>");
+		writeln(bufferedWriter,
+				"<tr><td>Mutation (Success / Failure):</td><td>"
+						+ Main.mutationSuccess + " / " + Main.mutationFailure
+						+ " (" + Main.getMutationSuccessRatio()
+						+ "%)</td></tr>");
 		writeln(bufferedWriter,
 				"<tr><td>Solution Table Insertion (Success / Failure):</td><td>"
 						+ Main.solutionTableInsertionSuccess + " / "

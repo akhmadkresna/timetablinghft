@@ -2,6 +2,7 @@ package de.hft.timetabling.solutiontable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import de.hft.timetabling.common.ICourse;
@@ -106,30 +107,6 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
-	public int getBestFairnessSolutionFairness() {
-		return (bestFairnessSolution == null) ? 0 : bestFairnessSolution
-				.getFairness();
-	}
-
-	@Override
-	public int getBestFairnessSolutionPenalty() {
-		return (bestFairnessSolution == null) ? 0 : bestFairnessSolution
-				.getPenalty();
-	}
-
-	@Override
-	public int getBestPenaltySolutionFairness() {
-		return (bestPenaltySolution == null) ? 0 : bestPenaltySolution
-				.getFairness();
-	}
-
-	@Override
-	public int getBestPenaltySolutionPenalty() {
-		return (bestPenaltySolution == null) ? 0 : bestPenaltySolution
-				.getPenalty();
-	}
-
-	@Override
 	public ISolution getWorstPenaltySolution() {
 		return worstPenaltySolution.getSolution();
 	}
@@ -137,30 +114,6 @@ public final class SolutionTable implements ISolutionTableService {
 	@Override
 	public ISolution getWorstFairnessSolution() {
 		return worstFairnessSolution.getSolution();
-	}
-
-	@Override
-	public int getWorstFairnessSolutionFairness() {
-		return (worstFairnessSolution == null) ? 0 : worstFairnessSolution
-				.getFairness();
-	}
-
-	@Override
-	public int getWorstFairnessSolutionPenalty() {
-		return (worstFairnessSolution == null) ? 0 : worstFairnessSolution
-				.getPenalty();
-	}
-
-	@Override
-	public int getWorstPenaltySolutionFairness() {
-		return (worstPenaltySolution == null) ? 0 : worstPenaltySolution
-				.getFairness();
-	}
-
-	@Override
-	public int getWorstPenaltySolutionPenalty() {
-		return (worstPenaltySolution == null) ? 0 : worstPenaltySolution
-				.getPenalty();
 	}
 
 	@Override
@@ -177,6 +130,8 @@ public final class SolutionTable implements ISolutionTableService {
 		voteIndexModification++;
 		ISolution solution = notVotedTable.get(index);
 		notVotedTable.remove(index);
+		((SolutionImpl) solution).setPenalty(penalty);
+		((SolutionImpl) solution).setFairness(fairness);
 		boolean added = solutionTable.add(new WeightedSolution(solution,
 				penalty, fairness));
 		if (added) {
@@ -196,8 +151,30 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
-	public ISolution removeWorstSolution() {
-		return solutionTable.pollLast().getSolution();
+	public ISolution removeWorstSolution(int minAge) {
+		Set<WeightedSolution> removed = new TreeSet<WeightedSolution>();
+		ISolution removedSolution = null;
+		boolean removalOk = false;
+		while (!(removalOk) && (solutionTable.size() > 0)) {
+			WeightedSolution weightedSolution = solutionTable.pollLast();
+			if (weightedSolution.getSolution().getAge() >= minAge) {
+				removalOk = true;
+				removedSolution = weightedSolution.getSolution();
+				break;
+			}
+			removed.add(weightedSolution);
+		}
+
+		// Re-insert all solutions that have been removed by mistake.
+		for (WeightedSolution weightedSolution : removed) {
+			solutionTable.add(weightedSolution);
+		}
+
+		if (removedSolution == null) {
+			removedSolution = solutionTable.pollLast().getSolution();
+		}
+
+		return removedSolution;
 	}
 
 	@Override
@@ -255,6 +232,13 @@ public final class SolutionTable implements ISolutionTableService {
 		updateBestFairnessSolution();
 		updateWorstPenaltySolution();
 		updateWorstFairnessSolution();
+		updateSolutionAges();
+	}
+
+	private void updateSolutionAges() {
+		for (WeightedSolution weightedSolution : solutionTable) {
+			((SolutionImpl) weightedSolution.getSolution()).increaseAge();
+		}
 	}
 
 	private void updateBestFairnessSolution() {

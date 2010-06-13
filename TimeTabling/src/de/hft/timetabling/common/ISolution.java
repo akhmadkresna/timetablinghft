@@ -1,6 +1,5 @@
 package de.hft.timetabling.common;
 
-
 /**
  * A solution is a result of the program. Feasible solutions are created by the
  * generator sub system. A solution can be used as a basis for further
@@ -46,5 +45,14 @@ public interface ISolution {
 	 * @author Steffen
 	 */
 	void increaseRecombinationCount();
+
+	/**
+	 * Returns how many iterations this solution survived up to now.
+	 */
+	int getAge();
+
+	int getPenalty();
+
+	int getFairness();
 
 }

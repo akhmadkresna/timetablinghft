@@ -10,8 +10,8 @@ import java.util.Date;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.evaluator.Evaluator;
-import de.hft.timetabling.generator.MultiThreadedGenerator;
 import de.hft.timetabling.generator.Generator;
+import de.hft.timetabling.generator.MultiThreadedGenerator;
 import de.hft.timetabling.genetist.CrazyGenetist;
 import de.hft.timetabling.reader.Reader;
 import de.hft.timetabling.services.ICrazyGenetistService;
@@ -258,14 +258,17 @@ public final class Main {
 	private static void printBestSolution() {
 		System.out.println("----------------------------");
 		System.out.println("-- Best Penalty Solution (Penalty / Fairness): "
-				+ getSolutionTable().getBestPenaltySolutionPenalty() + " / "
-				+ getSolutionTable().getBestPenaltySolutionFairness());
+				+ getSolutionTable().getBestPenaltySolution().getPenalty()
+				+ " / "
+				+ getSolutionTable().getBestPenaltySolution().getFairness());
 	}
 
 	private static void printFairestSolution() {
 		System.out.print("-- Best Fairness Solution (Penalty / Fairness): "
-				+ getSolutionTable().getBestFairnessSolutionPenalty() + " / "
-				+ getSolutionTable().getBestFairnessSolutionFairness() + "\n");
+				+ getSolutionTable().getBestFairnessSolution().getPenalty()
+				+ " / "
+				+ getSolutionTable().getBestFairnessSolution().getFairness()
+				+ "\n");
 	}
 
 	private static ISolutionTableService getSolutionTable() {
@@ -279,11 +282,13 @@ public final class Main {
 		System.out.println("Algorithm terminated.");
 		System.out.println("----------------------------");
 		System.out.println("-- Best Penalty Solution (Penalty / Fairness): "
-				+ getSolutionTable().getBestPenaltySolutionPenalty() + " / "
-				+ getSolutionTable().getBestPenaltySolutionFairness());
+				+ getSolutionTable().getBestPenaltySolution().getPenalty()
+				+ " / "
+				+ getSolutionTable().getBestPenaltySolution().getFairness());
 		System.out.println("-- Best Fairness Solution (Penalty / Fairness): "
-				+ getSolutionTable().getBestFairnessSolutionPenalty() + " / "
-				+ getSolutionTable().getBestFairnessSolutionFairness());
+				+ getSolutionTable().getBestFairnessSolution().getPenalty()
+				+ " / "
+				+ getSolutionTable().getBestFairnessSolution().getFairness());
 
 		System.out.println();
 
@@ -294,6 +299,10 @@ public final class Main {
 		System.out.println("-- Recombination (Success / Failure): "
 				+ recombinationSuccess + " / " + recombinationFailure + " ("
 				+ getRecombinationSuccessRatio() + " %)");
+
+		System.out.println("-- Mutation (Success / Failure): "
+				+ mutationSuccess + " / " + mutationFailure + " ("
+				+ getMutationSuccessRatio() + " %)");
 
 		System.out.println("-- Solution Table Insertion (Success / Failure): "
 				+ solutionTableInsertionSuccess + " / "
@@ -327,6 +336,14 @@ public final class Main {
 			return 0;
 		}
 		return (recombinationSuccess * 100) / total;
+	}
+
+	public static int getMutationSuccessRatio() {
+		int total = mutationSuccess + mutationFailure;
+		if (total == 0) {
+			return 0;
+		}
+		return (mutationSuccess * 100) / total;
 	}
 
 	private static void shortSleep(final long sleepMilliSeconds) {
@@ -371,9 +388,10 @@ public final class Main {
 			run("instances/" + instanceFiles[i].getName(),
 					initialSolutionsDirectory, 0);
 			totalDuration += duration;
-			totalPenalty += getSolutionTable().getBestPenaltySolutionPenalty();
-			totalFairness += getSolutionTable()
-					.getBestPenaltySolutionFairness();
+			totalPenalty += getSolutionTable().getBestPenaltySolution()
+					.getPenalty();
+			totalFairness += getSolutionTable().getBestPenaltySolution()
+					.getFairness();
 			writeResult(writer, instanceFiles[i], duration);
 		}
 
@@ -421,28 +439,28 @@ public final class Main {
 		writer.write("--------------");
 		writer.newLine();
 		writer.write("Best penalty/penalty: "
-				+ solutionTable.getBestPenaltySolutionPenalty());
+				+ solutionTable.getBestPenaltySolution().getPenalty());
 		writer.newLine();
 		writer.write("Best penalty/fairness: "
-				+ solutionTable.getBestPenaltySolutionFairness());
+				+ solutionTable.getBestPenaltySolution().getFairness());
 		writer.newLine();
 		writer.write("Best fairness/penalty: "
-				+ solutionTable.getBestFairnessSolutionPenalty());
+				+ solutionTable.getBestFairnessSolution().getPenalty());
 		writer.newLine();
 		writer.write("Best fairness/fairness: "
-				+ solutionTable.getBestFairnessSolutionFairness());
+				+ solutionTable.getBestFairnessSolution().getFairness());
 		writer.newLine();
 		writer.write("Worst penalty/penalty: "
-				+ solutionTable.getWorstPenaltySolutionPenalty());
+				+ solutionTable.getWorstPenaltySolution().getPenalty());
 		writer.newLine();
 		writer.write("Worst penalty/fairness: "
-				+ solutionTable.getWorstPenaltySolutionFairness());
+				+ solutionTable.getWorstPenaltySolution().getFairness());
 		writer.newLine();
 		writer.write("Worst fairness/penalty: "
-				+ solutionTable.getWorstFairnessSolutionPenalty());
+				+ solutionTable.getWorstFairnessSolution().getPenalty());
 		writer.newLine();
 		writer.write("Worst fairness/fairness: "
-				+ solutionTable.getWorstFairnessSolutionFairness());
+				+ solutionTable.getWorstFairnessSolution().getFairness());
 		writer.newLine();
 		writer.write("Generator success: " + Main.generatorSuccess);
 		writer.newLine();
@@ -451,6 +469,10 @@ public final class Main {
 		writer.write("Recombination success: " + Main.recombinationSuccess);
 		writer.newLine();
 		writer.write("Recombination failure: " + Main.recombinationFailure);
+		writer.newLine();
+		writer.write("Mutation success: " + Main.mutationSuccess);
+		writer.newLine();
+		writer.write("Mutatoin failure: " + Main.mutationFailure);
 		writer.newLine();
 		writer.newLine();
 		writer.newLine();

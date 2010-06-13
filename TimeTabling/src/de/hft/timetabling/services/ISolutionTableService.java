@@ -95,25 +95,9 @@ public interface ISolutionTableService {
 	 */
 	ISolution getBestFairnessSolution();
 
-	int getBestPenaltySolutionPenalty();
-
-	int getBestPenaltySolutionFairness();
-
-	int getBestFairnessSolutionPenalty();
-
-	int getBestFairnessSolutionFairness();
-
 	ISolution getWorstPenaltySolution();
 
 	ISolution getWorstFairnessSolution();
-
-	int getWorstPenaltySolutionPenalty();
-
-	int getWorstPenaltySolutionFairness();
-
-	int getWorstFairnessSolutionPenalty();
-
-	int getWorstFairnessSolutionFairness();
 
 	void voteForSolution(int index, int penalty, int fairness);
 
@@ -143,8 +127,18 @@ public interface ISolutionTableService {
 	 * Removes the current worst solution from the solution table. Does nothing
 	 * if the solution table is currently empty. Returns the solution that has
 	 * been removed or <tt>null</tt> if the solution table was empty.
+	 * <p>
+	 * The solution will only be eliminated if it is at least as old as the
+	 * given minimum age. If it is younger, the next worst solution will be
+	 * eliminated and so on. If no solution is old enough however, the worst
+	 * will be removed so this method eliminates at least 1 solution whatsoever
+	 * (except when the solution table is empty).
+	 * 
+	 * @param minAge
+	 *            The age that the solution must have at least in order to be
+	 *            eliminated.
 	 */
-	ISolution removeWorstSolution();
+	ISolution removeWorstSolution(int minAge);
 
 	/**
 	 * Returns the solution that has been recombined most often. Returns

@@ -185,7 +185,7 @@ public final class NeighborhoodRecombinationStrategy extends
 			Set<ISolution> eliminatedSolutions) {
 		ISolutionTableService solutionTable = ServiceLocator.getInstance()
 				.getSolutionTableService();
-		ISolution worstSolution = solutionTable.removeWorstSolution();
+		ISolution worstSolution = solutionTable.removeWorstSolution(0);
 		eliminatedSolutions.add(worstSolution);
 	}
 
