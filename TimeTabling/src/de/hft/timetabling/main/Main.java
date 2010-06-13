@@ -56,6 +56,8 @@ public final class Main {
 	 */
 	public static int iterations = 200;
 
+	public static int nrExecutions = 0;
+
 	public static String initialSolutionDirectory = "";
 
 	public static boolean outputAllSolutions = false;
@@ -88,7 +90,7 @@ public final class Main {
 		}
 
 		long sleepTime = 0;
-		int nrExecutions = 1;
+		nrExecutions = 1;
 		if (args.length >= 2) {
 			iterations = Integer.valueOf(args[1]);
 			if (args.length >= 3) {
@@ -107,16 +109,16 @@ public final class Main {
 
 		setUpServices();
 
-		for (int i = 0; i < nrExecutions; i++) {
-			try {
-				if (args[0].equals("ALL")) {
-					runAllInstances(initialSolutionDirectory);
-				} else {
+		try {
+			if (args[0].equals("ALL")) {
+				runAllInstances(initialSolutionDirectory);
+			} else {
+				for (int i = 0; i < nrExecutions; i++) {
 					run(args[0], initialSolutionDirectory, sleepTime);
 				}
-			} catch (IOException e) {
-				handleException(e);
 			}
+		} catch (IOException e) {
+			handleException(e);
 		}
 
 		// MR: band-aid fix until I find out why the app does not terminate
@@ -385,14 +387,16 @@ public final class Main {
 		int totalPenalty = 0;
 		int totalFairness = 0;
 		for (int i = 0; i < instanceFiles.length; i++) {
-			run("instances/" + instanceFiles[i].getName(),
-					initialSolutionsDirectory, 0);
-			totalDuration += duration;
-			totalPenalty += getSolutionTable().getBestPenaltySolution()
-					.getPenalty();
-			totalFairness += getSolutionTable().getBestPenaltySolution()
-					.getFairness();
-			writeResult(writer, instanceFiles[i], duration);
+			for (int execution = 0; execution < nrExecutions; execution++) {
+				run("instances/" + instanceFiles[i].getName(),
+						initialSolutionsDirectory, 0);
+				totalDuration += duration;
+				totalPenalty += getSolutionTable().getBestPenaltySolution()
+						.getPenalty();
+				totalFairness += getSolutionTable().getBestPenaltySolution()
+						.getFairness();
+				writeResult(writer, instanceFiles[i], duration);
+			}
 		}
 
 		createLogFileFooter(writer, totalDuration, totalPenalty, totalFairness);

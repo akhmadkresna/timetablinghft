@@ -47,12 +47,16 @@ public final class CourseExchangeRecombinationStrategy extends
 	/** Value between 0.0 and 1.0. */
 	private static final double START_MUTATION_PROBABILITY = 0.05;
 
+	private static final int START_MIN_ELIMINATION_AGE = 5;
+
 	/** Value between 0 and 100. */
-	private static final int RECOMBINATION_PERCENTAGE = 85;
+	private static final int RECOMBINATION_PERCENTAGE = 75;
 
 	private static final int SOLUTION_TABLE_SIZE = 50;
 
 	private double mutationProbability;
+
+	private int minEliminationAge;
 
 	/**
 	 * List of lectures that could not be assigned during the first step of the
@@ -358,6 +362,11 @@ public final class CourseExchangeRecombinationStrategy extends
 	protected void newInterationStarted(int iteration, int totalIterations) {
 		if (iteration == 1) {
 			mutationProbability = START_MUTATION_PROBABILITY;
+			minEliminationAge = START_MIN_ELIMINATION_AGE;
+		}
+
+		if (iteration % (totalIterations / 5) == 0) {
+			minEliminationAge--;
 		}
 
 		/*
@@ -374,14 +383,15 @@ public final class CourseExchangeRecombinationStrategy extends
 	protected void eliminate(ISolution parent1, ISolution parent2,
 			Set<ISolution> eliminatedSolutions) {
 
-		ISolution worstSolution = getSolutionTable().removeWorstSolution(5);
+		ISolution worstSolution = getSolutionTable().removeWorstSolution(
+				minEliminationAge);
 		eliminatedSolutions.add(worstSolution);
 
 		/*
 		 * With some probability we additionally want to remove an old solution
 		 * (high recombination count)
 		 */
-		if (Math.random() < 0.35) {
+		if (Math.random() < 0.40) {
 			ISolution mostRecombinedSolution = getSolutionTable()
 					.getSolutionMostOftenRecombined();
 			/*
@@ -389,7 +399,7 @@ public final class CourseExchangeRecombinationStrategy extends
 			 * to loose a good rooster that hasn't got the chance to recombine
 			 * that much yet.
 			 */
-			if (mostRecombinedSolution.getRecombinationCount() > (SOLUTION_TABLE_SIZE / 1.5)) {
+			if (mostRecombinedSolution.getRecombinationCount() > (SOLUTION_TABLE_SIZE / 2)) {
 				getSolutionTable().remove(mostRecombinedSolution);
 				eliminatedSolutions.add(mostRecombinedSolution);
 			}

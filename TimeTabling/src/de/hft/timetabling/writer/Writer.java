@@ -203,6 +203,11 @@ public final class Writer implements IWriterService {
 				+ solution.getPenalty() + "</td></tr>");
 		writeln(bufferedWriter, "<tr><td>Solution Fairness:</td><td>"
 				+ solution.getFairness() + "</td></tr>");
+		writeln(bufferedWriter, "<tr><td>Solution Age:</td><td>"
+				+ solution.getAge() + "</td></tr>");
+		writeln(bufferedWriter,
+				"<tr><td>Solution Recombination Count:</td><td>"
+						+ solution.getRecombinationCount() + "</td></tr>");
 		writeln(bufferedWriter, "<tr><td>&nbsp;</td></tr>");
 
 		writeln(bufferedWriter,
