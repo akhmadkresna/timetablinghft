@@ -12,242 +12,58 @@ import de.hft.timetabling.common.ICourse;
 import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
-import de.hft.timetabling.services.IEvaluatorService;
 import de.hft.timetabling.services.ISolutionTableService;
 import de.hft.timetabling.services.ServiceLocator;
 
-public class NewEvaluator implements IEvaluatorService {
+public final class NewEvaluator {
 
-	private final ISolutionTableService table = ServiceLocator.getInstance()
-			.getSolutionTableService();
+	private EvaluationResult result;
 
-	// TODO more sane data handling
-	private int[] curriculumCosts;
-
-	@Override
-	public int evaluateSolution(ISolution newSolution) {
-		final IProblemInstance instance = newSolution.getProblemInstance();
-
-		// TODO combine into one variable once it works reliably
-		int totalRoomCapacityPenalty = 0;
-		int totalMinimumWorkingDaysPenalty = 0;
-		int totalCurriculumCompactnessPenalty = 0;
-		int totalRoomStabilityPenalty = 0;
-
-		// TODO combine into one variable once it works reliably
-		final Map<ICurriculum, Integer> specificRoomCapacityPenalty = new HashMap<ICurriculum, Integer>();
-		final Map<ICurriculum, Integer> specificMinimumWorkingDaysPenalty = new HashMap<ICurriculum, Integer>();
-		final Map<ICurriculum, Integer> specificCurriculumCompactnessPenalty = new HashMap<ICurriculum, Integer>();
-		final Map<ICurriculum, Integer> specificRoomStabilityPenalty = new HashMap<ICurriculum, Integer>();
-
-		final Map<ICourse, Set<Integer>> roomsPerCourse = new HashMap<ICourse, Set<Integer>>();
-		final Map<ICourse, Set<Integer>> workingDaysPerCourse = new HashMap<ICourse, Set<Integer>>();
-		final Set<ICurriculum> curriculaInSinglePeriod = new HashSet<ICurriculum>();
-		final Map<ICurriculum, List<Integer>> curriculaInPeriods = new HashMap<ICurriculum, List<Integer>>();
-
-		curriculumCosts = new int[instance.getCurricula().size()];
-
-		for (final ICourse course : instance.getCourses()) {
-			roomsPerCourse.put(course, new HashSet<Integer>());
-			workingDaysPerCourse.put(course, new HashSet<Integer>());
-		}
-
-		for (ICurriculum curriculum : instance.getCurricula()) {
-			specificCurriculumCompactnessPenalty.put(curriculum, 0);
-			specificMinimumWorkingDaysPenalty.put(curriculum, 0);
-			specificRoomCapacityPenalty.put(curriculum, 0);
-			specificRoomStabilityPenalty.put(curriculum, 0);
-			curriculaInPeriods.put(curriculum, new ArrayList<Integer>());
-		}
-
-		ICourse[][] schedule = newSolution.getCoding();
-		for (int period = 0; period < schedule.length; period++) {
-			curriculaInSinglePeriod.clear();
-
-			for (int room = 0; room < schedule[period].length; room++) {
-				ICourse course = schedule[period][room];
-
-				if (course != null) {
-					/* calculate room capacity penalty */
-					int roomStudentDifference = course.getNumberOfStudents()
-							- instance.getRoomByUniqueNumber(room)
-									.getCapacity();
-					int roomCapacityPenalty = roomStudentDifference < 0 ? 0
-							: roomStudentDifference;
-					totalRoomCapacityPenalty += roomCapacityPenalty;
-
-					for (ICurriculum curriculum : course.getCurricula()) {
-						int penalty = specificRoomCapacityPenalty
-								.get(curriculum);
-						penalty += roomCapacityPenalty;
-						specificRoomCapacityPenalty.put(curriculum, penalty);
-					}
-
-					/* store all rooms in which a course takes place */
-					roomsPerCourse.get(course).add(room);
-
-					/* store all days on which a course takes place */
-					int day = period / instance.getPeriodsPerDay();
-					workingDaysPerCourse.get(course).add(day);
-
-					/* store which curricula occur in a single period */
-					curriculaInSinglePeriod.addAll(course.getCurricula());
-				}
-			}
-
-			for (ICurriculum curriculum : curriculaInSinglePeriod) {
-				curriculaInPeriods.get(curriculum).add(period);
-			}
-		}
-
-		for (ICourse course : instance.getCourses()) {
-			/* calculate room stability penalty */
-			int roomStabilityPenalty = roomsPerCourse.get(course).size() - 1;
-			totalRoomStabilityPenalty += roomStabilityPenalty;
-
-			/* calculate the minimum working days penalty */
-			int workingDaysDifference = course.getMinWorkingDays()
-					- workingDaysPerCourse.get(course).size();
-			int minimumWorkingDaysPenalty = workingDaysDifference < 0 ? 0
-					: workingDaysDifference * 5;
-			totalMinimumWorkingDaysPenalty += minimumWorkingDaysPenalty;
-
-			/* add penalty for specific curricula */
-			for (ICurriculum curriculum : course.getCurricula()) {
-				int penalty = specificRoomStabilityPenalty.get(curriculum);
-				penalty += roomStabilityPenalty;
-				specificRoomStabilityPenalty.put(curriculum, penalty);
-
-				penalty = specificMinimumWorkingDaysPenalty.get(curriculum);
-				penalty += minimumWorkingDaysPenalty;
-				specificMinimumWorkingDaysPenalty.put(curriculum, penalty);
-			}
-		}
-
-		// TODO ugly, make pretty
-		int k = 0;
-		for (ICurriculum curriculum : curriculaInPeriods.keySet()) {
-			List<Integer> periods = new ArrayList<Integer>(curriculaInPeriods
-					.get(curriculum));
-			if (periods.size() == 1) {
-				continue;
-			}
-			Collections.sort(periods);
-
-			int curriculumCompactnessPenalty = 0;
-
-			for (int i = 0; i < periods.size(); i++) {
-				int dayOfPreviousPeriod = -1;
-				int previousPeriod = -1;
-				if (i > 0) {
-					previousPeriod = periods.get(i - 1);
-					dayOfPreviousPeriod = previousPeriod
-							/ instance.getNumberOfDays();
-				}
-
-				int currentPeriod = periods.get(i);
-				int dayOfCurrentPeriod = currentPeriod
-						/ instance.getNumberOfDays();
-
-				int nextPeriod = -1;
-				int dayOfNextPeriod = -1;
-				if (i + 1 < periods.size()) {
-					nextPeriod = periods.get(i + 1);
-					dayOfNextPeriod = nextPeriod / instance.getNumberOfDays();
-				}
-
-				if ((dayOfPreviousPeriod != dayOfCurrentPeriod)
-						&& (dayOfCurrentPeriod == dayOfNextPeriod)) {
-					if (nextPeriod - currentPeriod > 1) {
-						curriculumCompactnessPenalty++;
-						// System.out.println("1. Curriculum "
-						// + curriculum.getId() + " Period "
-						// + currentPeriod);
-					}
-				} else if ((dayOfPreviousPeriod == dayOfCurrentPeriod)
-						&& (dayOfCurrentPeriod == dayOfNextPeriod)) {
-					if ((currentPeriod - previousPeriod > 1)
-							&& (nextPeriod - currentPeriod > 1)) {
-						curriculumCompactnessPenalty++;
-						// System.out.println("2. Curriculum "
-						// + curriculum.getId() + " Period "
-						// + currentPeriod);
-					}
-				} else if ((dayOfPreviousPeriod == dayOfCurrentPeriod)
-						&& (dayOfCurrentPeriod != dayOfNextPeriod)) {
-					if (currentPeriod - previousPeriod > 1) {
-						curriculumCompactnessPenalty++;
-						// System.out.println("3. Curriculum "
-						// + curriculum.getId() + " Period "
-						// + currentPeriod);
-					}
-				} else if ((dayOfPreviousPeriod != dayOfCurrentPeriod)
-						&& (dayOfCurrentPeriod != dayOfNextPeriod)) {
-					curriculumCompactnessPenalty++;
-					// System.out.println("4. Curriculum " + curriculum.getId()
-					// + " Period " + currentPeriod);
-				}
-			}
-
-			curriculumCompactnessPenalty *= 2;
-			totalCurriculumCompactnessPenalty += curriculumCompactnessPenalty;
-			int penalty = specificCurriculumCompactnessPenalty.get(curriculum);
-			penalty += curriculumCompactnessPenalty;
-			specificCurriculumCompactnessPenalty.put(curriculum, penalty);
-
-			/* calculate total costs for specific curriculum */
-			curriculumCosts[k++] = specificCurriculumCompactnessPenalty
-					.get(curriculum)
-					+ specificMinimumWorkingDaysPenalty.get(curriculum)
-					+ specificRoomCapacityPenalty.get(curriculum)
-					+ specificRoomStabilityPenalty.get(curriculum);
-		}
-
-		// System.out.println("Cost of RoomCapacity: " +
-		// totalRoomCapacityPenalty);
-		// System.out.println("Cost of MinWorkingDays: "
-		// + totalMinimumWorkingDaysPenalty);
-		// System.out.println("Cost of CurriculumCompactness: "
-		// + totalCurriculumCompactnessPenalty);
-		// System.out.println("Cost of RoomStability: "
-		// + totalRoomStabilityPenalty);
-		//
-		// System.out.println("Fairness new evalutor: "
-		// + calculateSolutionFairness());
-
-		return totalRoomCapacityPenalty + totalMinimumWorkingDaysPenalty
-				+ totalCurriculumCompactnessPenalty + totalRoomStabilityPenalty;
-	}
-
-	@Override
 	public void evaluateSolutions() {
+		final ISolutionTableService table = ServiceLocator.getInstance()
+				.getSolutionTableService();
+
 		int i = 0;
-		for (ISolution solution : table.getNotVotedSolutions()) {
-			int penalty = evaluateSolution(solution);
-			int fairness = calculateSolutionFairness();
-			System.out.println("Fairness new evaluator:" + fairness);
-			table.voteForSolution(i++, penalty, fairness);
+
+		for (final ISolution solution : table.getNotVotedSolutions()) {
+			EvaluationResult result = evaluateSolution(solution);
+			table.voteForSolution(i++, result.getTotalPenalty(), result
+					.getTotalFairness());
 		}
 	}
 
-	private int calculateSolutionFairness() {
+	public EvaluationResult evaluateSolution(final ISolution newSolution) {
+		final EvaluationResult result = new EvaluationResult(newSolution);
+
+		calcCurCompPen(newSolution, result);
+		calcMinWorkDaysPen(newSolution, result);
+		calcRoomCapPen(newSolution, result);
+		calcRoomStabPen(newSolution, result);
+		evaluateFairness(result);
+
+		return result;
+	}
+
+	public int evaluateFairness(EvaluationResult result) {
 		int iFairnessCost = 0, maxAvgDiff, minAvgDiff;
 		int maxPenalty = -1, minPenalty = -1, avgPenalty = -1, penaltySum = 0;
 
+		List<Integer> curriculumCosts = result.getPenaltyPerCurriculum();
+
 		// initial value to compare with
-		maxPenalty = curriculumCosts[0];
-		minPenalty = curriculumCosts[0];
-		for (int i = 1; i < curriculumCosts.length; i++) {
+		maxPenalty = curriculumCosts.get(0);
+		minPenalty = curriculumCosts.get(0);
+		for (int i = 1; i < curriculumCosts.size(); i++) {
 			// Take max value, min value, and average value... and compare
-			if (curriculumCosts[i] > maxPenalty) {
-				maxPenalty = curriculumCosts[i];
+			if (curriculumCosts.get(i) > maxPenalty) {
+				maxPenalty = curriculumCosts.get(i);
 			}
-			if (curriculumCosts[i] < minPenalty) {
-				minPenalty = curriculumCosts[i];
+			if (curriculumCosts.get(i) < minPenalty) {
+				minPenalty = curriculumCosts.get(i);
 			}
-			penaltySum += curriculumCosts[i];
+			penaltySum += curriculumCosts.get(i);
 		}
-		avgPenalty = (penaltySum / curriculumCosts.length);
+		avgPenalty = (penaltySum / curriculumCosts.size());
 
 		maxAvgDiff = maxPenalty - avgPenalty;
 		minAvgDiff = avgPenalty - minPenalty;
@@ -261,5 +77,198 @@ public class NewEvaluator implements IEvaluatorService {
 		}
 
 		return iFairnessCost;
+	}
+
+	private void calcRoomCapPen(final ISolution sol, final EvaluationResult res) {
+		final ICourse[][] schedule = sol.getCoding();
+		final IProblemInstance instance = sol.getProblemInstance();
+
+		for (final ICourse[] element : schedule) {
+			for (int room = 0; room < element.length; room++) {
+				final ICourse course = element[room];
+
+				if (course == null) {
+					continue;
+				}
+
+				/* calculate room capacity penalty */
+				final int roomStudentDifference = course.getNumberOfStudents()
+						- instance.getRoomByUniqueNumber(room).getCapacity();
+				final int roomCapacityPenalty = roomStudentDifference < 0 ? 0
+						: roomStudentDifference;
+				res.addTotalRoomCapacityPenalty(roomCapacityPenalty);
+
+				for (final ICurriculum curriculum : course.getCurricula()) {
+					res.addRoomCapacityPenalty(curriculum, roomCapacityPenalty);
+				}
+			}
+		}
+	}
+
+	private void calcRoomStabPen(final ISolution sol, final EvaluationResult res) {
+		final ICourse[][] schedule = sol.getCoding();
+		final HashMap<ICourse, Set<Integer>> periods = new HashMap<ICourse, Set<Integer>>();
+
+		for (final ICourse[] element : schedule) {
+			for (int room = 0; room < element.length; room++) {
+				final ICourse course = element[room];
+
+				if (course == null) {
+					continue;
+				}
+
+				if (periods.get(course) == null) {
+					periods.put(course, new HashSet<Integer>());
+				}
+
+				periods.get(course).add(room);
+			}
+		}
+
+		for (final ICourse course : periods.keySet()) {
+			final int roomStabilityPenalty = periods.get(course).size() - 1;
+			res.addTotalRoomStabilityPenalty(roomStabilityPenalty);
+
+			for (final ICurriculum cur : course.getCurricula()) {
+				res.addRoomCapacityPenalty(cur, roomStabilityPenalty);
+			}
+		}
+
+	}
+
+	private void calcMinWorkDaysPen(final ISolution sol,
+			final EvaluationResult res) {
+		final IProblemInstance instance = sol.getProblemInstance();
+		final ICourse[][] schedule = sol.getCoding();
+		final Map<ICourse, Set<Integer>> workingDaysPerCourse = new HashMap<ICourse, Set<Integer>>();
+
+		for (int period = 0; period < schedule.length; period++) {
+			for (int room = 0; room < schedule[period].length; room++) {
+				final ICourse course = schedule[period][room];
+
+				if (course == null) {
+					continue;
+				}
+
+				if (workingDaysPerCourse.get(course) == null) {
+					workingDaysPerCourse.put(course, new HashSet<Integer>());
+				}
+
+				/* store all days on which a course takes place */
+				final int day = period / instance.getPeriodsPerDay();
+				workingDaysPerCourse.get(course).add(day);
+			}
+		}
+
+		for (final ICourse course : instance.getCourses()) {
+			/* calculate the minimum working days penalty */
+			final int workingDaysDifference = course.getMinWorkingDays()
+					- workingDaysPerCourse.get(course).size();
+			final int minimumWorkingDaysPenalty = workingDaysDifference < 0 ? 0
+					: workingDaysDifference * 5;
+			res.addTotalMinimumWorkingDaysPenalty(minimumWorkingDaysPenalty);
+
+			/* add penalty for specific curricula */
+			for (final ICurriculum curriculum : course.getCurricula()) {
+				res.addMinimumWorkingDaysPenalty(curriculum,
+						minimumWorkingDaysPenalty);
+			}
+		}
+	}
+
+	private void calcCurCompPen(final ISolution sol, final EvaluationResult res) {
+		final IProblemInstance instance = sol.getProblemInstance();
+		final ICourse[][] schedule = sol.getCoding();
+		final Map<ICurriculum, List<Integer>> curriculaInPeriods = new HashMap<ICurriculum, List<Integer>>();
+
+		for (int period = 0; period < schedule.length; period++) {
+			final Set<ICurriculum> curriculaInSinglePeriod = new HashSet<ICurriculum>();
+
+			for (int room = 0; room < schedule[period].length; room++) {
+				final ICourse course = schedule[period][room];
+
+				if (course == null) {
+					continue;
+				}
+
+				curriculaInSinglePeriod.addAll(course.getCurricula());
+			}
+
+			for (final ICurriculum curriculum : curriculaInSinglePeriod) {
+				if (curriculaInPeriods.get(curriculum) == null) {
+					curriculaInPeriods
+							.put(curriculum, new ArrayList<Integer>());
+				}
+				curriculaInPeriods.get(curriculum).add(period);
+			}
+		}
+
+		for (final ICurriculum curriculum : curriculaInPeriods.keySet()) {
+			final List<Integer> periods = new ArrayList<Integer>(
+					curriculaInPeriods.get(curriculum));
+			if (periods.size() == 1) {
+				continue;
+			}
+			Collections.sort(periods);
+
+			int curriculumCompactnessPenalty = 0;
+
+			for (int i = 0; i < periods.size(); i++) {
+				int previousPeriod = -1;
+				int dayOfPreviousPeriod = -1;
+				if (i > 0) {
+					previousPeriod = periods.get(i - 1);
+					dayOfPreviousPeriod = previousPeriod
+							/ instance.getPeriodsPerDay();
+				}
+
+				final int currentPeriod = periods.get(i);
+				final int dayOfCurrentPeriod = currentPeriod
+						/ instance.getPeriodsPerDay();
+
+				int nextPeriod = -1;
+				int dayOfNextPeriod = -1;
+				if (i + 1 < periods.size()) {
+					nextPeriod = periods.get(i + 1);
+					dayOfNextPeriod = nextPeriod / instance.getPeriodsPerDay();
+				}
+
+				if ((dayOfPreviousPeriod != dayOfCurrentPeriod)
+						&& (dayOfCurrentPeriod == dayOfNextPeriod)) {
+					if (nextPeriod - currentPeriod > 1) {
+						curriculumCompactnessPenalty++;
+						// System.out.println("Curriculum " + curriculum.getId()
+						// + " Period " + currentPeriod);
+					}
+				} else if ((dayOfPreviousPeriod == dayOfCurrentPeriod)
+						&& (dayOfCurrentPeriod == dayOfNextPeriod)) {
+					if ((currentPeriod - previousPeriod > 1)
+							&& (nextPeriod - currentPeriod > 1)) {
+						curriculumCompactnessPenalty++;
+						// System.out.println("Curriculum " + curriculum.getId()
+						// + " Period " + currentPeriod);
+					}
+				} else if ((dayOfPreviousPeriod == dayOfCurrentPeriod)
+						&& (dayOfCurrentPeriod != dayOfNextPeriod)) {
+					if (currentPeriod - previousPeriod > 1) {
+						curriculumCompactnessPenalty++;
+						// System.out.println("Curriculum " + curriculum.getId()
+						// + " Period " + currentPeriod);
+					}
+				} else if ((dayOfPreviousPeriod != dayOfCurrentPeriod)
+						&& (dayOfCurrentPeriod != dayOfNextPeriod)) {
+					curriculumCompactnessPenalty++;
+					// System.out.println("Curriculum " + curriculum.getId()
+					// + " Period " + currentPeriod);
+				}
+			}
+
+			curriculumCompactnessPenalty *= 2;
+			res
+					.addTotalCurriculumCompactnessPenalty(curriculumCompactnessPenalty);
+
+			res.addCurriculumCompactnessPenalty(curriculum,
+					curriculumCompactnessPenalty);
+		}
 	}
 }
