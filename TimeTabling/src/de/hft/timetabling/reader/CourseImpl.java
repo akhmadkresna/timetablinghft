@@ -30,9 +30,9 @@ final class CourseImpl implements ICourse {
 
 	private final Set<ICurriculum> curricula;
 
-	CourseImpl(String id, int minWorkingDays, int numberOfLectures,
-			int numberOfStudents, String teacher,
-			IProblemInstance problemInstance) {
+	CourseImpl(final String id, final int minWorkingDays,
+			final int numberOfLectures, final int numberOfStudents,
+			final String teacher, final IProblemInstance problemInstance) {
 
 		this.id = id;
 		this.minWorkingDays = minWorkingDays;
@@ -76,7 +76,7 @@ final class CourseImpl implements ICourse {
 	@Override
 	public synchronized Set<ICurriculum> getCurricula() {
 		if (curricula.isEmpty()) {
-			for (ICurriculum curriculum : problemInstance.getCurricula()) {
+			for (final ICurriculum curriculum : problemInstance.getCurricula()) {
 				if (curriculum.containsCourse(this)) {
 					curricula.add(curriculum);
 				}
@@ -94,7 +94,7 @@ final class CourseImpl implements ICourse {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -104,7 +104,7 @@ final class CourseImpl implements ICourse {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		CourseImpl other = (CourseImpl) obj;
+		final CourseImpl other = (CourseImpl) obj;
 		if (id == null) {
 			if (other.id != null) {
 				return false;

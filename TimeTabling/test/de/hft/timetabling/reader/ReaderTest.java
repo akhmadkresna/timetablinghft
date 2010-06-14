@@ -32,11 +32,12 @@ public class ReaderTest extends TestCase {
 	 * Tests whether a specific problem instance input file is read correctly.
 	 */
 	public void testReadInstance() throws IOException {
-		IProblemInstance instance = reader.readInstance(TEST_INSTANCE_NAME);
+		final IProblemInstance instance = reader
+				.readInstance(TEST_INSTANCE_NAME);
 		performTestReadInstance(instance);
 	}
 
-	private void performTestReadInstance(IProblemInstance instance) {
+	private void performTestReadInstance(final IProblemInstance instance) {
 		// # GENERAL INFORMATION
 		assertEquals("ToyExample", instance.getName());
 		assertEquals(4, instance.getNumberOfCourses());
@@ -47,9 +48,9 @@ public class ReaderTest extends TestCase {
 		assertEquals(8, instance.getNumberOfConstraints());
 
 		// # COURSES
-		Set<ICourse> courses = instance.getCourses();
+		final Set<ICourse> courses = instance.getCourses();
 		assertEquals(4, courses.size());
-		ICourse[] courseArray = courses.toArray(new ICourse[4]);
+		final ICourse[] courseArray = courses.toArray(new ICourse[4]);
 
 		// - Course 1
 		assertEquals("SceCosC", courseArray[0].getId());
@@ -80,9 +81,9 @@ public class ReaderTest extends TestCase {
 		assertEquals(18, courseArray[3].getNumberOfStudents());
 
 		// # ROOMS
-		Set<IRoom> rooms = instance.getRooms();
+		final Set<IRoom> rooms = instance.getRooms();
 		assertEquals(2, rooms.size());
-		IRoom[] roomArray = rooms.toArray(new IRoom[2]);
+		final IRoom[] roomArray = rooms.toArray(new IRoom[2]);
 
 		// - Room 1
 		assertEquals("A", roomArray[0].getId());
@@ -93,15 +94,16 @@ public class ReaderTest extends TestCase {
 		assertEquals(50, roomArray[1].getCapacity());
 
 		// # CURRICULA
-		Set<ICurriculum> curricula = instance.getCurricula();
+		final Set<ICurriculum> curricula = instance.getCurricula();
 		assertEquals(2, curricula.size());
-		ICurriculum[] curriculaArray = curricula.toArray(new ICurriculum[2]);
+		final ICurriculum[] curriculaArray = curricula
+				.toArray(new ICurriculum[2]);
 
 		// - Curriculum 1
 		assertEquals("Cur1", curriculaArray[0].getId());
 		assertEquals(3, curriculaArray[0].getNumberOfCourses());
-		ICourse[] curricula1Courses = curriculaArray[0].getCourses().toArray(
-				new ICourse[3]);
+		final ICourse[] curricula1Courses = curriculaArray[0].getCourses()
+				.toArray(new ICourse[3]);
 		assertEquals("SceCosC", curricula1Courses[0].getId());
 		assertEquals("ArcTec", curricula1Courses[1].getId());
 		assertEquals("TecCos", curricula1Courses[2].getId());
@@ -109,20 +111,20 @@ public class ReaderTest extends TestCase {
 		// - Curriculum 2
 		assertEquals("Cur2", curriculaArray[1].getId());
 		assertEquals(2, curriculaArray[1].getNumberOfCourses());
-		ICourse[] curricula2Courses = curriculaArray[1].getCourses().toArray(
-				new ICourse[2]);
+		final ICourse[] curricula2Courses = curriculaArray[1].getCourses()
+				.toArray(new ICourse[2]);
 		assertEquals("TecCos", curricula2Courses[0].getId());
 		assertEquals("Geotec", curricula2Courses[1].getId());
 
 		// # UNAVAILABILITY CONSTRAINTS
 
 		// - Course 1
-		Set<Integer> course1Constraints = instance
+		final Set<Integer> course1Constraints = instance
 				.getUnavailabilityConstraints(courseArray[0]);
 		assertEquals(0, course1Constraints.size());
 
 		// - Course 2
-		Set<Integer> course2Constraints = instance
+		final Set<Integer> course2Constraints = instance
 				.getUnavailabilityConstraints(courseArray[1]);
 		assertEquals(4, course2Constraints.size());
 		assertTrue(course2Constraints.contains(16));
@@ -131,7 +133,7 @@ public class ReaderTest extends TestCase {
 		assertTrue(course2Constraints.contains(19));
 
 		// - Course 3
-		Set<Integer> course3Constraints = instance
+		final Set<Integer> course3Constraints = instance
 				.getUnavailabilityConstraints(courseArray[2]);
 		assertEquals(4, course3Constraints.size());
 		assertTrue(course3Constraints.contains(8));
@@ -140,7 +142,7 @@ public class ReaderTest extends TestCase {
 		assertTrue(course3Constraints.contains(15));
 
 		// - Course 4
-		Set<Integer> course4Constraints = instance
+		final Set<Integer> course4Constraints = instance
 				.getUnavailabilityConstraints(courseArray[3]);
 		assertEquals(0, course4Constraints.size());
 	}
@@ -150,8 +152,8 @@ public class ReaderTest extends TestCase {
 	 * exception occurs while reading any of the input files.
 	 */
 	public void testReadAllInstances() throws IOException {
-		File instancesFolder = new File("instances");
-		for (String fileName : instancesFolder.list()) {
+		final File instancesFolder = new File("instances");
+		for (final String fileName : instancesFolder.list()) {
 			if (!(fileName.endsWith(".ctt"))) {
 				continue;
 			}
@@ -165,13 +167,13 @@ public class ReaderTest extends TestCase {
 		ServiceLocator.getInstance().setSolutionTableService(
 				new SolutionTable());
 
-		IProblemInstance instance = reader
+		final IProblemInstance instance = reader
 				.readInstanceUsingInitialSolutionDirectory(TEST_INSTANCE_NAME,
 						"test/solutions");
 		performTestReadInstance(instance);
 
-		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-				.getSolutionTableService();
+		final ISolutionTableService solutionTable = ServiceLocator
+				.getInstance().getSolutionTableService();
 		assertEquals(2, solutionTable.getSize(true));
 	}
 

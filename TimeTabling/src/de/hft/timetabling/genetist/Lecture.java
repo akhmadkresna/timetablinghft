@@ -13,7 +13,7 @@ final class Lecture {
 
 	private final TimeTableSlot slot;
 
-	public Lecture(ICourse course, int period, int room) {
+	public Lecture(final ICourse course, final int period, final int room) {
 		this.course = course;
 		slot = new TimeTableSlot(period, room);
 	}

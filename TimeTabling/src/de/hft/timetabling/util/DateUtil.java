@@ -13,7 +13,7 @@ public class DateUtil {
 	/**
 	 * @author Matthias Ruszala
 	 */
-	public static String toTimeString(long timeInMillis) {
+	public static String toTimeString(final long timeInMillis) {
 		final long hours = TimeUnit.MILLISECONDS.toHours(timeInMillis);
 		final long minutes = TimeUnit.MILLISECONDS.toMinutes(timeInMillis)
 				- TimeUnit.HOURS.toMinutes(hours);
@@ -23,7 +23,7 @@ public class DateUtil {
 		return String.format("%d h, %d m, %d s", hours, minutes, seconds);
 	}
 
-	public static String getTimeStamp(Date date) {
+	public static String getTimeStamp(final Date date) {
 		String dateString = date.toString();
 		dateString = dateString.replaceAll(" ", "-");
 		dateString = dateString.replaceAll(":", "-");

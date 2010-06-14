@@ -25,8 +25,8 @@ final class CurriculumImpl implements ICurriculum {
 
 	private final IProblemInstance problemInstance;
 
-	CurriculumImpl(String id, int numberOfCourses,
-			IProblemInstance problemInstance) {
+	CurriculumImpl(final String id, final int numberOfCourses,
+			final IProblemInstance problemInstance) {
 
 		this.id = id;
 		this.numberOfCourses = numberOfCourses;
@@ -55,11 +55,11 @@ final class CurriculumImpl implements ICurriculum {
 	}
 
 	@Override
-	public boolean containsCourse(ICourse course) {
+	public boolean containsCourse(final ICourse course) {
 		return courses.contains(course);
 	}
 
-	void addCourse(ICourse course) {
+	void addCourse(final ICourse course) {
 		courses.add(course);
 	}
 
@@ -72,7 +72,7 @@ final class CurriculumImpl implements ICurriculum {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -82,7 +82,7 @@ final class CurriculumImpl implements ICurriculum {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		CurriculumImpl other = (CurriculumImpl) obj;
+		final CurriculumImpl other = (CurriculumImpl) obj;
 		if (id == null) {
 			if (other.id != null) {
 				return false;

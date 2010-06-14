@@ -36,27 +36,28 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 * Solutions that are recombined and mutated are chosen randomly.
 	 */
 	@Override
-	public void recombineAndMutate(int iteration, int totalIterations) {
+	public void recombineAndMutate(final int iteration,
+			final int totalIterations) {
 		RECOMBINATION_STRATEGY.newInterationStarted(iteration, totalIterations);
-		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-				.getSolutionTableService();
+		final ISolutionTableService solutionTable = ServiceLocator
+				.getInstance().getSolutionTableService();
 
 		if (solutionTable.getSize(false) <= 2) {
 			return;
 		}
 
 		// The solutions ordered by rank (low to high, highest rank is best)
-		List<ISolution> rankedSolutions = new ArrayList<ISolution>(
+		final List<ISolution> rankedSolutions = new ArrayList<ISolution>(
 				solutionTable.getSize(false));
 		for (int i = solutionTable.getSize(false) - 1; i >= 0; i--) {
 			rankedSolutions.add(solutionTable.getSolution(i));
 		}
 
-		int nrRecombinations = (getRecombinationPercentage() * solutionTable
+		final int nrRecombinations = (getRecombinationPercentage() * solutionTable
 				.getSize(false)) / 100;
 		for (int i = 0; i < nrRecombinations; i++) {
 
-			int rankingSystemSlotSum = computeRankingSystemSlotSum(rankedSolutions);
+			final int rankingSystemSlotSum = computeRankingSystemSlotSum(rankedSolutions);
 			ISolution firstParentSolution = null;
 			ISolution secondParentSolution = null;
 
@@ -65,14 +66,14 @@ public class CrazyGenetist implements ICrazyGenetistService {
 					.equals(secondParentSolution))
 					&& (rankedSolutions.size() > 2)) {
 
-				Random random = new Random();
-				int selectedSlot1 = random.nextInt(rankingSystemSlotSum) + 1;
-				int rank1 = slotToRank(selectedSlot1, rankedSolutions.size(),
-						rankingSystemSlotSum);
+				final Random random = new Random();
+				final int selectedSlot1 = random.nextInt(rankingSystemSlotSum) + 1;
+				final int rank1 = slotToRank(selectedSlot1, rankedSolutions
+						.size(), rankingSystemSlotSum);
 				firstParentSolution = rankedSolutions.get(rank1 - 1);
-				int selectedSlot2 = random.nextInt(rankingSystemSlotSum) + 1;
-				int rank2 = slotToRank(selectedSlot2, rankedSolutions.size(),
-						rankingSystemSlotSum);
+				final int selectedSlot2 = random.nextInt(rankingSystemSlotSum) + 1;
+				final int rank2 = slotToRank(selectedSlot2, rankedSolutions
+						.size(), rankingSystemSlotSum);
 				secondParentSolution = rankedSolutions.get(rank2 - 1);
 			}
 
@@ -92,7 +93,7 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			Main.recombinationSuccess++;
 
 			// Mutation
-			ISolution mutatedSolution = RECOMBINATION_STRATEGY
+			final ISolution mutatedSolution = RECOMBINATION_STRATEGY
 					.mutate(recombinedSolution);
 			if (mutatedSolution != null) {
 				recombinedSolution = mutatedSolution;
@@ -104,17 +105,18 @@ public class CrazyGenetist implements ICrazyGenetistService {
 			// Hand in solution
 			firstParentSolution.increaseRecombinationCount();
 			secondParentSolution.increaseRecombinationCount();
-			Set<ISolution> eliminatedSolutions = new HashSet<ISolution>();
+			final Set<ISolution> eliminatedSolutions = new HashSet<ISolution>();
 			RECOMBINATION_STRATEGY.eliminate(firstParentSolution,
 					secondParentSolution, eliminatedSolutions);
-			for (ISolution eliminatedSolution : eliminatedSolutions) {
+			for (final ISolution eliminatedSolution : eliminatedSolutions) {
 				rankedSolutions.remove(eliminatedSolution);
 			}
 			solutionTable.addSolution(recombinedSolution);
 		}
 	}
 
-	private int computeRankingSystemSlotSum(List<ISolution> rankedSolutions) {
+	private int computeRankingSystemSlotSum(
+			final List<ISolution> rankedSolutions) {
 		int slotSum = 0;
 		for (int i = 1; i <= rankedSolutions.size(); i++) {
 			slotSum += i;
@@ -133,7 +135,8 @@ public class CrazyGenetist implements ICrazyGenetistService {
 	 * @param slotSum
 	 *            The sum of all slots.
 	 */
-	private int slotToRank(int slot, int nrSolutions, int slotSum) {
+	private int slotToRank(final int slot, final int nrSolutions,
+			final int slotSum) {
 		int rank = 1;
 		int currentSlotSum = 1;
 		while (rank <= nrSolutions) {

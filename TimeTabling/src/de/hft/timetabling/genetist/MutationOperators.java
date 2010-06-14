@@ -31,14 +31,14 @@ final class MutationOperators {
 	 * @param solution
 	 *            The solution to mutate.
 	 */
-	public static ISolution mutateCourseIsolation(ISolution solution) {
+	public static ISolution mutateCourseIsolation(final ISolution solution) {
 		ISolution mutatedSolution = null;
-		ICourse[][] mutatedCoding = solution.getCoding().clone();
-		IProblemInstance problemInstance = solution.getProblemInstance();
+		final ICourse[][] mutatedCoding = solution.getCoding().clone();
+		final IProblemInstance problemInstance = solution.getProblemInstance();
 		ICourse courseToSwitch = null;
 
 		// First, randomly find any lecture.
-		Random random = new Random();
+		final Random random = new Random();
 		int randomlySelectedPeriod = 0;
 		int randomlySelectedRoom = 0;
 		while (courseToSwitch == null) {
@@ -53,7 +53,7 @@ final class MutationOperators {
 		 * Second, find the nearest empty valid time table slot with the same
 		 * room to switch to.
 		 */
-		TimeTableSlot nearestFreeSlot = findNearestFreeValidTimeTableSlotSameRoom(
+		final TimeTableSlot nearestFreeSlot = findNearestFreeValidTimeTableSlotSameRoom(
 				mutatedCoding, randomlySelectedPeriod, randomlySelectedRoom,
 				problemInstance);
 		if (nearestFreeSlot == null) {
@@ -70,15 +70,15 @@ final class MutationOperators {
 	}
 
 	private static TimeTableSlot findNearestFreeValidTimeTableSlotSameRoom(
-			ICourse[][] coding, int basePeriod, int room,
-			IProblemInstance instance) {
+			final ICourse[][] coding, final int basePeriod, final int room,
+			final IProblemInstance instance) {
 
-		TimeTableSlot nextFree = findNextFreeValidTimeTableSlotSameRoom(coding,
-				basePeriod, room, true, instance);
+		final TimeTableSlot nextFree = findNextFreeValidTimeTableSlotSameRoom(
+				coding, basePeriod, room, true, instance);
 		if (nextFree == null) {
 			return null;
 		}
-		TimeTableSlot previousFree = findNextFreeValidTimeTableSlotSameRoom(
+		final TimeTableSlot previousFree = findNextFreeValidTimeTableSlotSameRoom(
 				coding, basePeriod, room, false, instance);
 		if (Math.abs(basePeriod - nextFree.getPeriod()) > Math.abs(basePeriod
 				- previousFree.getPeriod())) {
@@ -88,24 +88,24 @@ final class MutationOperators {
 	}
 
 	private static TimeTableSlot findNextFreeValidTimeTableSlotSameRoom(
-			ICourse[][] coding, int basePeriod, int room, boolean next,
-			IProblemInstance instance) {
+			final ICourse[][] coding, final int basePeriod, final int room,
+			final boolean next, final IProblemInstance instance) {
 
-		int numberOfPeriods = instance.getNumberOfPeriods();
-		ICourse course = coding[basePeriod][room];
+		final int numberOfPeriods = instance.getNumberOfPeriods();
+		final ICourse course = coding[basePeriod][room];
 
 		int targetPeriod = next ? PeriodUtil.getNextPeriod(basePeriod,
 				numberOfPeriods) : PeriodUtil.getPreviousPeriod(basePeriod,
 				numberOfPeriods);
 		while (targetPeriod != basePeriod) {
-			ICourse courseAtTarget = coding[targetPeriod][room];
+			final ICourse courseAtTarget = coding[targetPeriod][room];
 			if (courseAtTarget == null) {
-				boolean unavailabilityConstraintViolated = HardConstraintUtil
+				final boolean unavailabilityConstraintViolated = HardConstraintUtil
 						.existsUnavailabilityConstraint(course, targetPeriod);
-				boolean curriculumViolated = HardConstraintUtil
+				final boolean curriculumViolated = HardConstraintUtil
 						.existsCurriculaInPeriod(coding, course.getCurricula(),
 								targetPeriod);
-				boolean teacherViolated = HardConstraintUtil
+				final boolean teacherViolated = HardConstraintUtil
 						.existsTeacherInPeriod(coding, course.getTeacher(),
 								targetPeriod);
 				if (!(unavailabilityConstraintViolated || curriculumViolated || teacherViolated)) {
@@ -135,9 +135,9 @@ final class MutationOperators {
 	 *            that should be mutated.
 	 * @return mutated solution
 	 */
-	public static ISolution mutateRoomStability(ISolution solution) {
-		IProblemInstance pi = solution.getProblemInstance();
-		ICourse[][] courses = solution.getCoding();
+	public static ISolution mutateRoomStability(final ISolution solution) {
+		final IProblemInstance pi = solution.getProblemInstance();
+		final ICourse[][] courses = solution.getCoding();
 		int roomY = 0, periodX = 0;
 		ICurriculum myCurriculum = null;
 
@@ -145,10 +145,11 @@ final class MutationOperators {
 			roomY = (int) (pi.getRooms().size() * Math.random());
 			periodX = (int) (pi.getNumberOfPeriods() * Math.random());
 			if (courses[periodX][roomY] != null) {
-				Set<ICurriculum> cur = courses[periodX][roomY].getCurricula();
-				int random = (int) (cur.size() * Math.random());
-				ICurriculum curriculum = cur
-						.toArray(new ICurriculum[cur.size()])[random];
+				final Set<ICurriculum> cur = courses[periodX][roomY]
+						.getCurricula();
+				final int random = (int) (cur.size() * Math.random());
+				final ICurriculum curriculum = cur.toArray(new ICurriculum[cur
+						.size()])[random];
 				myCurriculum = getCurriculumOutOfSet(cur, curriculum.getId());
 			}
 		}
@@ -156,11 +157,12 @@ final class MutationOperators {
 		for (int i = 0; i < courses.length; i++) {
 			if (i != periodX) {
 				for (int j = 0; j < courses[i].length; j++) {
-					ICourse selectedCourse = courses[i][j];
+					final ICourse selectedCourse = courses[i][j];
 					if (selectedCourse != null) {
-						Set<ICurriculum> tmpCur = selectedCourse.getCurricula();
+						final Set<ICurriculum> tmpCur = selectedCourse
+								.getCurricula();
 
-						for (ICurriculum iCurriculum : tmpCur) {
+						for (final ICurriculum iCurriculum : tmpCur) {
 							if (iCurriculum.getId()
 									.equals(myCurriculum.getId())) {
 								courses[i][j] = courses[i][roomY];
@@ -172,9 +174,9 @@ final class MutationOperators {
 			}
 		}
 
-		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-				.getSolutionTableService();
-		ISolution newSolution = solutionTable.createNewSolution(courses,
+		final ISolutionTableService solutionTable = ServiceLocator
+				.getInstance().getSolutionTableService();
+		final ISolution newSolution = solutionTable.createNewSolution(courses,
 				solution.getProblemInstance());
 		newSolution.setRecombinationCount(solution.getRecombinationCount() + 1);
 		return newSolution;
@@ -190,10 +192,10 @@ final class MutationOperators {
 	 *            ID of ICurriculum that should be searched for
 	 * @return the found item
 	 */
-	private static ICurriculum getCurriculumOutOfSet(Set<ICurriculum> set,
-			String searchedOneId) {
+	private static ICurriculum getCurriculumOutOfSet(
+			final Set<ICurriculum> set, final String searchedOneId) {
 
-		for (ICurriculum iCurriculum : set) {
+		for (final ICurriculum iCurriculum : set) {
 			if (iCurriculum.getId().equals(searchedOneId)) {
 				return iCurriculum;
 			}

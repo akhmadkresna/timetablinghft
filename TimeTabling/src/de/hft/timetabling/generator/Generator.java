@@ -51,7 +51,8 @@ public final class Generator implements IGeneratorService {
 		 */
 		while (iterations < MAX_ITERATIONS) {
 			int loops = 0;
-			GeneratorAlgorithm session = new FastAssignmentAlgorithm(instance);
+			final GeneratorAlgorithm session = new FastAssignmentAlgorithm(
+					instance);
 
 			final Set<ICourse> prioterized = new HashSet<ICourse>();
 			final Set<ICourse> nonPrioterized = new HashSet<ICourse>();
@@ -92,10 +93,10 @@ public final class Generator implements IGeneratorService {
 	 */
 	private Set<ICourse> assignCourses(final GeneratorAlgorithm session,
 			final Set<ICourse> courses) {
-		Set<ICourse> unassigned = new HashSet<ICourse>();
+		final Set<ICourse> unassigned = new HashSet<ICourse>();
 
 		while (!courses.isEmpty()) {
-			ICourse critical = session.getMostCriticalEvent(courses);
+			final ICourse critical = session.getMostCriticalEvent(courses);
 
 			if (session.isAssignable(critical)) {
 				session.assignRandomViableSlots(critical);
@@ -108,10 +109,10 @@ public final class Generator implements IGeneratorService {
 	}
 
 	@Override
-	public void fillSolutionTable(IProblemInstance problemInstance) {
-		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-				.getSolutionTableService();
-		int numberOfEmptySlots = solutionTable.getNumberOfEmptySlots();
+	public void fillSolutionTable(final IProblemInstance problemInstance) {
+		final ISolutionTableService solutionTable = ServiceLocator
+				.getInstance().getSolutionTableService();
+		final int numberOfEmptySlots = solutionTable.getNumberOfEmptySlots();
 		System.out.print("GENERATOR: Filling " + numberOfEmptySlots
 				+ " empty slots ...");
 
@@ -119,10 +120,10 @@ public final class Generator implements IGeneratorService {
 			ICourse[][] coding;
 			try {
 				coding = generateFeasibleSolution(problemInstance);
-				ISolution newSolution = solutionTable.createNewSolution(coding,
-						problemInstance);
+				final ISolution newSolution = solutionTable.createNewSolution(
+						coding, problemInstance);
 				solutionTable.addSolution(newSolution);
-			} catch (NoFeasibleSolutionFoundException e) {
+			} catch (final NoFeasibleSolutionFoundException e) {
 				e.printStackTrace();
 			}
 		}

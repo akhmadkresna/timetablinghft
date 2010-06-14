@@ -29,7 +29,7 @@ public final class MultiThreadedGenerator implements IGeneratorService {
 
 	private final IGeneratorService generator;
 
-	public MultiThreadedGenerator(IGeneratorService generator) {
+	public MultiThreadedGenerator(final IGeneratorService generator) {
 		this.generator = generator;
 	}
 
@@ -51,19 +51,20 @@ public final class MultiThreadedGenerator implements IGeneratorService {
 			final List<Future<ISolution>> futureList = exec.invokeAll(taskGroup
 					.subList(0, solutionTable.getNumberOfEmptySlots()));
 
-			for (Future<ISolution> future : futureList) {
+			for (final Future<ISolution> future : futureList) {
 				final ISolution sol = future.get();
 				solutionTable.addSolution(sol);
 			}
-		} catch (InterruptedException e1) {
+		} catch (final InterruptedException e1) {
 			e1.printStackTrace();
-		} catch (ExecutionException e) {
+		} catch (final ExecutionException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public ICourse[][] generateFeasibleSolution(IProblemInstance problemInstance)
+	public ICourse[][] generateFeasibleSolution(
+			final IProblemInstance problemInstance)
 			throws NoFeasibleSolutionFoundException {
 		return generator.generateFeasibleSolution(problemInstance);
 	}
@@ -73,7 +74,7 @@ final class SolutionTask implements Callable<ISolution> {
 
 	private static final Object CREATE_LOCK = new Object();
 
-	private IProblemInstance problemInstance;
+	private final IProblemInstance problemInstance;
 
 	private final ISolutionTableService solutionTable = ServiceLocator
 			.getInstance().getSolutionTableService();
@@ -81,7 +82,7 @@ final class SolutionTask implements Callable<ISolution> {
 	private final IGeneratorService generator;
 
 	public SolutionTask(final IProblemInstance problemInstance,
-			IGeneratorService generator) {
+			final IGeneratorService generator) {
 		this.problemInstance = problemInstance;
 		this.generator = generator;
 	}
@@ -92,14 +93,14 @@ final class SolutionTask implements Callable<ISolution> {
 
 		while (newSolution == null) {
 			try {
-				ICourse[][] coding = generator
+				final ICourse[][] coding = generator
 						.generateFeasibleSolution(problemInstance);
 
 				synchronized (CREATE_LOCK) {
 					newSolution = solutionTable.createNewSolution(coding,
 							problemInstance);
 				}
-			} catch (NoFeasibleSolutionFoundException e) {
+			} catch (final NoFeasibleSolutionFoundException e) {
 				e.printStackTrace();
 			}
 		}

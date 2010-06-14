@@ -42,7 +42,8 @@ public class Evaluator implements IEvaluatorService {
 	 *            A solution instance is send for evaluation
 	 * @return iCost Returns the penalty value
 	 */
-	private int costsOnRoomCapacity(ISolution solution, ICurriculum curriculum) {
+	private int costsOnRoomCapacity(final ISolution solution,
+			final ICurriculum curriculum) {
 		int iCost = 0;
 		int iNoOfStudents, iRoomCapacity;
 		int r, p;
@@ -64,7 +65,7 @@ public class Evaluator implements IEvaluatorService {
 				if ((currentCode[p][r] != null)
 						&& courses.contains(currentCode[p][r])) {
 					currentRoom = currentInstance.getRoomByUniqueNumber(r);
-					String str = ":" + currentCode[p][r].toString() + ","
+					final String str = ":" + currentCode[p][r].toString() + ","
 							+ currentRoom.toString() + ";";
 					if (!strArrayRoomCourse.contains(str)) {
 
@@ -102,7 +103,8 @@ public class Evaluator implements IEvaluatorService {
 	 *            A solution instance is send for evaluation
 	 * @return iCost Returns the penalty value
 	 */
-	private int costsOnMinWorkingDays(ISolution solution, ICurriculum curriculum) {
+	private int costsOnMinWorkingDays(final ISolution solution,
+			final ICurriculum curriculum) {
 		int iCost = 0;
 		int p, r, iWorkingDays;
 		int iMinWorkingDays, iPeriodPerDay;
@@ -160,8 +162,8 @@ public class Evaluator implements IEvaluatorService {
 			}
 			// Each day below the minimum counts as 5 points of penalty
 			if (iWorkingDays < iMinWorkingDays) {
-				int temp = iMinWorkingDays - iWorkingDays;
-				int temp2 = temp * 5;
+				final int temp = iMinWorkingDays - iWorkingDays;
+				final int temp2 = temp * 5;
 				iCost += temp2;
 			}
 
@@ -177,7 +179,8 @@ public class Evaluator implements IEvaluatorService {
 	 *            A solution instance is send for evaluation
 	 * @return iCost Returns the penalty value of both soft constrains
 	 */
-	private int costsOnRoomStability(ISolution solution, ICurriculum curriculum) {
+	private int costsOnRoomStability(final ISolution solution,
+			final ICurriculum curriculum) {
 		int iCost = 0;
 		int p, r, rooms;
 		Iterator<ICourse> it;
@@ -188,7 +191,7 @@ public class Evaluator implements IEvaluatorService {
 		currentCode = solution.getCoding();
 		courses = curriculum.getCourses();
 		rooms = currentInstance.getNumberOfRooms();
-		int roomArray[] = new int[rooms];
+		final int roomArray[] = new int[rooms];
 
 		// Initial value of day and period
 		it = courses.iterator();
@@ -271,7 +274,7 @@ public class Evaluator implements IEvaluatorService {
 	 */
 	@Override
 	public void evaluateSolutions() {
-		ServiceLocator serviceLocator = ServiceLocator.getInstance();
+		final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 		solutionTable = serviceLocator.getSolutionTableService();
 		callSoftConstrainEvalutors(solutionTable);
 	}
@@ -283,11 +286,12 @@ public class Evaluator implements IEvaluatorService {
 	 *            The solutionTable from which solution are taken
 	 * 
 	 */
-	private void callSoftConstrainEvalutors(ISolutionTableService solutionTable) {
+	private void callSoftConstrainEvalutors(
+			final ISolutionTableService solutionTable) {
 		Set<ICurriculum> currentCurriculumSet;
 		ICurriculum currentCurricula;
 		int iFairness;
-		List<Integer> curriculumCosts = new ArrayList<Integer>();
+		final List<Integer> curriculumCosts = new ArrayList<Integer>();
 
 		int iPenalty = 0;
 		int iCurriculumBasedPenalty = 0;
@@ -300,15 +304,15 @@ public class Evaluator implements IEvaluatorService {
 		int iCBasedCompactness = 0;
 		int iRoomStability = 0;
 
-		List<ISolution> notVotedSolutions = solutionTable
+		final List<ISolution> notVotedSolutions = solutionTable
 				.getNotVotedSolutions();
-		int nrNotVoted = notVotedSolutions.size();
+		final int nrNotVoted = notVotedSolutions.size();
 		for (int i = 0; i < nrNotVoted; i++) {
-			ISolution solutionCode = notVotedSolutions.get(i);
+			final ISolution solutionCode = notVotedSolutions.get(i);
 			currentInstance = solutionCode.getProblemInstance();
 			currentCode = solutionCode.getCoding();
 			currentCurriculumSet = currentInstance.getCurricula();
-			Iterator<ICurriculum> it = currentCurriculumSet.iterator();
+			final Iterator<ICurriculum> it = currentCurriculumSet.iterator();
 			iPenalty = 0;
 			iCBasedRoom = 0;
 			iCBasedMinWorking = 0;
@@ -370,7 +374,7 @@ public class Evaluator implements IEvaluatorService {
 	 * @param curriculumCosts
 	 *            The integer list with the penalty for each curriculum
 	 */
-	public int evaluateFairness(List<Integer> curriculumCosts) {
+	public int evaluateFairness(final List<Integer> curriculumCosts) {
 		int iFairnessCost = 0, maxAvgDiff, minAvgDiff;
 		int maxPenalty = -1, minPenalty = -1, avgPenalty = -1, penaltySum = 0;
 
@@ -404,7 +408,7 @@ public class Evaluator implements IEvaluatorService {
 	}
 
 	@Override
-	public int evaluateSolution(ISolution newSolution) {
+	public int evaluateSolution(final ISolution newSolution) {
 		Set<ICurriculum> currentCurriculumSet;
 		ICurriculum currentCurricula;
 		int numberOfCurriculum;
@@ -414,7 +418,7 @@ public class Evaluator implements IEvaluatorService {
 		currentCurriculumSet = currentInstance.getCurricula();
 		numberOfCurriculum = currentInstance.getNumberOfCurricula();
 		curriculumCosts = new int[numberOfCurriculum];
-		Iterator<ICurriculum> it = currentCurriculumSet.iterator();
+		final Iterator<ICurriculum> it = currentCurriculumSet.iterator();
 		int c = 0;
 		int iPenalty = 0;
 		// int iRoom = 0;
@@ -483,7 +487,7 @@ public class Evaluator implements IEvaluatorService {
 	 * System.out.println("CirriculumRoom: " + iCompRoomS); }
 	 */
 
-	private int costsOnRoomCapacity(ISolution solution) {
+	private int costsOnRoomCapacity(final ISolution solution) {
 		int iCost = 0;
 		int iNoOfStudents, iRoomCapacity;
 		int r, p;
@@ -535,7 +539,7 @@ public class Evaluator implements IEvaluatorService {
 		return iCost;
 	}
 
-	private int costsOnMinWorkingDays(ISolution solution) {
+	private int costsOnMinWorkingDays(final ISolution solution) {
 		int iCost = 0;
 		int p, r, iWorkingDays;
 		int iMinWorkingDays, iPeriodPerDay;
@@ -593,8 +597,8 @@ public class Evaluator implements IEvaluatorService {
 			}
 			// Each day below the minimum counts as 5 points of penalty
 			if (iWorkingDays < iMinWorkingDays) {
-				int temp = iMinWorkingDays - iWorkingDays;
-				int temp2 = temp * 5;
+				final int temp = iMinWorkingDays - iWorkingDays;
+				final int temp2 = temp * 5;
 				iCost += temp2;
 			}
 
@@ -602,8 +606,8 @@ public class Evaluator implements IEvaluatorService {
 		return iCost;
 	}
 
-	private int costsOnCurriculumCompactness(ISolution solution,
-			ICurriculum curriculum) {
+	private int costsOnCurriculumCompactness(final ISolution solution,
+			final ICurriculum curriculum) {
 		int iCost = 0;
 		int p, r, d, ppd;
 		// int iPreviousPeriod;
@@ -615,7 +619,7 @@ public class Evaluator implements IEvaluatorService {
 
 		// Initial value of day and period
 		ppd = currentInstance.getPeriodsPerDay();
-		int periodArray[] = new int[ppd];
+		final int periodArray[] = new int[ppd];
 
 		d = 1;
 		p = 0;
@@ -689,7 +693,7 @@ public class Evaluator implements IEvaluatorService {
 		return iCost;
 	}
 
-	private int costsOnRoomStability(ISolution solution) {
+	private int costsOnRoomStability(final ISolution solution) {
 		int iCost = 0;
 		int p, r, rooms;
 		Iterator<ICourse> it;
@@ -700,7 +704,7 @@ public class Evaluator implements IEvaluatorService {
 		currentCode = solution.getCoding();
 		courses = currentInstance.getCourses();
 		rooms = currentInstance.getNumberOfRooms();
-		int roomArray[] = new int[rooms];
+		final int roomArray[] = new int[rooms];
 
 		// Initial value of day and period
 		it = courses.iterator();

@@ -31,7 +31,8 @@ final class SolutionImpl implements ISolution {
 
 	private int fairness;
 
-	SolutionImpl(ICourse[][] coding, IProblemInstance problemInstance) {
+	SolutionImpl(final ICourse[][] coding,
+			final IProblemInstance problemInstance) {
 		this.coding = coding;
 		this.problemInstance = problemInstance;
 	}
@@ -62,7 +63,7 @@ final class SolutionImpl implements ISolution {
 	}
 
 	@Override
-	public void setRecombinationCount(int nrOfRecombinations) {
+	public void setRecombinationCount(final int nrOfRecombinations) {
 		recombinations = nrOfRecombinations;
 	}
 
@@ -80,7 +81,7 @@ final class SolutionImpl implements ISolution {
 		return fairness;
 	}
 
-	void setFairness(int fairness) {
+	void setFairness(final int fairness) {
 		this.fairness = fairness;
 	}
 
@@ -89,7 +90,7 @@ final class SolutionImpl implements ISolution {
 		return penalty;
 	}
 
-	void setPenalty(int penalty) {
+	void setPenalty(final int penalty) {
 		this.penalty = penalty;
 	}
 
@@ -102,7 +103,7 @@ final class SolutionImpl implements ISolution {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -112,7 +113,7 @@ final class SolutionImpl implements ISolution {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		SolutionImpl other = (SolutionImpl) obj;
+		final SolutionImpl other = (SolutionImpl) obj;
 		if (!Arrays.equals(coding, other.coding)) {
 			return false;
 		}

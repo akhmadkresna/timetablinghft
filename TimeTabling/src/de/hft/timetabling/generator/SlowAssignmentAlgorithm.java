@@ -32,7 +32,8 @@ public class SlowAssignmentAlgorithm implements GeneratorAlgorithm {
 	public SlowAssignmentAlgorithm(final IProblemInstance instance) {
 
 		this.instance = instance;
-		int slots = instance.getNumberOfPeriods() * instance.getNumberOfRooms();
+		final int slots = instance.getNumberOfPeriods()
+				* instance.getNumberOfRooms();
 		schedule = new ICourse[slots];
 
 		for (int i = 0; i < instance.getNumberOfPeriods(); i++) {
@@ -63,7 +64,7 @@ public class SlowAssignmentAlgorithm implements GeneratorAlgorithm {
 			calculateSlots(courses);
 		}
 
-		ICourse critical = priorityList.get(0);
+		final ICourse critical = priorityList.get(0);
 		priorityList.remove(0);
 
 		if (priorityList.isEmpty()) {
@@ -88,16 +89,16 @@ public class SlowAssignmentAlgorithm implements GeneratorAlgorithm {
 			/*
 			 * randomize the order of the available viable slots
 			 */
-			List<Integer> slots = availableSlots.get(course);
+			final List<Integer> slots = availableSlots.get(course);
 			java.util.Collections.shuffle(slots);
-			int randomSlot = slots.get(0);
+			final int randomSlot = slots.get(0);
 			schedule[randomSlot] = course;
 
 			/*
 			 * keep track of which curricula and teachers are present in the
 			 * period the course has been assigned to
 			 */
-			int period = getPeriodForSlot(randomSlot);
+			final int period = getPeriodForSlot(randomSlot);
 			curriculaInPeriod.get(period).addAll(course.getCurricula());
 			teachersInPeriod.get(period).add(course.getTeacher());
 
@@ -107,9 +108,9 @@ public class SlowAssignmentAlgorithm implements GeneratorAlgorithm {
 			 * removed as otherwise hard constraints would be violated on
 			 * assignment
 			 */
-			List<Integer> remainingSlots = new ArrayList<Integer>();
+			final List<Integer> remainingSlots = new ArrayList<Integer>();
 
-			for (int slot : slots) {
+			for (final int slot : slots) {
 				if (period != getPeriodForSlot(slot)) {
 					remainingSlots.add(slot);
 				}
@@ -134,7 +135,7 @@ public class SlowAssignmentAlgorithm implements GeneratorAlgorithm {
 	 */
 	public ICourse[][] getCoding() {
 
-		ICourse[][] coding = new ICourse[instance.getNumberOfPeriods()][instance
+		final ICourse[][] coding = new ICourse[instance.getNumberOfPeriods()][instance
 				.getNumberOfRooms()];
 		int x = 0;
 
@@ -174,17 +175,17 @@ public class SlowAssignmentAlgorithm implements GeneratorAlgorithm {
 
 		reset(courses);
 
-		for (ICourse course : courses) {
+		for (final ICourse course : courses) {
 
 			int slot = 0;
 
 			while (slot < schedule.length) {
-				int period = getPeriodForSlot(slot);
+				final int period = getPeriodForSlot(slot);
 
 				if (periodInvalid(course, period)) {
 					slot += instance.getNumberOfRooms();
 				} else {
-					int periodEnd = slot + instance.getNumberOfRooms();
+					final int periodEnd = slot + instance.getNumberOfRooms();
 
 					while (slot < periodEnd) {
 						if (schedule[slot] == null) {
@@ -229,7 +230,7 @@ public class SlowAssignmentAlgorithm implements GeneratorAlgorithm {
 	 * @return true if and only if any hard constraints are violated or no rooms
 	 *         are available in the period, false otherwise
 	 */
-	private boolean periodInvalid(final ICourse course, int period) {
+	private boolean periodInvalid(final ICourse course, final int period) {
 
 		/*
 		 * calculate whether curricula in this period are present to which the
@@ -254,10 +255,10 @@ public class SlowAssignmentAlgorithm implements GeneratorAlgorithm {
 	 * @return true if and only if assigning the course would violate curricula
 	 *         hard constraints, false otherwise
 	 */
-	private boolean intersects(ICourse course, int period) {
+	private boolean intersects(final ICourse course, final int period) {
 
-		Set<ICurriculum> curricula = curriculaInPeriod.get(period);
-		for (ICurriculum c : course.getCurricula()) {
+		final Set<ICurriculum> curricula = curriculaInPeriod.get(period);
+		for (final ICurriculum c : course.getCurricula()) {
 			if (curricula.contains(c)) {
 				return true;
 			}
@@ -276,7 +277,7 @@ public class SlowAssignmentAlgorithm implements GeneratorAlgorithm {
 	 * @return true if and only if the teacher is already busy in this period,
 	 *         false otherwise
 	 */
-	private boolean teacherOverlap(ICourse course, int period) {
+	private boolean teacherOverlap(final ICourse course, final int period) {
 		return teachersInPeriod.get(period).contains(course.getTeacher());
 	}
 
@@ -310,8 +311,8 @@ public class SlowAssignmentAlgorithm implements GeneratorAlgorithm {
 		/*
 		 * calculate the start and end slots for the given period
 		 */
-		int periodStart = period * instance.getNumberOfRooms();
-		int periodEnd = periodStart + instance.getNumberOfRooms();
+		final int periodStart = period * instance.getNumberOfRooms();
+		final int periodEnd = periodStart + instance.getNumberOfRooms();
 
 		for (int i = periodStart; i < periodEnd; i++) {
 
@@ -332,7 +333,7 @@ public class SlowAssignmentAlgorithm implements GeneratorAlgorithm {
 	 */
 	private void addMissingCourses(final Set<ICourse> courses) {
 
-		for (ICourse course : courses) {
+		for (final ICourse course : courses) {
 
 			if (!availablePeriodsCount.keySet().contains(course)) {
 				availablePeriodsCount.put(course, 0);
@@ -356,15 +357,15 @@ public class SlowAssignmentAlgorithm implements GeneratorAlgorithm {
 
 			for (int i = 0; i < priorityList.size() - 1; i++) {
 
-				int slotCount_1 = availableSlots.get(priorityList.get(i))
+				final int slotCount_1 = availableSlots.get(priorityList.get(i))
 						.size();
 
-				int slotCount_2 = availableSlots.get(priorityList.get(i + 1))
-						.size();
+				final int slotCount_2 = availableSlots.get(
+						priorityList.get(i + 1)).size();
 
 				if (slotCount_1 > slotCount_2) {
-					ICourse course_1 = priorityList.get(i);
-					ICourse course_2 = priorityList.get(i + 1);
+					final ICourse course_1 = priorityList.get(i);
+					final ICourse course_2 = priorityList.get(i + 1);
 					priorityList.set(i, course_2);
 					priorityList.set(i + 1, course_1);
 
@@ -388,14 +389,14 @@ public class SlowAssignmentAlgorithm implements GeneratorAlgorithm {
 		availableSlots.clear();
 		availablePeriodsCount.clear();
 
-		for (ICourse course : courses) {
+		for (final ICourse course : courses) {
 			availableSlots.put(course, new ArrayList<Integer>());
 			availablePeriodsCount.put(course, 0);
 		}
 	}
 
 	@Override
-	public boolean isAssignable(ICourse course) {
+	public boolean isAssignable(final ICourse course) {
 		return availablePeriodsCount.get(course) >= course
 				.getNumberOfLectures();
 	}

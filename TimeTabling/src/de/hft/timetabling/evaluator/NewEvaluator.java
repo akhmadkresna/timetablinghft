@@ -26,7 +26,7 @@ public final class NewEvaluator {
 		int i = 0;
 
 		for (final ISolution solution : table.getNotVotedSolutions()) {
-			EvaluationResult result = evaluateSolution(solution);
+			final EvaluationResult result = evaluateSolution(solution);
 			table.voteForSolution(i++, result.getTotalPenalty(), result
 					.getTotalFairness());
 		}
@@ -44,11 +44,11 @@ public final class NewEvaluator {
 		return result;
 	}
 
-	public int evaluateFairness(EvaluationResult result) {
+	public int evaluateFairness(final EvaluationResult result) {
 		int iFairnessCost = 0, maxAvgDiff, minAvgDiff;
 		int maxPenalty = -1, minPenalty = -1, avgPenalty = -1, penaltySum = 0;
 
-		List<Integer> curriculumCosts = result.getPenaltyPerCurriculum();
+		final List<Integer> curriculumCosts = result.getPenaltyPerCurriculum();
 
 		// initial value to compare with
 		maxPenalty = curriculumCosts.get(0);

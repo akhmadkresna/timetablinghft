@@ -51,9 +51,10 @@ final class ProblemInstanceImpl implements IProblemInstance {
 
 	private final Map<String, ICourse> coursesById;
 
-	public ProblemInstanceImpl(String fileName, String name,
-			int numberOfCourses, int numberOfRooms, int numberOfDays,
-			int periodsPerDay, int numberOfCurricula, int numberOfConstraints) {
+	public ProblemInstanceImpl(final String fileName, final String name,
+			final int numberOfCourses, final int numberOfRooms,
+			final int numberOfDays, final int periodsPerDay,
+			final int numberOfCurricula, final int numberOfConstraints) {
 
 		this.fileName = fileName;
 		this.name = name;
@@ -113,21 +114,21 @@ final class ProblemInstanceImpl implements IProblemInstance {
 		return periodsPerDay;
 	}
 
-	void addCourse(ICourse course) {
+	void addCourse(final ICourse course) {
 		courses.add(course);
 		coursesById.put(course.getId(), course);
 	}
 
-	void addRoom(IRoom room) {
+	void addRoom(final IRoom room) {
 		rooms.add(room);
 		roomsById.put(room.getId(), room);
 	}
 
-	void addCurriculum(ICurriculum curriculum) {
+	void addCurriculum(final ICurriculum curriculum) {
 		curricula.add(curriculum);
 	}
 
-	void addUnavailabilityConstraint(ICourse course, int period) {
+	void addUnavailabilityConstraint(final ICourse course, final int period) {
 		Set<Integer> periodsForCourse = unavailabilityConstraints.get(course);
 		if (periodsForCourse == null) {
 			periodsForCourse = new LinkedHashSet<Integer>();
@@ -152,7 +153,7 @@ final class ProblemInstanceImpl implements IProblemInstance {
 	}
 
 	@Override
-	public Set<Integer> getUnavailabilityConstraints(ICourse course) {
+	public Set<Integer> getUnavailabilityConstraints(final ICourse course) {
 		Set<Integer> constraints = unavailabilityConstraints.get(course);
 		if (constraints == null) {
 			constraints = new LinkedHashSet<Integer>(0);
@@ -161,13 +162,13 @@ final class ProblemInstanceImpl implements IProblemInstance {
 	}
 
 	@Override
-	public ICourse getCourseById(String courseId) {
+	public ICourse getCourseById(final String courseId) {
 		return coursesById.get(courseId);
 	}
 
 	@Override
-	public IRoom getRoomByUniqueNumber(int uniqueRoomNumber) {
-		for (IRoom room : rooms) {
+	public IRoom getRoomByUniqueNumber(final int uniqueRoomNumber) {
+		for (final IRoom room : rooms) {
 			if (room.getUniqueNumber() == uniqueRoomNumber) {
 				return room;
 			}
@@ -186,13 +187,13 @@ final class ProblemInstanceImpl implements IProblemInstance {
 	}
 
 	@Override
-	public Set<ICourse> getCoursesForTeacher(String teacher) {
+	public Set<ICourse> getCoursesForTeacher(final String teacher) {
 		Set<ICourse> teachersCourses = coursesByTeacher.get(teacher);
 
 		if (teachersCourses == null) {
 			teachersCourses = new HashSet<ICourse>();
 
-			for (ICourse course : courses) {
+			for (final ICourse course : courses) {
 				if (course.getTeacher().equals(teacher)) {
 					teachersCourses.add(course);
 				}
@@ -204,7 +205,7 @@ final class ProblemInstanceImpl implements IProblemInstance {
 	}
 
 	@Override
-	public IRoom getRoomById(String roomId) {
+	public IRoom getRoomById(final String roomId) {
 		return roomsById.get(roomId);
 	}
 

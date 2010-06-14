@@ -36,29 +36,33 @@ public class CurriculumImplTest extends AbstractReaderTest {
 	public void testGetCourses() {
 		assertEquals(0, curriculum.getCourses().size());
 
-		ICourse course1 = new CourseImpl("c1", 1, 2, 20, "Teacher1", instance);
-		ICourse course2 = new CourseImpl("c2", 1, 1, 15, "Teacher1", instance);
+		final ICourse course1 = new CourseImpl("c1", 1, 2, 20, "Teacher1",
+				instance);
+		final ICourse course2 = new CourseImpl("c2", 1, 1, 15, "Teacher1",
+				instance);
 		instance.addCourse(course1);
 		instance.addCourse(course2);
 
 		curriculum.addCourse(course1);
 		curriculum.addCourse(course2);
 
-		Set<ICourse> courses = curriculum.getCourses();
+		final Set<ICourse> courses = curriculum.getCourses();
 		assertEquals(2, courses.size());
 		assertTrue(courses.contains(course1));
 		assertTrue(courses.contains(course2));
 		try {
 			courses.remove(course1);
 			fail();
-		} catch (UnsupportedOperationException e) {
+		} catch (final UnsupportedOperationException e) {
 			// Expected exception (immutability).
 		}
 	}
 
 	public void testContainsCourse() {
-		ICourse course1 = new CourseImpl("c1", 1, 2, 20, "Teacher1", instance);
-		ICourse course2 = new CourseImpl("c2", 1, 1, 15, "Teacher1", instance);
+		final ICourse course1 = new CourseImpl("c1", 1, 2, 20, "Teacher1",
+				instance);
+		final ICourse course2 = new CourseImpl("c2", 1, 1, 15, "Teacher1",
+				instance);
 		instance.addCourse(course1);
 		instance.addCourse(course2);
 

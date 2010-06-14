@@ -49,11 +49,11 @@ public final class Validator implements IValidatorService {
 	private boolean noCurriculaOverlap(final ICourse[][] coding) {
 		final Set<ICurriculum> curriculaInPeriod = new HashSet<ICurriculum>();
 
-		for (int period = 0; period < coding.length; period++) {
+		for (final ICourse[] element : coding) {
 			curriculaInPeriod.clear();
 
-			for (int room = 0; room < coding[period].length; room++) {
-				final ICourse course = coding[period][room];
+			for (int room = 0; room < element.length; room++) {
+				final ICourse course = element[room];
 
 				if (course != null) {
 					if (curriculaInPeriod.isEmpty()) {
@@ -80,13 +80,13 @@ public final class Validator implements IValidatorService {
 	 * Checks whether a teacher gives more than one lecture in the same period.
 	 */
 	private boolean noTeacherOverlap(final ICourse[][] coding) {
-		Set<String> teachersInPeriod = new HashSet<String>();
+		final Set<String> teachersInPeriod = new HashSet<String>();
 
-		for (int period = 0; period < coding.length; period++) {
+		for (final ICourse[] element : coding) {
 			teachersInPeriod.clear();
 
-			for (int room = 0; room < coding[period].length; room++) {
-				ICourse course = coding[period][room];
+			for (int room = 0; room < element.length; room++) {
+				final ICourse course = element[room];
 
 				if (course != null) {
 					if (teachersInPeriod.contains(course.getTeacher())) {
@@ -106,11 +106,11 @@ public final class Validator implements IValidatorService {
 	 */
 	private boolean allCoursesHeld(final ICourse[][] coding,
 			final IProblemInstance inst) {
-		Map<ICourse, Integer> courseCount = new HashMap<ICourse, Integer>();
+		final Map<ICourse, Integer> courseCount = new HashMap<ICourse, Integer>();
 
-		for (int period = 0; period < coding.length; period++) {
-			for (int room = 0; room < coding[period].length; room++) {
-				final ICourse course = coding[period][room];
+		for (final ICourse[] element : coding) {
+			for (int room = 0; room < element.length; room++) {
+				final ICourse course = element[room];
 
 				if (course != null) {
 					/*
@@ -161,8 +161,8 @@ public final class Validator implements IValidatorService {
 				final ICourse course = coding[period][room];
 
 				if ((course != null)
-						&& inst.getUnavailabilityConstraints(course)
-								.contains(period)) {
+						&& inst.getUnavailabilityConstraints(course).contains(
+								period)) {
 					System.out.println("CHECK:---noUnavailabilityViolations"
 							+ course.getId() + ")");
 					return false;

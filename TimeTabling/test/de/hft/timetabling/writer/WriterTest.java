@@ -32,14 +32,14 @@ public class WriterTest extends TestCase {
 
 		writer = new Writer();
 		instance = new Reader().readInstance("test/input/test.ctt");
-		ICourse[] courses = instance.getCourses().toArray(
+		final ICourse[] courses = instance.getCourses().toArray(
 				new ICourse[instance.getNumberOfCourses()]);
 
 		// Course 0: SceCosC
 		// Course 1: ArcTec
 		// Course 2: TecCos
 		// Course 3: Geotec
-		ICourse[][] coding = { //
+		final ICourse[][] coding = { //
 		{ null, courses[2] }, // Period 0
 				{ courses[2], courses[1] }, // Period 1
 				{ null, null }, // Period 2
@@ -64,21 +64,22 @@ public class WriterTest extends TestCase {
 
 		solutionTable = new SolutionTable();
 		ServiceLocator.getInstance().setSolutionTableService(solutionTable);
-		ISolution solution = solutionTable.createNewSolution(coding, instance);
+		final ISolution solution = solutionTable.createNewSolution(coding,
+				instance);
 		solutionTable.addSolution(solution);
 		solutionTable.voteForSolution(0, 1000, 200);
 		solutionTable.update();
 	}
 
 	public void testOutputBestSolution() throws IOException {
-		String fileName = "test/temp.ctt";
+		final String fileName = "test/temp.ctt";
 		writer.outputSolution(fileName, solutionTable.getBestPenaltySolution());
 
-		FileInputStream fileStream = new FileInputStream(fileName);
-		DataInputStream dataStream = new DataInputStream(fileStream);
-		BufferedReader bufferedReader = new BufferedReader(
+		final FileInputStream fileStream = new FileInputStream(fileName);
+		final DataInputStream dataStream = new DataInputStream(fileStream);
+		final BufferedReader bufferedReader = new BufferedReader(
 				new InputStreamReader(dataStream));
-		List<String> lines = new ArrayList<String>();
+		final List<String> lines = new ArrayList<String>();
 		String line = bufferedReader.readLine();
 		while (line != null) {
 			lines.add(line);
@@ -108,11 +109,11 @@ public class WriterTest extends TestCase {
 		 * Delete the temporary output files again as they were only created for
 		 * testing purposes.
 		 */
-		File file = new File(fileName);
+		final File file = new File(fileName);
 		file.delete();
-		File htmlFile = new File("test/html/temp.html");
+		final File htmlFile = new File("test/html/temp.html");
 		htmlFile.delete();
-		File htmlDirectory = new File("test/html");
+		final File htmlDirectory = new File("test/html");
 		htmlDirectory.delete();
 	}
 

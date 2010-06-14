@@ -20,7 +20,8 @@ public final class PeriodUtil {
 	 * @param periodsPerDay
 	 *            Specifies how many periods one day has.
 	 */
-	public static int convertToPeriodOnly(int day, int period, int periodsPerDay) {
+	public static int convertToPeriodOnly(final int day, final int period,
+			final int periodsPerDay) {
 		return period + day * periodsPerDay;
 	}
 
@@ -33,7 +34,8 @@ public final class PeriodUtil {
 	 * @param periodsPerDay
 	 *            Specifies how many periods one day has.
 	 */
-	public static int convertToDayPeriod(int period, int periodsPerDay) {
+	public static int convertToDayPeriod(final int period,
+			final int periodsPerDay) {
 		return period % periodsPerDay;
 	}
 
@@ -46,7 +48,8 @@ public final class PeriodUtil {
 	 * @param periodsPerDay
 	 *            Specifies how many periods one day has.
 	 */
-	public static int getDayFromPeriodOnly(int period, int periodsPerDay) {
+	public static int getDayFromPeriodOnly(final int period,
+			final int periodsPerDay) {
 		int day = 0;
 		for (int i = 1; i <= period; i++) {
 			if (i % periodsPerDay == 0) {
@@ -65,7 +68,8 @@ public final class PeriodUtil {
 	 * @param numberOfPeriods
 	 *            The number of periods in total.
 	 */
-	public static int getNextPeriod(int basePeriod, int numberOfPeriods) {
+	public static int getNextPeriod(final int basePeriod,
+			final int numberOfPeriods) {
 		return (basePeriod + 1) % numberOfPeriods;
 	}
 
@@ -78,7 +82,8 @@ public final class PeriodUtil {
 	 * @param numberOfPeriods
 	 *            The number of periods in total.
 	 */
-	public static int getPreviousPeriod(int basePeriod, int numberOfPeriods) {
+	public static int getPreviousPeriod(final int basePeriod,
+			final int numberOfPeriods) {
 		int previous = basePeriod - 1;
 		if (previous < 0) {
 			previous = numberOfPeriods - 1;

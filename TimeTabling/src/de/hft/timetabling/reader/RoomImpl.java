@@ -18,8 +18,8 @@ final class RoomImpl implements IRoom {
 
 	private final IProblemInstance problemInstance;
 
-	RoomImpl(String id, int capacity, int uniqueNumber,
-			IProblemInstance problemInstance) {
+	RoomImpl(final String id, final int capacity, final int uniqueNumber,
+			final IProblemInstance problemInstance) {
 
 		this.id = id;
 		this.capacity = capacity;
@@ -56,7 +56,7 @@ final class RoomImpl implements IRoom {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -66,7 +66,7 @@ final class RoomImpl implements IRoom {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		RoomImpl other = (RoomImpl) obj;
+		final RoomImpl other = (RoomImpl) obj;
 		if (id == null) {
 			if (other.id != null) {
 				return false;

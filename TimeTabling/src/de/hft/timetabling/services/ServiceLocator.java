@@ -85,32 +85,32 @@ public final class ServiceLocator {
 	}
 
 	public void setSolutionTableService(
-			ISolutionTableService solutionTableService) {
+			final ISolutionTableService solutionTableService) {
 		this.solutionTableService = solutionTableService;
 	}
 
-	public void setWriterService(IWriterService writerService) {
+	public void setWriterService(final IWriterService writerService) {
 		this.writerService = writerService;
 	}
 
-	public void setReaderService(IReaderService readerService) {
+	public void setReaderService(final IReaderService readerService) {
 		this.readerService = readerService;
 	}
 
-	public void setGeneratorService(IGeneratorService generatorService) {
+	public void setGeneratorService(final IGeneratorService generatorService) {
 		this.generatorService = generatorService;
 	}
 
-	public void setValidatorService(IValidatorService validatorService) {
+	public void setValidatorService(final IValidatorService validatorService) {
 		this.validatorService = validatorService;
 	}
 
 	public void setCrazyGenetistService(
-			ICrazyGenetistService crazyGenetistService) {
+			final ICrazyGenetistService crazyGenetistService) {
 		this.crazyGenetistService = crazyGenetistService;
 	}
 
-	public void setEvaluatorService(IEvaluatorService evaluatorService) {
+	public void setEvaluatorService(final IEvaluatorService evaluatorService) {
 		this.evaluatorService = evaluatorService;
 	}
 

@@ -24,8 +24,8 @@ public final class HardConstraintUtil {
 	 * @param period
 	 *            The period (period-only format) to be inspected.
 	 */
-	public static boolean existsTeacherInPeriod(ICourse[][] coding,
-			String teacher, int period) {
+	public static boolean existsTeacherInPeriod(final ICourse[][] coding,
+			final String teacher, final int period) {
 
 		for (int room = 0; room < coding[period].length; room++) {
 			if (coding[period][room] == null) {
@@ -49,14 +49,15 @@ public final class HardConstraintUtil {
 	 * @param period
 	 *            The period (period-only format) to be inspected.
 	 */
-	public static boolean existsCurriculaInPeriod(ICourse[][] coding,
-			Set<ICurriculum> curricula, int period) {
+	public static boolean existsCurriculaInPeriod(final ICourse[][] coding,
+			final Set<ICurriculum> curricula, final int period) {
 
 		for (int room = 0; room < coding[period].length; room++) {
 			if (coding[period][room] == null) {
 				continue;
 			}
-			for (ICurriculum curriculum : coding[period][room].getCurricula()) {
+			for (final ICurriculum curriculum : coding[period][room]
+					.getCurricula()) {
 				if (curricula.contains(curriculum)) {
 					return true;
 				}
@@ -75,10 +76,10 @@ public final class HardConstraintUtil {
 	 *            The period (period-only format) to look for unavailability
 	 *            constraints.
 	 */
-	public static boolean existsUnavailabilityConstraint(ICourse course,
-			int period) {
+	public static boolean existsUnavailabilityConstraint(final ICourse course,
+			final int period) {
 
-		IProblemInstance instance = course.getProblemInstance();
+		final IProblemInstance instance = course.getProblemInstance();
 		return instance.getUnavailabilityConstraints(course).contains(period);
 	}
 

@@ -28,8 +28,9 @@ public final class NeighborhoodRecombinationStrategy extends
 	private static final int SOLUTION_TABLE_SIZE = 100;
 
 	@Override
-	public ISolution recombine(ISolution solution1, ISolution solution2) {
-		ISolution newSolution = getSolutionTable().createNewSolution(
+	public ISolution recombine(final ISolution solution1,
+			final ISolution solution2) {
+		final ISolution newSolution = getSolutionTable().createNewSolution(
 				solution1.getCoding(), solution1.getProblemInstance());
 
 		for (int i = 0; i < newSolution.getCoding().length; i++) {
@@ -39,16 +40,16 @@ public final class NeighborhoodRecombinationStrategy extends
 				if ((newSolution.getCoding()[i][j] == null)
 						&& (solution2.getCoding()[i][j] != null)) {
 
-					boolean sameCurriculumInPeriod = HardConstraintUtil
+					final boolean sameCurriculumInPeriod = HardConstraintUtil
 							.existsCurriculaInPeriod(newSolution.getCoding(),
 									solution2.getCoding()[i][j].getCurricula(),
 									i);
-					boolean sameTeacherInPeriod = HardConstraintUtil
+					final boolean sameTeacherInPeriod = HardConstraintUtil
 							.existsTeacherInPeriod(newSolution.getCoding(),
 									solution2.getCoding()[i][j].getTeacher(), i);
 
 					if (!(sameCurriculumInPeriod) && !(sameTeacherInPeriod)) {
-						Lecture cp1 = getCoursePositionRandomly(getPositionOfCourse(
+						final Lecture cp1 = getCoursePositionRandomly(getPositionOfCourse(
 								newSolution, solution2.getCoding()[i][j]));
 						if (cp1 != null) {
 							newSolution.getCoding()[cp1.getSlot().getPeriod()][cp1
@@ -58,9 +59,9 @@ public final class NeighborhoodRecombinationStrategy extends
 						}
 
 					} else if (sameCurriculumInPeriod && sameTeacherInPeriod) {
-						Lecture cp1 = getCoursePositionRandomly(getPositionOfCourse(
+						final Lecture cp1 = getCoursePositionRandomly(getPositionOfCourse(
 								newSolution, solution2.getCoding()[i][j]));
-						Lecture cp2 = getIfSameCurriculumAndSameTeacher(
+						final Lecture cp2 = getIfSameCurriculumAndSameTeacher(
 								newSolution, solution2.getCoding()[i][j], i);
 
 						if (cp2 != null) {
@@ -97,8 +98,9 @@ public final class NeighborhoodRecombinationStrategy extends
 	 *            Searched course
 	 * @return Set of the position of found courses
 	 */
-	private Set<Lecture> getPositionOfCourse(ISolution courses, ICourse course) {
-		Set<Lecture> positions = new HashSet<Lecture>();
+	private Set<Lecture> getPositionOfCourse(final ISolution courses,
+			final ICourse course) {
+		final Set<Lecture> positions = new HashSet<Lecture>();
 		for (int i = 0; i < courses.getCoding().length; i++) {
 			for (int j = 0; j < courses.getCoding()[i].length; j++) {
 				if (courses.getCoding()[i][j] != null) {
@@ -119,12 +121,12 @@ public final class NeighborhoodRecombinationStrategy extends
 	 *            Set of CoursePositions
 	 * @return randomly selected CoursePosition
 	 */
-	private Lecture getCoursePositionRandomly(Set<Lecture> set) {
+	private Lecture getCoursePositionRandomly(final Set<Lecture> set) {
 		if (set.size() == 0) {
 			return null;
 		}
-		Random random = new Random();
-		int n = random.nextInt(set.size());
+		final Random random = new Random();
+		final int n = random.nextInt(set.size());
 		return set.toArray(new Lecture[set.size()])[n];
 	}
 
@@ -141,13 +143,13 @@ public final class NeighborhoodRecombinationStrategy extends
 	 *            period in which that course should be
 	 * @return Position of found course
 	 */
-	private Lecture getIfSameCurriculumAndSameTeacher(ISolution courses,
-			ICourse givenCourse, int period) {
+	private Lecture getIfSameCurriculumAndSameTeacher(final ISolution courses,
+			final ICourse givenCourse, final int period) {
 		for (int i = 0; i < courses.getCoding()[period].length; i++) {
 			if ((courses.getCoding()[period][i] != null)
 					&& courses.getCoding()[period][i].getTeacher().equals(
 							givenCourse.getTeacher())) {
-				Set<ICurriculum> tmpCur = courses.getCoding()[period][i]
+				final Set<ICurriculum> tmpCur = courses.getCoding()[period][i]
 						.getCurricula();
 
 				if ((tmpCur.size() == givenCourse.getCurricula().size())
@@ -170,8 +172,8 @@ public final class NeighborhoodRecombinationStrategy extends
 
 	@Override
 	protected void configure() {
-		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-				.getSolutionTableService();
+		final ISolutionTableService solutionTable = ServiceLocator
+				.getInstance().getSolutionTableService();
 		solutionTable.setMaximumSize(SOLUTION_TABLE_SIZE);
 	}
 
@@ -181,16 +183,17 @@ public final class NeighborhoodRecombinationStrategy extends
 	}
 
 	@Override
-	protected void eliminate(ISolution parent1, ISolution parent2,
-			Set<ISolution> eliminatedSolutions) {
-		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-				.getSolutionTableService();
-		ISolution worstSolution = solutionTable.removeWorstSolution(0);
+	protected void eliminate(final ISolution parent1, final ISolution parent2,
+			final Set<ISolution> eliminatedSolutions) {
+		final ISolutionTableService solutionTable = ServiceLocator
+				.getInstance().getSolutionTableService();
+		final ISolution worstSolution = solutionTable.removeWorstSolution(0);
 		eliminatedSolutions.add(worstSolution);
 	}
 
 	@Override
-	protected void newInterationStarted(int interation, int totalIterations) {
+	protected void newInterationStarted(final int interation,
+			final int totalIterations) {
 		// Nothing to do
 	}
 

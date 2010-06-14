@@ -30,15 +30,16 @@ public final class Writer implements IWriterService {
 
 	@Override
 	public void outputBestSolution() throws IOException {
-		ISolutionTableService solutionTableService = ServiceLocator
+		final ISolutionTableService solutionTableService = ServiceLocator
 				.getInstance().getSolutionTableService();
-		ISolution bestSolution = solutionTableService.getBestPenaltySolution();
+		final ISolution bestSolution = solutionTableService
+				.getBestPenaltySolution();
 		outputSolution(bestSolution);
 	}
 
 	@Override
-	public void outputSolution(ISolution solution) throws IOException {
-		IProblemInstance problemInstance = solution.getProblemInstance();
+	public void outputSolution(final ISolution solution) throws IOException {
+		final IProblemInstance problemInstance = solution.getProblemInstance();
 		String fileName = problemInstance.getFileName();
 		fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
 		fileName = fileName.substring(0, fileName.lastIndexOf('.'));
@@ -48,34 +49,35 @@ public final class Writer implements IWriterService {
 	}
 
 	@Override
-	public void outputSolution(String fileName, ISolution solution)
+	public void outputSolution(final String fileName, final ISolution solution)
 			throws IOException {
 
 		System.out.print("WRITER: Writing solution to '" + fileName + "'");
 
-		FileWriter fileWriter = new FileWriter(fileName);
-		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+		final FileWriter fileWriter = new FileWriter(fileName);
+		final BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
-		IProblemInstance problemInstance = solution.getProblemInstance();
-		ICourse[][] coding = solution.getCoding();
-		int numberOfPeriods = problemInstance.getNumberOfPeriods();
-		int numberOfRooms = problemInstance.getNumberOfRooms();
+		final IProblemInstance problemInstance = solution.getProblemInstance();
+		final ICourse[][] coding = solution.getCoding();
+		final int numberOfPeriods = problemInstance.getNumberOfPeriods();
+		final int numberOfRooms = problemInstance.getNumberOfRooms();
 		for (int period = 0; period < numberOfPeriods; period++) {
-			ICourse[] coursesInPeriod = coding[period];
+			final ICourse[] coursesInPeriod = coding[period];
 			for (int roomNumber = 0; roomNumber < numberOfRooms; roomNumber++) {
 
-				ICourse course = coursesInPeriod[roomNumber];
+				final ICourse course = coursesInPeriod[roomNumber];
 				// Continue if no assignment at this location.
 				if (course == null) {
 					continue;
 				}
 
-				IRoom room = problemInstance.getRoomByUniqueNumber(roomNumber);
-				int periodsPerDay = problemInstance.getPeriodsPerDay();
-				int day = PeriodUtil
-						.getDayFromPeriodOnly(period, periodsPerDay);
-				int convertedPeriod = PeriodUtil.convertToDayPeriod(period,
+				final IRoom room = problemInstance
+						.getRoomByUniqueNumber(roomNumber);
+				final int periodsPerDay = problemInstance.getPeriodsPerDay();
+				final int day = PeriodUtil.getDayFromPeriodOnly(period,
 						periodsPerDay);
+				final int convertedPeriod = PeriodUtil.convertToDayPeriod(
+						period, periodsPerDay);
 
 				bufferedWriter.write(course.getId() + " " + room.getId() + " "
 						+ day + " " + convertedPeriod);
@@ -93,16 +95,17 @@ public final class Writer implements IWriterService {
 		System.out.print(" ... success.\n");
 	}
 
-	private void outputHtmlFile(String fileName, ISolution solution,
-			IProblemInstance problemInstance) throws IOException {
+	private void outputHtmlFile(String fileName, final ISolution solution,
+			final IProblemInstance problemInstance) throws IOException {
 
 		fileName = getHtmlFileName(fileName);
-		int lastSlashPos = fileName.lastIndexOf('/');
-		String htmlPathName = getHtmlDirectoryPathName(fileName, lastSlashPos);
+		final int lastSlashPos = fileName.lastIndexOf('/');
+		final String htmlPathName = getHtmlDirectoryPathName(fileName,
+				lastSlashPos);
 		createHtmlDirectoryIfNonExistent(htmlPathName);
 		fileName = htmlPathName + "/" + fileName.substring(lastSlashPos + 1);
-		FileWriter fileWriter = new FileWriter(fileName);
-		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+		final FileWriter fileWriter = new FileWriter(fileName);
+		final BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
 		writeHtmlHeader(fileName, bufferedWriter);
 
@@ -111,7 +114,7 @@ public final class Writer implements IWriterService {
 		writeStatistics(solution, problemInstance, bufferedWriter);
 
 		// Write one table for each curriculum
-		for (ICurriculum curriculum : problemInstance.getCurricula()) {
+		for (final ICurriculum curriculum : problemInstance.getCurricula()) {
 
 			writeln(bufferedWriter, "<h2>" + curriculum.getId() + "</h2>");
 			writeln(bufferedWriter,
@@ -134,15 +137,15 @@ public final class Writer implements IWriterService {
 				for (int day = 0; day < problemInstance.getNumberOfDays(); day++) {
 					String courseString = "&nbsp;";
 					String roomString = "";
-					int convertedPeriod = PeriodUtil.convertToPeriodOnly(day,
-							period, problemInstance.getPeriodsPerDay());
+					final int convertedPeriod = PeriodUtil.convertToPeriodOnly(
+							day, period, problemInstance.getPeriodsPerDay());
 					for (int room = 0; room < problemInstance
 							.getNumberOfRooms(); room++) {
-						ICourse course = solution.getCoding()[convertedPeriod][room];
+						final ICourse course = solution.getCoding()[convertedPeriod][room];
 						if (course != null) {
 							if (course.getCurricula().contains(curriculum)) {
 								courseString = course.getId();
-								IRoom roomObj = problemInstance
+								final IRoom roomObj = problemInstance
 										.getRoomByUniqueNumber(room);
 								roomString = "<br /><em>- " + roomObj.getId()
 										+ " [" + course.getNumberOfStudents()
@@ -174,9 +177,9 @@ public final class Writer implements IWriterService {
 		bufferedWriter.close();
 	}
 
-	private void writeStatistics(ISolution solution,
-			IProblemInstance problemInstance, BufferedWriter bufferedWriter)
-			throws IOException {
+	private void writeStatistics(final ISolution solution,
+			final IProblemInstance problemInstance,
+			final BufferedWriter bufferedWriter) throws IOException {
 
 		writeln(bufferedWriter, "<h1>" + problemInstance.getName() + "("
 				+ problemInstance.getFileName() + ")</h1>");
@@ -194,7 +197,7 @@ public final class Writer implements IWriterService {
 		writeln(bufferedWriter, "<tr><td>Recombination Strategy:</td><td>"
 				+ ICrazyGenetistService.RECOMBINATION_STRATEGY.getName()
 				+ "</td></tr>");
-		String directory = (Main.initialSolutionDirectory.length() == 0) ? "None"
+		final String directory = (Main.initialSolutionDirectory.length() == 0) ? "None"
 				: Main.initialSolutionDirectory;
 		writeln(bufferedWriter, "<tr><td>Initial Solution Directory:</td><td>"
 				+ directory + "</td></tr>");
@@ -236,14 +239,15 @@ public final class Writer implements IWriterService {
 		writeln(bufferedWriter, "<br /><hr size=\"1\" />");
 	}
 
-	private void createHtmlDirectoryIfNonExistent(String htmlPathName) {
-		File htmlDirectory = new File(htmlPathName);
+	private void createHtmlDirectoryIfNonExistent(final String htmlPathName) {
+		final File htmlDirectory = new File(htmlPathName);
 		if (!(htmlDirectory.exists())) {
 			htmlDirectory.mkdir();
 		}
 	}
 
-	private String getHtmlDirectoryPathName(String fileName, int lastSlashPos) {
+	private String getHtmlDirectoryPathName(final String fileName,
+			final int lastSlashPos) {
 		String pathName = "";
 		if (lastSlashPos != -1) {
 			pathName = fileName.substring(0, lastSlashPos);
@@ -258,14 +262,14 @@ public final class Writer implements IWriterService {
 		return fileName;
 	}
 
-	private void writeHtmlFooter(BufferedWriter bufferedWriter)
+	private void writeHtmlFooter(final BufferedWriter bufferedWriter)
 			throws IOException {
 
 		bufferedWriter.write("</html>");
 	}
 
-	private void writeHtmlHeader(String fileName, BufferedWriter bufferedWriter)
-			throws IOException {
+	private void writeHtmlHeader(final String fileName,
+			final BufferedWriter bufferedWriter) throws IOException {
 
 		writeln(bufferedWriter, "<html>");
 		writeln(bufferedWriter, "<head>");
@@ -274,7 +278,7 @@ public final class Writer implements IWriterService {
 		bufferedWriter.newLine();
 	}
 
-	private void writeln(BufferedWriter bufferedWriter, String text)
+	private void writeln(final BufferedWriter bufferedWriter, final String text)
 			throws IOException {
 
 		bufferedWriter.write(text);

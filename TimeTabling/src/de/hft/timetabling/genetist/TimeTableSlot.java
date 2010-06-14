@@ -11,7 +11,7 @@ final class TimeTableSlot {
 
 	private final int room;
 
-	public TimeTableSlot(int period, int room) {
+	public TimeTableSlot(final int period, final int room) {
 		this.period = period;
 		this.room = room;
 	}

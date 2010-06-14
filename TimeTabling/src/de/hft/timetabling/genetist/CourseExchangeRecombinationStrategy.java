@@ -97,13 +97,14 @@ public final class CourseExchangeRecombinationStrategy extends
 	}
 
 	@Override
-	public ISolution recombine(ISolution solution1, ISolution solution2) {
+	public ISolution recombine(final ISolution solution1,
+			final ISolution solution2) {
 		instance = solution1.getProblemInstance();
 		solution1Coding = solution1.getCoding();
 		solution2Coding = solution2.getCoding();
 
-		int nrPeriods = instance.getNumberOfPeriods();
-		int nrRooms = instance.getNumberOfRooms();
+		final int nrPeriods = instance.getNumberOfPeriods();
+		final int nrRooms = instance.getNumberOfRooms();
 		childCoding = new ICourse[nrPeriods][nrRooms];
 
 		determineCourseSets();
@@ -111,7 +112,7 @@ public final class CourseExchangeRecombinationStrategy extends
 		performRecombination();
 
 		ISolution childSolution = null;
-		boolean success = assignNotAssignedLectures();
+		final boolean success = assignNotAssignedLectures();
 		if (success) {
 			childSolution = getSolutionTable().createNewSolution(childCoding,
 					instance);
@@ -122,10 +123,10 @@ public final class CourseExchangeRecombinationStrategy extends
 
 	/** Determines the course sets that will be provided by each solution. */
 	private void determineCourseSets() {
-		Set<ICourse> allCourses = instance.getCourses();
-		int halfSize = allCourses.size() / 2;
+		final Set<ICourse> allCourses = instance.getCourses();
+		final int halfSize = allCourses.size() / 2;
 		int i = 0;
-		for (ICourse course : allCourses) {
+		for (final ICourse course : allCourses) {
 			if (i < halfSize) {
 				courses1.add(course);
 			} else {
@@ -193,10 +194,11 @@ public final class CourseExchangeRecombinationStrategy extends
 	 * Handles the situation in which only one solution offers a relevant
 	 * assignment.
 	 */
-	private void recombineOne(ICourse course, int period, int room) {
-		boolean success = assign(course, period, room);
+	private void recombineOne(final ICourse course, final int period,
+			final int room) {
+		final boolean success = assign(course, period, room);
 		if (!(success)) {
-			Lecture lecture = new Lecture(course, period, room);
+			final Lecture lecture = new Lecture(course, period, room);
 			notAssignedLectures.add(lecture);
 		}
 	}
@@ -204,24 +206,24 @@ public final class CourseExchangeRecombinationStrategy extends
 	/**
 	 * Handles the situation in which both solutions offer relevant assignments.
 	 */
-	private void recombineTwo(ICourse solution1Course, ICourse solution2Course,
-			int period, int room) {
+	private void recombineTwo(final ICourse solution1Course,
+			final ICourse solution2Course, final int period, final int room) {
 
 		ICourse courseToAssign = solution1Course;
 		ICourse courseNotAssigned = solution2Course;
-		Random random = new Random();
+		final Random random = new Random();
 		if (random.nextBoolean()) {
 			courseToAssign = solution2Course;
 			courseNotAssigned = solution1Course;
 		}
 
-		boolean success = assign(courseToAssign, period, room);
+		final boolean success = assign(courseToAssign, period, room);
 		if (success) {
 			notAssignedLectures
 					.add(new Lecture(courseNotAssigned, period, room));
 		} else {
 			notAssignedLectures.add(new Lecture(courseToAssign, period, room));
-			boolean successOther = assign(courseNotAssigned, period, room);
+			final boolean successOther = assign(courseNotAssigned, period, room);
 			if (!(successOther)) {
 				notAssignedLectures.add(new Lecture(courseNotAssigned, period,
 						room));
@@ -235,9 +237,9 @@ public final class CourseExchangeRecombinationStrategy extends
 	 * <tt>false</tt> is returned.
 	 */
 	private boolean assignNotAssignedLectures() {
-		for (Lecture lecture : notAssignedLectures) {
-			ICourse course = lecture.getCourse();
-			TimeTableSlot slot = lecture.getSlot();
+		for (final Lecture lecture : notAssignedLectures) {
+			final ICourse course = lecture.getCourse();
+			final TimeTableSlot slot = lecture.getSlot();
 
 			/*
 			 * First try to assign the lecture to another room in the same
@@ -247,7 +249,7 @@ public final class CourseExchangeRecombinationStrategy extends
 				continue;
 			}
 
-			TimeTableSlot newSlot = findNearestFreeValidSlot(slot, course);
+			final TimeTableSlot newSlot = findNearestFreeValidSlot(slot, course);
 			if (newSlot == null) {
 				return false;
 			}
@@ -256,15 +258,16 @@ public final class CourseExchangeRecombinationStrategy extends
 		return true;
 	}
 
-	private TimeTableSlot findNearestFreeValidSlot(TimeTableSlot baseSlot,
-			ICourse course) {
+	private TimeTableSlot findNearestFreeValidSlot(
+			final TimeTableSlot baseSlot, final ICourse course) {
 
-		TimeTableSlot nextFree = findNextFreeValidSlot(baseSlot, course, true);
+		final TimeTableSlot nextFree = findNextFreeValidSlot(baseSlot, course,
+				true);
 		if (nextFree == null) {
 			return null;
 		}
-		TimeTableSlot previousFree = findNextFreeValidSlot(baseSlot, course,
-				false);
+		final TimeTableSlot previousFree = findNextFreeValidSlot(baseSlot,
+				course, false);
 		if (Math.abs(baseSlot.getPeriod() - nextFree.getPeriod()) > Math
 				.abs(baseSlot.getPeriod() - previousFree.getPeriod())) {
 			return previousFree;
@@ -272,11 +275,11 @@ public final class CourseExchangeRecombinationStrategy extends
 		return nextFree;
 	}
 
-	private TimeTableSlot findNextFreeValidSlot(TimeTableSlot baseSlot,
-			ICourse course, boolean directionNext) {
+	private TimeTableSlot findNextFreeValidSlot(final TimeTableSlot baseSlot,
+			final ICourse course, final boolean directionNext) {
 
-		int startPeriod = baseSlot.getPeriod();
-		int numberOfPeriods = instance.getNumberOfPeriods();
+		final int startPeriod = baseSlot.getPeriod();
+		final int numberOfPeriods = instance.getNumberOfPeriods();
 		int nextPeriod = directionNext ? PeriodUtil.getNextPeriod(startPeriod,
 				numberOfPeriods) : PeriodUtil.getPreviousPeriod(startPeriod,
 				numberOfPeriods);
@@ -294,7 +297,8 @@ public final class CourseExchangeRecombinationStrategy extends
 	}
 
 	/** Tries to assign the given course to some room in the given period. */
-	private boolean assignToFreeValidSlotInPeriod(int period, ICourse course) {
+	private boolean assignToFreeValidSlotInPeriod(final int period,
+			final ICourse course) {
 		boolean success = false;
 		for (int room = 0; room < childCoding[period].length; room++) {
 			success = assign(course, period, room);
@@ -311,7 +315,8 @@ public final class CourseExchangeRecombinationStrategy extends
 	 * not possible due to hard constraint violation or because there is already
 	 * an assignment.
 	 */
-	private boolean assign(ICourse course, int period, int room) {
+	private boolean assign(final ICourse course, final int period,
+			final int room) {
 		if (isValidToAssign(course, period, room)) {
 			safeAssign(course, new TimeTableSlot(period, room));
 			return true;
@@ -323,7 +328,7 @@ public final class CourseExchangeRecombinationStrategy extends
 	 * This method is based on the assumption that it is called only when it is
 	 * safe to assign the given course to the given slot.
 	 */
-	private void safeAssign(ICourse course, TimeTableSlot slot) {
+	private void safeAssign(final ICourse course, final TimeTableSlot slot) {
 		if (course == null) {
 			throw new NullPointerException();
 		}
@@ -335,15 +340,17 @@ public final class CourseExchangeRecombinationStrategy extends
 	 * and room without violating any hard constraints or overwriting an
 	 * existing assignment.
 	 */
-	private boolean isValidToAssign(ICourse course, int period, int room) {
+	private boolean isValidToAssign(final ICourse course, final int period,
+			final int room) {
 		if (childCoding[period][room] != null) {
 			return false;
 		}
-		boolean teacherViolated = HardConstraintUtil.existsTeacherInPeriod(
-				childCoding, course.getTeacher(), period);
-		boolean curriculaViolated = HardConstraintUtil.existsCurriculaInPeriod(
-				childCoding, course.getCurricula(), period);
-		boolean unavailabilityConstraintViolated = HardConstraintUtil
+		final boolean teacherViolated = HardConstraintUtil
+				.existsTeacherInPeriod(childCoding, course.getTeacher(), period);
+		final boolean curriculaViolated = HardConstraintUtil
+				.existsCurriculaInPeriod(childCoding, course.getCurricula(),
+						period);
+		final boolean unavailabilityConstraintViolated = HardConstraintUtil
 				.existsUnavailabilityConstraint(course, period);
 		return !(teacherViolated || unavailabilityConstraintViolated || curriculaViolated);
 	}
@@ -353,7 +360,7 @@ public final class CourseExchangeRecombinationStrategy extends
 		if (Math.random() < mutationProbability) {
 			recombinedSolution = MutationOperators
 					.mutateRoomStability(recombinedSolution);
-			double randomValue = Math.random();
+			final double randomValue = Math.random();
 			if (randomValue < 0.05) {
 				recombinedSolution = MutationOperators
 						.mutateCourseIsolation(recombinedSolution);
@@ -364,13 +371,14 @@ public final class CourseExchangeRecombinationStrategy extends
 
 	@Override
 	protected void configure() {
-		ISolutionTableService solutionTable = ServiceLocator.getInstance()
-				.getSolutionTableService();
+		final ISolutionTableService solutionTable = ServiceLocator
+				.getInstance().getSolutionTableService();
 		solutionTable.setMaximumSize(SOLUTION_TABLE_SIZE);
 	}
 
 	@Override
-	protected void newInterationStarted(int iteration, int totalIterations) {
+	protected void newInterationStarted(final int iteration,
+			final int totalIterations) {
 		if (iteration == 1) {
 			mutationProbability = START_MUTATION_PROBABILITY;
 			minEliminationAge = START_MIN_ELIMINATION_AGE;
@@ -391,10 +399,10 @@ public final class CourseExchangeRecombinationStrategy extends
 	}
 
 	@Override
-	protected void eliminate(ISolution parent1, ISolution parent2,
-			Set<ISolution> eliminatedSolutions) {
+	protected void eliminate(final ISolution parent1, final ISolution parent2,
+			final Set<ISolution> eliminatedSolutions) {
 
-		ISolution worstSolution = getSolutionTable().removeWorstSolution(
+		final ISolution worstSolution = getSolutionTable().removeWorstSolution(
 				minEliminationAge);
 		eliminatedSolutions.add(worstSolution);
 
@@ -404,7 +412,7 @@ public final class CourseExchangeRecombinationStrategy extends
 		 * solutions get too one-sided.
 		 */
 		if (Math.random() < 0.40) {
-			ISolution mostRecombinedSolution = getSolutionTable()
+			final ISolution mostRecombinedSolution = getSolutionTable()
 					.getSolutionMostOftenRecombined();
 			/*
 			 * Only eliminate if the solution is really old cause we don't want

@@ -47,19 +47,21 @@ public class ProblemInstanceImplTest extends AbstractReaderTest {
 	public void testGetCourses() {
 		assertEquals(0, instance.getCourses().size());
 
-		ICourse course1 = new CourseImpl("c1", 1, 2, 20, "Teacher1", instance);
-		ICourse course2 = new CourseImpl("c2", 1, 1, 15, "Teacher1", instance);
+		final ICourse course1 = new CourseImpl("c1", 1, 2, 20, "Teacher1",
+				instance);
+		final ICourse course2 = new CourseImpl("c2", 1, 1, 15, "Teacher1",
+				instance);
 		instance.addCourse(course1);
 		instance.addCourse(course2);
 
-		Set<ICourse> courses = instance.getCourses();
+		final Set<ICourse> courses = instance.getCourses();
 		assertEquals(2, courses.size());
 		assertTrue(courses.contains(course1));
 		assertTrue(courses.contains(course2));
 		try {
 			courses.remove(course1);
 			fail();
-		} catch (UnsupportedOperationException e) {
+		} catch (final UnsupportedOperationException e) {
 			// Expected exception (immutability).
 		}
 	}
@@ -67,19 +69,19 @@ public class ProblemInstanceImplTest extends AbstractReaderTest {
 	public void testGetRooms() {
 		assertEquals(0, instance.getRooms().size());
 
-		IRoom room1 = new RoomImpl("r1", 15, 0, instance);
-		IRoom room2 = new RoomImpl("r2", 30, 1, instance);
+		final IRoom room1 = new RoomImpl("r1", 15, 0, instance);
+		final IRoom room2 = new RoomImpl("r2", 30, 1, instance);
 		instance.addRoom(room1);
 		instance.addRoom(room2);
 
-		Set<IRoom> rooms = instance.getRooms();
+		final Set<IRoom> rooms = instance.getRooms();
 		assertEquals(2, rooms.size());
 		assertTrue(rooms.contains(room1));
 		assertTrue(rooms.contains(room2));
 		try {
 			rooms.remove(room1);
 			fail();
-		} catch (UnsupportedOperationException e) {
+		} catch (final UnsupportedOperationException e) {
 			// Expected exception (immutability).
 		}
 	}
@@ -87,26 +89,28 @@ public class ProblemInstanceImplTest extends AbstractReaderTest {
 	public void testGetCurricula() {
 		assertEquals(0, instance.getCurricula().size());
 
-		ICurriculum curriculum1 = new CurriculumImpl("c1", 1, instance);
-		ICurriculum curriculum2 = new CurriculumImpl("c2", 2, instance);
+		final ICurriculum curriculum1 = new CurriculumImpl("c1", 1, instance);
+		final ICurriculum curriculum2 = new CurriculumImpl("c2", 2, instance);
 		instance.addCurriculum(curriculum1);
 		instance.addCurriculum(curriculum2);
 
-		Set<ICurriculum> curricula = instance.getCurricula();
+		final Set<ICurriculum> curricula = instance.getCurricula();
 		assertEquals(2, curricula.size());
 		assertTrue(curricula.contains(curriculum1));
 		assertTrue(curricula.contains(curriculum2));
 		try {
 			curricula.remove(curriculum1);
 			fail();
-		} catch (UnsupportedOperationException e) {
+		} catch (final UnsupportedOperationException e) {
 			// Expected exception (immutability).
 		}
 	}
 
 	public void testGetUnavailabilityConstraints() {
-		ICourse course1 = new CourseImpl("c1", 1, 2, 20, "Teacher1", instance);
-		ICourse course2 = new CourseImpl("c2", 1, 1, 15, "Teacher1", instance);
+		final ICourse course1 = new CourseImpl("c1", 1, 2, 20, "Teacher1",
+				instance);
+		final ICourse course2 = new CourseImpl("c2", 1, 1, 15, "Teacher1",
+				instance);
 		instance.addCourse(course1);
 		instance.addCourse(course2);
 
@@ -116,13 +120,13 @@ public class ProblemInstanceImplTest extends AbstractReaderTest {
 		instance.addUnavailabilityConstraint(course1, 3);
 		instance.addUnavailabilityConstraint(course2, 1);
 
-		Set<Integer> constraintsCourse1 = instance
+		final Set<Integer> constraintsCourse1 = instance
 				.getUnavailabilityConstraints(course1);
 		assertEquals(2, constraintsCourse1.size());
 		assertTrue(constraintsCourse1.contains(0));
 		assertTrue(constraintsCourse1.contains(3));
 
-		Set<Integer> constraintsCourse2 = instance
+		final Set<Integer> constraintsCourse2 = instance
 				.getUnavailabilityConstraints(course2);
 		assertEquals(1, constraintsCourse2.size());
 		assertTrue(constraintsCourse2.contains(1));
@@ -130,14 +134,16 @@ public class ProblemInstanceImplTest extends AbstractReaderTest {
 		try {
 			constraintsCourse1.remove(0);
 			fail();
-		} catch (UnsupportedOperationException e) {
+		} catch (final UnsupportedOperationException e) {
 			// Expected exception (immutability).
 		}
 	}
 
 	public void testGetCourseById() {
-		ICourse course1 = new CourseImpl("c1", 1, 2, 20, "Teacher1", instance);
-		ICourse course2 = new CourseImpl("c2", 1, 1, 15, "Teacher1", instance);
+		final ICourse course1 = new CourseImpl("c1", 1, 2, 20, "Teacher1",
+				instance);
+		final ICourse course2 = new CourseImpl("c2", 1, 1, 15, "Teacher1",
+				instance);
 		instance.addCourse(course1);
 		instance.addCourse(course2);
 
@@ -147,8 +153,8 @@ public class ProblemInstanceImplTest extends AbstractReaderTest {
 	}
 
 	public void testGetRoomByUniqueNumber() {
-		IRoom room1 = new RoomImpl("r1", 15, 0, instance);
-		IRoom room2 = new RoomImpl("r2", 30, 1, instance);
+		final IRoom room1 = new RoomImpl("r1", 15, 0, instance);
+		final IRoom room2 = new RoomImpl("r2", 30, 1, instance);
 		instance.addRoom(room1);
 		instance.addRoom(room2);
 

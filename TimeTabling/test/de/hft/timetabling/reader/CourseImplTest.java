@@ -54,12 +54,15 @@ public class CourseImplTest extends AbstractReaderTest {
 	}
 
 	public void testGetCurricula() {
-		CurriculumImpl curriculum1 = new CurriculumImpl("cur1", 2, instance);
-		CurriculumImpl curriculum2 = new CurriculumImpl("cur2", 1, instance);
-		CurriculumImpl curriculum3 = new CurriculumImpl("cur3", 1, instance);
-
-		ICourse otherCourse = new CourseImpl("cOther", 1, 1, 1, "Teacher2",
+		final CurriculumImpl curriculum1 = new CurriculumImpl("cur1", 2,
 				instance);
+		final CurriculumImpl curriculum2 = new CurriculumImpl("cur2", 1,
+				instance);
+		final CurriculumImpl curriculum3 = new CurriculumImpl("cur3", 1,
+				instance);
+
+		final ICourse otherCourse = new CourseImpl("cOther", 1, 1, 1,
+				"Teacher2", instance);
 		instance.addCourse(otherCourse);
 		assertEquals(0, otherCourse.getCurricula().size());
 
@@ -72,12 +75,13 @@ public class CourseImplTest extends AbstractReaderTest {
 		instance.addCurriculum(curriculum2);
 		instance.addCurriculum(curriculum3);
 
-		Set<ICurriculum> courseCurricula = course.getCurricula();
+		final Set<ICurriculum> courseCurricula = course.getCurricula();
 		assertEquals(2, courseCurricula.size());
 		assertTrue(courseCurricula.contains(curriculum1));
 		assertTrue(courseCurricula.contains(curriculum2));
 
-		Set<ICurriculum> otherCourseCurricula = otherCourse.getCurricula();
+		final Set<ICurriculum> otherCourseCurricula = otherCourse
+				.getCurricula();
 		assertEquals(2, otherCourseCurricula.size());
 		assertTrue(otherCourseCurricula.contains(curriculum1));
 		assertTrue(otherCourseCurricula.contains(curriculum3));

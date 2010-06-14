@@ -26,7 +26,7 @@ public class FastAssignmentAlgorithm implements GeneratorAlgorithm {
 		schedule = new ICourse[instance.getNumberOfPeriods()][instance
 				.getNumberOfRooms()];
 
-		for (ICourse course : instance.getCourses()) {
+		for (final ICourse course : instance.getCourses()) {
 			for (int period = 0; period < instance.getNumberOfPeriods(); period++) {
 				if (availablePeriods.get(course) == null) {
 					availablePeriods.put(course, new HashSet<Integer>());
@@ -50,10 +50,10 @@ public class FastAssignmentAlgorithm implements GeneratorAlgorithm {
 
 	public ICourse getMostCriticalEvent(final Set<ICourse> courses) {
 		int minimum = Integer.MAX_VALUE;
-		List<ICourse> criticalCourses = new ArrayList<ICourse>();
+		final List<ICourse> criticalCourses = new ArrayList<ICourse>();
 
-		for (ICourse course : courses) {
-			int periods = availablePeriods.get(course).size();
+		for (final ICourse course : courses) {
+			final int periods = availablePeriods.get(course).size();
 
 			if (periods < minimum) {
 				minimum = periods;
@@ -84,7 +84,7 @@ public class FastAssignmentAlgorithm implements GeneratorAlgorithm {
 
 		for (int i = 0; i < critical.getNumberOfLectures(); i++) {
 			Collections.shuffle(periods);
-			int randomPeriod = periods.get(0);
+			final int randomPeriod = periods.get(0);
 
 			final List<Integer> rooms = new ArrayList<Integer>();
 			rooms.addAll(availableRooms.get(randomPeriod));
@@ -95,7 +95,7 @@ public class FastAssignmentAlgorithm implements GeneratorAlgorithm {
 				}
 			}
 			Collections.shuffle(rooms);
-			int randomRoom = rooms.get(0);
+			final int randomRoom = rooms.get(0);
 			schedule[randomPeriod][randomRoom] = critical;
 
 			availableRooms.get(randomPeriod).remove(randomRoom);
@@ -104,13 +104,13 @@ public class FastAssignmentAlgorithm implements GeneratorAlgorithm {
 			assignedPeriods.add(randomPeriod);
 		}
 
-		for (ICurriculum curriculum : critical.getCurricula()) {
-			for (ICourse course : curriculum.getCourses()) {
+		for (final ICurriculum curriculum : critical.getCurricula()) {
+			for (final ICourse course : curriculum.getCourses()) {
 				availablePeriods.get(course).removeAll(assignedPeriods);
 			}
 		}
 
-		for (ICourse course : instance.getCoursesForTeacher(critical
+		for (final ICourse course : instance.getCoursesForTeacher(critical
 				.getTeacher())) {
 			availablePeriods.get(course).removeAll(assignedPeriods);
 		}

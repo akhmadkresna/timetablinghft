@@ -30,7 +30,7 @@ public class SolutionTableTest extends AbstractServicesTest {
 					.getNumberOfRooms()];
 			newSolution = solutionTable.createNewSolution(coding, instance);
 			fail();
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			// Expected exception (incomplete coding).
 		}
 
@@ -39,7 +39,7 @@ public class SolutionTableTest extends AbstractServicesTest {
 					.getNumberOfRooms() - 1];
 			newSolution = solutionTable.createNewSolution(coding, instance);
 			fail();
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			// Expected exception (incomplete coding).
 		}
 	}
@@ -48,16 +48,16 @@ public class SolutionTableTest extends AbstractServicesTest {
 		try {
 			solutionTable.getSolution(solutionTable.getMaximumSize() + 1);
 			fail();
-		} catch (IndexOutOfBoundsException e) {
+		} catch (final IndexOutOfBoundsException e) {
 			// Expected exception (solution number out of range).
 		}
 
-		ISolution newSolution = solutionTable.createNewSolution(
+		final ISolution newSolution = solutionTable.createNewSolution(
 				new ICourse[instance.getNumberOfPeriods()][instance
 						.getNumberOfRooms()], instance);
 		solutionTable.addSolution(newSolution);
 		solutionTable.voteForSolution(0, 100, 100);
-		ISolution solution = solutionTable.getSolution(0);
+		final ISolution solution = solutionTable.getSolution(0);
 		assertEquals(newSolution, solution);
 	}
 

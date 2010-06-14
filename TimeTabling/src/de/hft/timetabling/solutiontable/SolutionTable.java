@@ -56,22 +56,22 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
-	public void setMaximumSize(int maximumSize) {
+	public void setMaximumSize(final int maximumSize) {
 		this.maximumSize = maximumSize;
 	}
 
 	@Override
-	public ISolution createNewSolution(ICourse[][] coding,
-			IProblemInstance problemInstance) {
+	public ISolution createNewSolution(final ICourse[][] coding,
+			final IProblemInstance problemInstance) {
 
-		int numberOfPeriods = problemInstance.getNumberOfDays()
+		final int numberOfPeriods = problemInstance.getNumberOfDays()
 				* problemInstance.getPeriodsPerDay();
 		if (coding.length != numberOfPeriods) {
 			throw new IllegalArgumentException(
 					"Incomplete coding: period-dimension (x) not matching the number of periods of the problem instance.");
 		}
 		for (int period = 0; period < numberOfPeriods; period++) {
-			ICourse[] coursesPerPeriod = coding[period];
+			final ICourse[] coursesPerPeriod = coding[period];
 			if (coursesPerPeriod.length != problemInstance.getNumberOfRooms()) {
 				throw new IllegalArgumentException(
 						"Incomplete coding: room-dimension (y) not matching the number of rooms of the problem instance in period "
@@ -87,7 +87,7 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
-	public void addSolution(ISolution solution) {
+	public void addSolution(final ISolution solution) {
 		if (getSize(true) == maximumSize) {
 			throw new RuntimeException(
 					"Insertion of solution failed because the solution table is full.");
@@ -118,21 +118,21 @@ public final class SolutionTable implements ISolutionTableService {
 
 	@Override
 	public List<ISolution> getNotVotedSolutions() {
-		List<ISolution> defensiveCopy = new ArrayList<ISolution>(notVotedTable
-				.size());
+		final List<ISolution> defensiveCopy = new ArrayList<ISolution>(
+				notVotedTable.size());
 		defensiveCopy.addAll(notVotedTable);
 		return defensiveCopy;
 	}
 
 	@Override
-	public void voteForSolution(int index, int penalty, int fairness) {
+	public void voteForSolution(int index, final int penalty, final int fairness) {
 		index = index - voteIndexModification;
 		voteIndexModification++;
-		ISolution solution = notVotedTable.get(index);
+		final ISolution solution = notVotedTable.get(index);
 		notVotedTable.remove(index);
 		((SolutionImpl) solution).setPenalty(penalty);
 		((SolutionImpl) solution).setFairness(fairness);
-		boolean added = solutionTable.add(new WeightedSolution(solution,
+		final boolean added = solutionTable.add(new WeightedSolution(solution,
 				penalty, fairness));
 		if (added) {
 			Main.solutionTableInsertionSuccess++;
@@ -143,7 +143,7 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
-	public int getSize(boolean includeNotVotedSolutions) {
+	public int getSize(final boolean includeNotVotedSolutions) {
 		if (includeNotVotedSolutions) {
 			return solutionTable.size() + currentNotVotedCount;
 		}
@@ -151,12 +151,12 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
-	public ISolution removeWorstSolution(int minAge) {
-		Set<WeightedSolution> removed = new TreeSet<WeightedSolution>();
+	public ISolution removeWorstSolution(final int minAge) {
+		final Set<WeightedSolution> removed = new TreeSet<WeightedSolution>();
 		ISolution removedSolution = null;
 		boolean removalOk = false;
 		while (!(removalOk) && (solutionTable.size() > 0)) {
-			WeightedSolution weightedSolution = solutionTable.pollLast();
+			final WeightedSolution weightedSolution = solutionTable.pollLast();
 			if (weightedSolution.getSolution().getAge() >= minAge) {
 				removalOk = true;
 				removedSolution = weightedSolution.getSolution();
@@ -166,7 +166,7 @@ public final class SolutionTable implements ISolutionTableService {
 		}
 
 		// Re-insert all solutions that have been removed by mistake.
-		for (WeightedSolution weightedSolution : removed) {
+		for (final WeightedSolution weightedSolution : removed) {
 			solutionTable.add(weightedSolution);
 		}
 
@@ -178,8 +178,8 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
-	public boolean remove(ISolution solution) {
-		for (WeightedSolution weightedSolution : solutionTable) {
+	public boolean remove(final ISolution solution) {
+		for (final WeightedSolution weightedSolution : solutionTable) {
 			if (weightedSolution.getSolution().equals(solution)) {
 				return solutionTable.remove(weightedSolution);
 			}
@@ -193,12 +193,12 @@ public final class SolutionTable implements ISolutionTableService {
 			return null;
 		}
 		WeightedSolution currentResult = null;
-		for (WeightedSolution weightedSolution : solutionTable) {
+		for (final WeightedSolution weightedSolution : solutionTable) {
 			if (currentResult == null) {
 				currentResult = weightedSolution;
 				continue;
 			}
-			ISolution currentSolution = weightedSolution.getSolution();
+			final ISolution currentSolution = weightedSolution.getSolution();
 			if (currentSolution.getRecombinationCount() > currentResult
 					.getSolution().getRecombinationCount()) {
 				currentResult = weightedSolution;
@@ -219,8 +219,8 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	@Override
-	public ISolution getSolution(int index) {
-		WeightedSolution[] array = solutionTable
+	public ISolution getSolution(final int index) {
+		final WeightedSolution[] array = solutionTable
 				.toArray(new WeightedSolution[getSize(false)]);
 		return array[index].getSolution();
 	}
@@ -236,14 +236,14 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	private void updateSolutionAges() {
-		for (WeightedSolution weightedSolution : solutionTable) {
+		for (final WeightedSolution weightedSolution : solutionTable) {
 			((SolutionImpl) weightedSolution.getSolution()).increaseAge();
 		}
 	}
 
 	private void updateBestFairnessSolution() {
 		WeightedSolution bestFairnessInTable = null;
-		for (WeightedSolution weightedSolution : solutionTable) {
+		for (final WeightedSolution weightedSolution : solutionTable) {
 			if (bestFairnessInTable == null) {
 				bestFairnessInTable = weightedSolution;
 				continue;
@@ -277,7 +277,7 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	private void updateBestPenaltySolution() {
-		WeightedSolution bestPenaltyInTable = solutionTable.first();
+		final WeightedSolution bestPenaltyInTable = solutionTable.first();
 		if (bestPenaltySolution == null) {
 			bestPenaltySolution = bestPenaltyInTable;
 		} else {
@@ -290,7 +290,7 @@ public final class SolutionTable implements ISolutionTableService {
 
 	private void updateWorstFairnessSolution() {
 		WeightedSolution worstFairnessInTable = null;
-		for (WeightedSolution weightedSolution : solutionTable) {
+		for (final WeightedSolution weightedSolution : solutionTable) {
 			if (worstFairnessInTable == null) {
 				worstFairnessInTable = weightedSolution;
 				continue;
@@ -324,7 +324,7 @@ public final class SolutionTable implements ISolutionTableService {
 	}
 
 	private void updateWorstPenaltySolution() {
-		WeightedSolution worstPenaltyInTable = solutionTable.last();
+		final WeightedSolution worstPenaltyInTable = solutionTable.last();
 		if (worstPenaltySolution == null) {
 			worstPenaltySolution = worstPenaltyInTable;
 		} else {
@@ -339,8 +339,8 @@ public final class SolutionTable implements ISolutionTableService {
 	 * @author Roy
 	 */
 	@Override
-	public boolean compareWithWorstSolution(int iPenalty) {
-		int worstSolutionPenalty = solutionTable.last().getPenalty();
+	public boolean compareWithWorstSolution(final int iPenalty) {
+		final int worstSolutionPenalty = solutionTable.last().getPenalty();
 		if (iPenalty < worstSolutionPenalty) {
 			return true;
 		}
@@ -369,7 +369,8 @@ public final class SolutionTable implements ISolutionTableService {
 
 		private final ISolution solution;
 
-		private WeightedSolution(ISolution solution, int penalty, int fairness) {
+		private WeightedSolution(final ISolution solution, final int penalty,
+				final int fairness) {
 			this.solution = solution;
 			this.penalty = penalty;
 			this.fairness = fairness;
@@ -397,7 +398,7 @@ public final class SolutionTable implements ISolutionTableService {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (this == obj) {
 				return true;
 			}
@@ -407,7 +408,7 @@ public final class SolutionTable implements ISolutionTableService {
 			if (getClass() != obj.getClass()) {
 				return false;
 			}
-			WeightedSolution other = (WeightedSolution) obj;
+			final WeightedSolution other = (WeightedSolution) obj;
 			if (fairness != other.fairness) {
 				return false;
 			}
@@ -418,7 +419,7 @@ public final class SolutionTable implements ISolutionTableService {
 		}
 
 		@Override
-		public int compareTo(WeightedSolution o) {
+		public int compareTo(final WeightedSolution o) {
 			if (penalty < o.penalty) {
 				return -1;
 			} else if (penalty > o.penalty) {
