@@ -1,5 +1,6 @@
 package de.hft.timetabling.evaluator;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -285,8 +286,8 @@ public class Evaluator implements IEvaluatorService {
 	private void callSoftConstrainEvalutors(ISolutionTableService solutionTable) {
 		Set<ICurriculum> currentCurriculumSet;
 		ICurriculum currentCurricula;
-		int numberOfCurriculum, iFairness;
-		int[] curriculumCosts = null;
+		int iFairness;
+		List<Integer> curriculumCosts = new ArrayList<Integer>();
 
 		int iPenalty = 0;
 		int iCurriculumBasedPenalty = 0;
@@ -307,10 +308,7 @@ public class Evaluator implements IEvaluatorService {
 			currentInstance = solutionCode.getProblemInstance();
 			currentCode = solutionCode.getCoding();
 			currentCurriculumSet = currentInstance.getCurricula();
-			numberOfCurriculum = currentInstance.getNumberOfCurricula();
-			curriculumCosts = new int[numberOfCurriculum];
 			Iterator<ICurriculum> it = currentCurriculumSet.iterator();
-			int c = 0;
 			iPenalty = 0;
 			iRoom = 0;
 			iMinWDays = 0;
@@ -327,11 +325,11 @@ public class Evaluator implements IEvaluatorService {
 						currentCurricula);
 				iCurriculumCompactness += costsOnCurriculumCompactness(
 						solutionCode, currentCurricula);
+
 				iCurriculumBasedPenalty += iCurriculumCompactness;
 				iCurriculumBasedPenalty += costsOnRoomStability(solutionCode,
 						currentCurricula);
-				curriculumCosts[c] = iCurriculumBasedPenalty;
-				c++;
+				curriculumCosts.add(iCurriculumBasedPenalty);
 
 				// Debug code
 				iRoom += costsOnRoomCapacity(solutionCode, currentCurricula);
@@ -349,7 +347,7 @@ public class Evaluator implements IEvaluatorService {
 
 			iPenalty = iNewRoom + iNewMinCost + iCurriculumCompactness
 					+ iRoomStability;
-			iFairness = evaluateFairness(curriculumCosts, numberOfCurriculum);
+			iFairness = evaluateFairness(curriculumCosts);
 
 			solutionTable.voteForSolution(i, iPenalty, iFairness);
 			System.out.println("RoomCapacity: " + iRoom);
@@ -368,28 +366,26 @@ public class Evaluator implements IEvaluatorService {
 	 * for the curriculum. The lower the difference, the better the solution.
 	 * 
 	 * @param curriculumCosts
-	 *            The integer array with the penalty for each curriculum
-	 * @param numberOfCurriculum
-	 *            Used to find the avg of the Penalties
+	 *            The integer list with the penalty for each curriculum
 	 */
-	private int evaluateFairness(int[] curriculumCosts, int numberOfCurriculum) {
+	public int evaluateFairness(List<Integer> curriculumCosts) {
 		int iFairnessCost = 0, maxAvgDiff, minAvgDiff;
 		int maxPenalty = -1, minPenalty = -1, avgPenalty = -1, penaltySum = 0;
 
 		// initial value to compare with
-		maxPenalty = curriculumCosts[0];
-		minPenalty = curriculumCosts[0];
-		for (int i = 1; i < numberOfCurriculum; i++) {
+		maxPenalty = curriculumCosts.get(0);
+		minPenalty = curriculumCosts.get(0);
+		for (int i = 1; i < curriculumCosts.size(); i++) {
 			// Take max value, min value, and average value... and compare
-			if (curriculumCosts[i] > maxPenalty) {
-				maxPenalty = curriculumCosts[i];
+			if (curriculumCosts.get(i) > maxPenalty) {
+				maxPenalty = curriculumCosts.get(i);
 			}
-			if (curriculumCosts[i] < minPenalty) {
-				minPenalty = curriculumCosts[i];
+			if (curriculumCosts.get(i) < minPenalty) {
+				minPenalty = curriculumCosts.get(i);
 			}
-			penaltySum += curriculumCosts[i];
+			penaltySum += curriculumCosts.get(i);
 		}
-		avgPenalty = (penaltySum / numberOfCurriculum);
+		avgPenalty = (penaltySum / curriculumCosts.size());
 
 		maxAvgDiff = maxPenalty - avgPenalty;
 		minAvgDiff = avgPenalty - minPenalty;
