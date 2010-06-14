@@ -292,12 +292,12 @@ public class Evaluator implements IEvaluatorService {
 		int iPenalty = 0;
 		int iCurriculumBasedPenalty = 0;
 		int iCurriculumCompactness = 0;
-		int iRoom = 0;
-		int iMinWDays = 0;
-		int iCompRoomS = 0;
-		int iNewRoom = 0;
-		int iNewMinCost = 0;
-		int iCompact = 0;
+		int iCBasedRoom = 0;
+		int iMinWorking = 0;
+		int iCBasedRoomStability = 0;
+		int iRoomCapacity = 0;
+		int iCBasedMinWorking = 0;
+		int iCBasedCompactness = 0;
 		int iRoomStability = 0;
 
 		List<ISolution> notVotedSolutions = solutionTable
@@ -310,10 +310,10 @@ public class Evaluator implements IEvaluatorService {
 			currentCurriculumSet = currentInstance.getCurricula();
 			Iterator<ICurriculum> it = currentCurriculumSet.iterator();
 			iPenalty = 0;
-			iRoom = 0;
-			iMinWDays = 0;
-			iCompRoomS = 0;
-			iCompact = 0;
+			iCBasedRoom = 0;
+			iCBasedMinWorking = 0;
+			iCBasedCompactness = 0;
+			iCBasedRoomStability = 0;
 
 			// Iterate through each curriculum
 			while (it.hasNext()) {
@@ -332,30 +332,32 @@ public class Evaluator implements IEvaluatorService {
 				curriculumCosts.add(iCurriculumBasedPenalty);
 
 				// Debug code
-				iRoom += costsOnRoomCapacity(solutionCode, currentCurricula);
-				iMinWDays += costsOnMinWorkingDays(solutionCode,
+				iCBasedRoom += costsOnRoomCapacity(solutionCode,
 						currentCurricula);
-				iCompRoomS += costsOnRoomStability(solutionCode,
+				iCBasedMinWorking += costsOnMinWorkingDays(solutionCode,
 						currentCurricula);
-				iCompact += costsOnCurriculumCompactness(solutionCode,
+				iCBasedRoomStability += costsOnRoomStability(solutionCode,
 						currentCurricula);
+				iCBasedCompactness += costsOnCurriculumCompactness(
+						solutionCode, currentCurricula);
 			}
-			iNewRoom += costsOnRoomCapacity(solutionCode);
-			iNewMinCost += costsOnMinWorkingDays(solutionCode);
+			iRoomCapacity += costsOnRoomCapacity(solutionCode);
+			iMinWorking += costsOnMinWorkingDays(solutionCode);
 			// iCurriculumCompactness
 			iRoomStability += costsOnRoomStability(solutionCode);
 
-			iPenalty = iNewRoom + iNewMinCost + iCurriculumCompactness
+			iPenalty = iRoomCapacity + iMinWorking + iCurriculumCompactness
 					+ iRoomStability;
 			iFairness = evaluateFairness(curriculumCosts);
 
 			solutionTable.voteForSolution(i, iPenalty, iFairness);
-			System.out.println("RoomCapacity: " + iRoom);
-			System.out.println("MinWorking day: " + iMinWDays);
-			System.out.println("CirriculumRoom: " + iCompRoomS);
-			System.out.println("NewRoomC: " + iNewRoom);
-			System.out.println("NewMinWCost: " + iNewMinCost);
-			System.out.println("NewcompactCost: " + iCompact);
+			System.out.println("RoomCapacity: " + iCBasedRoom);
+			System.out.println("MinWorking day: " + iCBasedMinWorking);
+			System.out.println("CirriculumComp: " + iCBasedCompactness);
+			System.out.println("RoomStablity: " + iCBasedRoomStability);
+			System.out.println("NewRoomC: " + iRoomCapacity);
+			System.out.println("NewMinWCost: " + iMinWorking);
+			System.out.println("NewcompactCost: " + iCurriculumCompactness);
 			System.out.println("NewRoomStability: " + iRoomStability);
 
 		}
