@@ -9,7 +9,7 @@ import java.util.Date;
 
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
-import de.hft.timetabling.evaluator.NewEvaluator;
+import de.hft.timetabling.evaluator.Evaluator;
 import de.hft.timetabling.generator.Generator;
 import de.hft.timetabling.generator.MultiThreadedGenerator;
 import de.hft.timetabling.genetist.CrazyGenetist;
@@ -54,7 +54,7 @@ public final class Main {
 	 * The number of iterations to perform until the best solution will be
 	 * printed.
 	 */
-	public static int iterations = 200;
+	public static int iterations = 250;
 
 	public static int nrExecutions = 0;
 
@@ -81,7 +81,7 @@ public final class Main {
 	 * @throws IllegalArgumentException
 	 *             If the length of <tt>args</tt> is smaller than 1.
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		if (args.length < 1) {
 			throw new IllegalArgumentException(
 					"The program's first argument must either be the "
@@ -90,35 +90,35 @@ public final class Main {
 		}
 
 		long sleepTime = 0;
-		nrExecutions = 1;
+		Main.nrExecutions = 1;
 		if (args.length >= 2) {
-			iterations = Integer.valueOf(args[1]);
+			Main.iterations = Integer.valueOf(args[1]);
 			if (args.length >= 3) {
-				nrExecutions = Integer.valueOf(args[2]);
+				Main.nrExecutions = Integer.valueOf(args[2]);
 				if (args.length >= 4) {
 					sleepTime = Long.valueOf(args[3]);
 					if (args.length >= 5) {
-						outputAllSolutions = Integer.valueOf(args[4]) > 0;
+						Main.outputAllSolutions = Integer.valueOf(args[4]) > 0;
 						if (args.length == 6) {
-							initialSolutionDirectory = args[5];
+							Main.initialSolutionDirectory = args[5];
 						}
 					}
 				}
 			}
 		}
 
-		setUpServices();
+		Main.setUpServices();
 
-		for (int i = 0; i < nrExecutions; i++) {
+		for (int i = 0; i < Main.nrExecutions; i++) {
 			try {
 				if (args[0].equals("ALL")) {
-					runAllInstances(initialSolutionDirectory);
+					Main.runAllInstances(Main.initialSolutionDirectory);
 				} else {
-					run(args[0], initialSolutionDirectory, sleepTime);
+					Main.run(args[0], Main.initialSolutionDirectory, sleepTime);
 
 				}
-			} catch (IOException e) {
-				handleException(e);
+			} catch (final IOException e) {
+				Main.handleException(e);
 			}
 		}
 
@@ -126,7 +126,7 @@ public final class Main {
 		System.exit(0);
 	}
 
-	private static void handleException(Exception e) {
+	private static void handleException(final Exception e) {
 		e.printStackTrace();
 	}
 
@@ -135,7 +135,7 @@ public final class Main {
 	 * with the service locator.
 	 */
 	private static void setUpServices() {
-		ServiceLocator serviceLocator = ServiceLocator.getInstance();
+		final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 		serviceLocator.setReaderService(new Reader());
 		serviceLocator.setSolutionTableService(new SolutionTable());
 		serviceLocator.setWriterService(new Writer());
@@ -143,112 +143,115 @@ public final class Main {
 				new Generator()));
 		serviceLocator.setValidatorService(new Validator());
 		serviceLocator.setCrazyGenetistService(new CrazyGenetist());
-		serviceLocator.setEvaluatorService(new NewEvaluator());
+		serviceLocator.setEvaluatorService(new Evaluator());
 	}
 
 	/**
 	 * Runs the main loop of the program.
 	 */
-	private static void run(String fileName, String initialSolutionDirectory,
-			long sleepMilliSeconds) throws IOException {
+	private static void run(final String fileName,
+			final String initialSolutionDirectory, final long sleepMilliSeconds)
+			throws IOException {
 
-		resetStatistics();
-		getSolutionTable().clear();
+		Main.resetStatistics();
+		Main.getSolutionTable().clear();
 
-		long startTime = System.currentTimeMillis();
+		final long startTime = System.currentTimeMillis();
 
-		ServiceLocator locator = ServiceLocator.getInstance();
-		IReaderService reader = locator.getReaderService();
-		IProblemInstance instance = (initialSolutionDirectory.length() == 0) ? reader
+		final ServiceLocator locator = ServiceLocator.getInstance();
+		final IReaderService reader = locator.getReaderService();
+		final IProblemInstance instance = (initialSolutionDirectory.length() == 0) ? reader
 				.readInstance(fileName)
 				: reader.readInstanceUsingInitialSolutionDirectory(fileName,
 						initialSolutionDirectory);
 
-		for (int i = 0; i < iterations; i++) {
+		for (int i = 0; i < Main.iterations; i++) {
 			System.out.println("");
 			System.out.println("------ ITERATION " + (i + 1) + " ------");
 
-			callGenerator(instance);
+			Main.callGenerator(instance);
 
-			callEvaluator();
+			Main.callEvaluator();
 
-			updateSolutionTable();
+			Main.updateSolutionTable();
 
-			callCrazyGenetist(i + 1);
+			Main.callCrazyGenetist(i + 1);
 
-			callEvaluator();
+			Main.callEvaluator();
 
-			updateSolutionTable();
+			Main.updateSolutionTable();
 
-			printBestSolution();
-			printFairestSolution();
+			Main.printBestSolution();
+			Main.printFairestSolution();
 
-			shortSleep(sleepMilliSeconds);
+			Main.shortSleep(sleepMilliSeconds);
 		}
 
-		printStatistics();
+		Main.printStatistics();
 
-		checkBestSolutionForValidity();
+		Main.checkBestSolutionForValidity();
 
-		duration = System.currentTimeMillis() - startTime;
-		System.out.println("Duration: " + DateUtil.toTimeString(duration));
+		Main.duration = System.currentTimeMillis() - startTime;
+		System.out.println("Duration: " + DateUtil.toTimeString(Main.duration));
 
-		outputSolutions();
+		Main.outputSolutions();
 	}
 
 	private static void checkBestSolutionForValidity() {
-		ServiceLocator locator = ServiceLocator.getInstance();
-		ISolutionTableService solutionTable = locator.getSolutionTableService();
-		ISolution bestSolution = solutionTable.getBestPenaltySolution();
-		IValidatorService validator = locator.getValidatorService();
+		final ServiceLocator locator = ServiceLocator.getInstance();
+		final ISolutionTableService solutionTable = locator
+				.getSolutionTableService();
+		final ISolution bestSolution = solutionTable.getBestPenaltySolution();
+		final IValidatorService validator = locator.getValidatorService();
 		if (!(validator.isValidSolution(bestSolution))) {
 			System.out.println("VALIDATOR: Ups, the solution is not valid!");
 		}
 	}
 
 	private static void resetStatistics() {
-		duration = 0;
-		generatorSuccess = 0;
-		generatorFailure = 0;
-		recombinationSuccess = 0;
-		recombinationFailure = 0;
-		solutionTableInsertionFailure = 0;
-		solutionTableInsertionSuccess = 0;
+		Main.duration = 0;
+		Main.generatorSuccess = 0;
+		Main.generatorFailure = 0;
+		Main.recombinationSuccess = 0;
+		Main.recombinationFailure = 0;
+		Main.solutionTableInsertionFailure = 0;
+		Main.solutionTableInsertionSuccess = 0;
 	}
 
-	private static void callGenerator(IProblemInstance instance) {
-		long startMillis = System.currentTimeMillis();
+	private static void callGenerator(final IProblemInstance instance) {
+		final long startMillis = System.currentTimeMillis();
 		ServiceLocator.getInstance().getGeneratorService().fillSolutionTable(
 				instance);
-		long time = System.currentTimeMillis() - startMillis;
+		final long time = System.currentTimeMillis() - startMillis;
 		System.out.println("GENERATOR: Finished after " + time + "ms.");
 	}
 
-	private static void callCrazyGenetist(int iteration) {
-		long startMillis = System.currentTimeMillis();
+	private static void callCrazyGenetist(final int iteration) {
+		final long startMillis = System.currentTimeMillis();
 		ServiceLocator.getInstance().getCrazyGenetistService()
-				.recombineAndMutate(iteration, iterations);
-		long time = System.currentTimeMillis() - startMillis;
+				.recombineAndMutate(iteration, Main.iterations);
+		final long time = System.currentTimeMillis() - startMillis;
 		System.out.println("CRAZY GENETIST: Finished after " + time + "ms.");
 	}
 
 	private static void callEvaluator() {
-		long startMillis = System.currentTimeMillis();
+		final long startMillis = System.currentTimeMillis();
 		ServiceLocator.getInstance().getEvaluatorService().evaluateSolutions();
-		long time = System.currentTimeMillis() - startMillis;
+		final long time = System.currentTimeMillis() - startMillis;
 		System.out.println("EVALUATOR: Finished after " + time + "ms.");
 	}
 
 	private static void outputSolutions() throws IOException {
-		IWriterService writer = ServiceLocator.getInstance().getWriterService();
-		if (outputAllSolutions) {
-			for (int i = 0; i < getSolutionTable().getSize(false); i++) {
-				writer.outputSolution(getSolutionTable().getSolution(i));
+		final IWriterService writer = ServiceLocator.getInstance()
+				.getWriterService();
+		if (Main.outputAllSolutions) {
+			for (int i = 0; i < Main.getSolutionTable().getSize(false); i++) {
+				writer.outputSolution(Main.getSolutionTable().getSolution(i));
 				/*
 				 * Sleep for 1 second to ensure that the time stamp for the file
 				 * name is a new one.
 				 */
-				shortSleep(1000);
+				Main.shortSleep(1000);
 			}
 		} else {
 			writer.outputBestSolution();
@@ -256,23 +259,25 @@ public final class Main {
 	}
 
 	private static void updateSolutionTable() {
-		getSolutionTable().update();
+		Main.getSolutionTable().update();
 	}
 
 	private static void printBestSolution() {
 		System.out.println("----------------------------");
 		System.out.println("-- Best Penalty Solution (Penalty / Fairness): "
-				+ getSolutionTable().getBestPenaltySolution().getPenalty()
+				+ Main.getSolutionTable().getBestPenaltySolution().getPenalty()
 				+ " / "
-				+ getSolutionTable().getBestPenaltySolution().getFairness());
+				+ Main.getSolutionTable().getBestPenaltySolution()
+						.getFairness());
 	}
 
 	private static void printFairestSolution() {
 		System.out.print("-- Best Fairness Solution (Penalty / Fairness): "
-				+ getSolutionTable().getBestFairnessSolution().getPenalty()
+				+ Main.getSolutionTable().getBestFairnessSolution()
+						.getPenalty()
 				+ " / "
-				+ getSolutionTable().getBestFairnessSolution().getFairness()
-				+ "\n");
+				+ Main.getSolutionTable().getBestFairnessSolution()
+						.getFairness() + "\n");
 	}
 
 	private static ISolutionTableService getSolutionTable() {
@@ -286,79 +291,82 @@ public final class Main {
 		System.out.println("Algorithm terminated.");
 		System.out.println("----------------------------");
 		System.out.println("-- Best Penalty Solution (Penalty / Fairness): "
-				+ getSolutionTable().getBestPenaltySolution().getPenalty()
+				+ Main.getSolutionTable().getBestPenaltySolution().getPenalty()
 				+ " / "
-				+ getSolutionTable().getBestPenaltySolution().getFairness());
+				+ Main.getSolutionTable().getBestPenaltySolution()
+						.getFairness());
 		System.out.println("-- Best Fairness Solution (Penalty / Fairness): "
-				+ getSolutionTable().getBestFairnessSolution().getPenalty()
+				+ Main.getSolutionTable().getBestFairnessSolution()
+						.getPenalty()
 				+ " / "
-				+ getSolutionTable().getBestFairnessSolution().getFairness());
+				+ Main.getSolutionTable().getBestFairnessSolution()
+						.getFairness());
 
 		System.out.println();
 
 		System.out.println("-- Generator (Success / Failure): "
-				+ generatorSuccess + " / " + generatorFailure + " ("
-				+ getGeneratorSuccessRatio() + " %)");
+				+ Main.generatorSuccess + " / " + Main.generatorFailure + " ("
+				+ Main.getGeneratorSuccessRatio() + " %)");
 
 		System.out.println("-- Recombination (Success / Failure): "
-				+ recombinationSuccess + " / " + recombinationFailure + " ("
-				+ getRecombinationSuccessRatio() + " %)");
+				+ Main.recombinationSuccess + " / " + Main.recombinationFailure
+				+ " (" + Main.getRecombinationSuccessRatio() + " %)");
 
 		System.out.println("-- Mutation (Success / Failure): "
-				+ mutationSuccess + " / " + mutationFailure + " ("
-				+ getMutationSuccessRatio() + " %)");
+				+ Main.mutationSuccess + " / " + Main.mutationFailure + " ("
+				+ Main.getMutationSuccessRatio() + " %)");
 
 		System.out.println("-- Solution Table Insertion (Success / Failure): "
-				+ solutionTableInsertionSuccess + " / "
-				+ solutionTableInsertionFailure + " ("
-				+ getSolutionTableInsertionSuccessRatio() + "%)");
+				+ Main.solutionTableInsertionSuccess + " / "
+				+ Main.solutionTableInsertionFailure + " ("
+				+ Main.getSolutionTableInsertionSuccessRatio() + "%)");
 		System.out.println("----------------------------");
 
 		System.out.println();
 	}
 
 	public static int getSolutionTableInsertionSuccessRatio() {
-		int total = solutionTableInsertionSuccess
-				+ solutionTableInsertionFailure;
+		final int total = Main.solutionTableInsertionSuccess
+				+ Main.solutionTableInsertionFailure;
 		if (total == 0) {
 			return 0;
 		}
-		return (solutionTableInsertionSuccess * 100) / total;
+		return (Main.solutionTableInsertionSuccess * 100) / total;
 	}
 
 	public static int getGeneratorSuccessRatio() {
-		int total = generatorSuccess + generatorFailure;
+		final int total = Main.generatorSuccess + Main.generatorFailure;
 		if (total == 0) {
 			return 0;
 		}
-		return (generatorSuccess * 100) / total;
+		return (Main.generatorSuccess * 100) / total;
 	}
 
 	public static int getRecombinationSuccessRatio() {
-		int total = recombinationSuccess + recombinationFailure;
+		final int total = Main.recombinationSuccess + Main.recombinationFailure;
 		if (total == 0) {
 			return 0;
 		}
-		return (recombinationSuccess * 100) / total;
+		return (Main.recombinationSuccess * 100) / total;
 	}
 
 	public static int getMutationSuccessRatio() {
-		int total = mutationSuccess + mutationFailure;
+		final int total = Main.mutationSuccess + Main.mutationFailure;
 		if (total == 0) {
 			return 0;
 		}
-		return (mutationSuccess * 100) / total;
+		return (Main.mutationSuccess * 100) / total;
 	}
 
 	private static void shortSleep(final long sleepMilliSeconds) {
 		try {
 			Thread.sleep(sleepMilliSeconds);
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void runAllInstances(String initialSolutionsDirectory)
+	private static void runAllInstances(final String initialSolutionsDirectory)
 			throws IOException {
 
 		final String logFileName = "doc/logs/allinstances_"
@@ -375,7 +383,7 @@ public final class Main {
 		final File[] instanceFiles = instancesDir
 				.listFiles(new FilenameFilter() {
 					@Override
-					public boolean accept(File dir, String name) {
+					public boolean accept(final File dir, final String name) {
 						return name.endsWith(".ctt");
 					}
 				});
@@ -383,23 +391,24 @@ public final class Main {
 		final BufferedWriter writer = new BufferedWriter(
 				new FileWriter(logFile));
 
-		createLogFileHeader(writer);
+		Main.createLogFileHeader(writer);
 
 		long totalDuration = 0;
 		int totalPenalty = 0;
 		int totalFairness = 0;
-		for (int i = 0; i < instanceFiles.length; i++) {
-			run("instances/" + instanceFiles[i].getName(),
+		for (final File instanceFile : instanceFiles) {
+			Main.run("instances/" + instanceFile.getName(),
 					initialSolutionsDirectory, 0);
-			totalDuration += duration;
-			totalPenalty += getSolutionTable().getBestPenaltySolution()
+			totalDuration += Main.duration;
+			totalPenalty += Main.getSolutionTable().getBestPenaltySolution()
 					.getPenalty();
-			totalFairness += getSolutionTable().getBestPenaltySolution()
+			totalFairness += Main.getSolutionTable().getBestPenaltySolution()
 					.getFairness();
-			writeResult(writer, instanceFiles[i], duration);
+			Main.writeResult(writer, instanceFile, Main.duration);
 		}
 
-		createLogFileFooter(writer, totalDuration, totalPenalty, totalFairness);
+		Main.createLogFileFooter(writer, totalDuration, totalPenalty,
+				totalFairness);
 
 		writer.close();
 	}
@@ -407,7 +416,7 @@ public final class Main {
 	private static void createLogFileHeader(final BufferedWriter writer)
 			throws IOException {
 
-		ServiceLocator serviceLocator = ServiceLocator.getInstance();
+		final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
 		writer.write("Log file created on " + new Date());
 		writer.newLine();
@@ -417,7 +426,7 @@ public final class Main {
 		writer.write("Maximum Solution Table Size: "
 				+ serviceLocator.getSolutionTableService().getMaximumSize());
 		writer.newLine();
-		writer.write("Iterations: " + iterations);
+		writer.write("Iterations: " + Main.iterations);
 		writer.newLine();
 		writer.write("Reproduction: "
 				+ serviceLocator.getCrazyGenetistService()
@@ -434,7 +443,7 @@ public final class Main {
 	private static void writeResult(final BufferedWriter writer,
 			final File instanceFile, final long duration) throws IOException {
 
-		final ISolutionTableService solutionTable = getSolutionTable();
+		final ISolutionTableService solutionTable = Main.getSolutionTable();
 
 		writer.write(instanceFile.getName());
 
@@ -484,9 +493,9 @@ public final class Main {
 		writer.flush();
 	}
 
-	private static void createLogFileFooter(BufferedWriter writer,
-			long totalDuration, int totalPenalty, int totalFairness)
-			throws IOException {
+	private static void createLogFileFooter(final BufferedWriter writer,
+			final long totalDuration, final int totalPenalty,
+			final int totalFairness) throws IOException {
 
 		writer.write("Total duration: " + DateUtil.toTimeString(totalDuration));
 		writer.newLine();
