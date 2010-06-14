@@ -34,7 +34,7 @@ import de.hft.timetabling.writer.Writer;
 public final class Main {
 
 	// band-aid solution since interfaces of both evaluators are incompatible
-	private static final boolean NEW_EVALUATOR = false;
+	private static final boolean NEW_EVALUATOR = true;
 	private static MultiThreadedEvaluator evaluator = null;
 
 	public static int generatorSuccess = 0;
