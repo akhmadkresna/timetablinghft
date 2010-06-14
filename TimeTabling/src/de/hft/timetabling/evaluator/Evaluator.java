@@ -32,14 +32,14 @@ public class Evaluator implements IEvaluatorService {
 	private IRoom currentRoom;
 	private ISolutionTableService solutionTable;
 
-	// private ICourse currentCourseDetails;
-
 	/**
 	 * This method calculates the penalty in Room Capacity. Needs to be based on
 	 * curriculum to have separate penalty points for each
 	 * 
 	 * @param solution
 	 *            A solution instance is send for evaluation
+	 * @param curriculum
+	 *            The curriculum to check penalty for
 	 * @return iCost Returns the penalty value
 	 */
 	private int costsOnRoomCapacity(final ISolution solution,
@@ -65,8 +65,12 @@ public class Evaluator implements IEvaluatorService {
 				if ((currentCode[p][r] != null)
 						&& courses.contains(currentCode[p][r])) {
 					currentRoom = currentInstance.getRoomByUniqueNumber(r);
+
+					// string format to add to string array. This will be used
+					// to compare with previous course and rooms
 					final String str = ":" + currentCode[p][r].toString() + ","
-							+ currentRoom.toString() + ";";
+
+					+ currentRoom.toString() + ";";
 					if (!strArrayRoomCourse.contains(str)) {
 
 						iNoOfStudents = currentCode[p][r].getNumberOfStudents();
@@ -74,9 +78,8 @@ public class Evaluator implements IEvaluatorService {
 						currentRoom = currentInstance.getRoomByUniqueNumber(r);
 						iRoomCapacity = currentRoom.getCapacity();
 
-						strArrayRoomCourse = strArrayRoomCourse + ":"
-								+ currentCode[p][r].toString() + ","
-								+ currentRoom.toString() + ";";
+						// Add string to array for next comparison
+						strArrayRoomCourse = strArrayRoomCourse + str;
 
 						// Each student above the capacity counts as 1 point of
 						// penalty
@@ -101,6 +104,9 @@ public class Evaluator implements IEvaluatorService {
 	 * 
 	 * @param solution
 	 *            A solution instance is send for evaluation
+	 * @param curriculum
+	 *            The curriculum to check penalty for
+	 * 
 	 * @return iCost Returns the penalty value
 	 */
 	private int costsOnMinWorkingDays(final ISolution solution,
@@ -172,11 +178,14 @@ public class Evaluator implements IEvaluatorService {
 	}
 
 	/**
-	 * Method to calculate the penalty on curriculum compactness and room
-	 * stability Need one more parameter to make it curriculum specific
+	 * Method to calculate the penalty room stability. Need one more parameter
+	 * to make it curriculum specific
 	 * 
 	 * @param solution
 	 *            A solution instance is send for evaluation
+	 * @param curriculum
+	 *            The curriculum to check penalty for
+	 * 
 	 * @return iCost Returns the penalty value of both soft constrains
 	 */
 	private int costsOnRoomStability(final ISolution solution,
@@ -201,55 +210,27 @@ public class Evaluator implements IEvaluatorService {
 				roomArray[i] = -1;
 			}
 			Course = it.next();
-			// iPreviousRoom = -1;
+
 			for (p = 0; p < currentInstance.getNumberOfPeriods(); p++) {
 				for (r = 0; r < currentInstance.getNumberOfRooms(); r++) {
 					// Assuming the value is null if no course is assigned
 					// the course should be contained in the curriculum
 					if ((currentCode[p][r] != null)
 							&& (currentCode[p][r] == Course)) {
-						// if (iPreviousRoom == -1) {
-						// iPreviousRoom = r;
-						// there should not be another course of same
-						// curriculum in different room in the same period
-						// it should also not go with next if statement in
-						// first run
-						// break;
-						// }
-
-						// Check if not new day
-						// if (p % currentInstance.getPeriodsPerDay()!= 0) {
-						// if (iPreviousRoom != -1) {
-						// Check if the previous period course is of the
-						// same curriculum
-						// if (!courses.contains(currentCode[p -
-						// 1][iPreviousRoom]))
-						// {
-
-						// Penalty for Room
-						// currentRoom =
-						// currentInstance.getRoomByUniqueNumber(r);
-						// previousRoom =
-						// currentInstance.getRoomByUniqueNumber(iPreviousRoom);
-						// if (currentRoom.getId() != previousRoom.getId())
-						// {
-						// if (r != iPreviousRoom) {
-						// iCost++;
-						// }
-						// Assign the new previous Room and Period values
-						// iPreviousRoom = r;
-						// }
 						if (c == 0) {
 							roomArray[c] = r;
 							c++;
 						} else {
 							boolean bRoomFromList = false;
+							// if room is found in array don't do not add
+							// penality again
 							for (int i = 0; i < c; i++) {
 								if (roomArray[i] == r) {
 									bRoomFromList = true;
 									break;
 								}
 							}
+							// add rooms to array that are not already in list
 							if (!bRoomFromList) {
 								roomArray[c] = r;
 								c++;
@@ -353,8 +334,8 @@ public class Evaluator implements IEvaluatorService {
 			iPenalty = iRoomCapacity + iMinWorking + iCurriculumCompactness
 					+ iRoomStability;
 			iFairness = evaluateFairness(curriculumCosts);
-
 			solutionTable.voteForSolution(i, iPenalty, iFairness);
+
 			System.out.println("RoomCapacity: " + iCBasedRoom);
 			System.out.println("MinWorking day: " + iCBasedMinWorking);
 			System.out.println("CirriculumComp: " + iCBasedCompactness);
@@ -411,140 +392,83 @@ public class Evaluator implements IEvaluatorService {
 	public int evaluateSolution(final ISolution newSolution) {
 		Set<ICurriculum> currentCurriculumSet;
 		ICurriculum currentCurricula;
-		int numberOfCurriculum;
-		int[] curriculumCosts = null;
 		currentInstance = newSolution.getProblemInstance();
 		currentCode = newSolution.getCoding();
 		currentCurriculumSet = currentInstance.getCurricula();
-		numberOfCurriculum = currentInstance.getNumberOfCurricula();
-		curriculumCosts = new int[numberOfCurriculum];
 		final Iterator<ICurriculum> it = currentCurriculumSet.iterator();
-		int c = 0;
 		int iPenalty = 0;
-		// int iRoom = 0;
-		// int iMinWDays = 0;
-		// int iCompRoomS = 0;
-		// Iterate through each curriculum
+
 		while (it.hasNext()) {
 			currentCurricula = it.next();
-			// Penalty calculation for given solution
-			iPenalty += costsOnRoomCapacity(newSolution, currentCurricula);
-			iPenalty += costsOnMinWorkingDays(newSolution, currentCurricula);
+			// Penalty calculation of compactness based on curriculum for given
+			// solution
 			iPenalty += costsOnCurriculumCompactness(newSolution,
 					currentCurricula);
-			iPenalty += costsOnRoomStability(newSolution, currentCurricula);
-			curriculumCosts[c] = iPenalty;
-			c++;
-
-			// Debug code
-			// iRoom += costsOnRoomCapacity(newSolution, currentCurricula);
-			// iMinWDays += costsOnMinWorkingDays(newSolution,
-			// currentCurricula);
-			// iCompRoomS += costsOnCurriculumCompactnessAndRoomStability(
-			// newSolution, currentCurricula);
 		}
-
-		// evaluateFairness(curriculumCosts, numberOfCurriculum);
-
-		// solutionTable.voteForSolution(i, iPenalty, iFairness);
-		// System.out.println("RoomCapacity: " + iRoom);
-		// System.out.println("MinWorking day: " + iMinWDays);
-		// System.out.println("CirriculumRoom: " + iCompRoomS);
-
-		// evaluateFairness(curriculumCosts, numberOfCurriculum);
+		// Penalty calculation for rest of the soft constrains
+		iPenalty += costsOnRoomCapacity(newSolution);
+		iPenalty += costsOnMinWorkingDays(newSolution);
+		iPenalty += costsOnRoomStability(newSolution);
 
 		return iPenalty;
 	}
 
-	/*
-	 * private void callEvalutorToCheckNewPenalty(ISolution newSolution){
-	 * Set<ICurriculum> currentCurriculumSet; ICurriculum currentCurricula; int
-	 * numberOfCurriculum; int[] curriculumCosts = null; currentInstance =
-	 * newSolution.getProblemInstance(); currentCode = newSolution.getCoding();
-	 * currentCurriculumSet = currentInstance.getCurricula(); numberOfCurriculum
-	 * = currentInstance.getNumberOfCurricula(); curriculumCosts = new
-	 * int[numberOfCurriculum]; Iterator<ICurriculum> it =
-	 * currentCurriculumSet.iterator(); int c = 0; int iPenalty = 0; int iRoom =
-	 * 0; int iMinWDays = 0; int iCompRoomS = 0; // Iterate through each
-	 * curriculum while (it.hasNext()) { currentCurricula = it.next(); //
-	 * Penalty calculation for given solution iPenalty +=
-	 * costsOnRoomCapacity(newSolution, currentCurricula); iPenalty +=
-	 * costsOnMinWorkingDays(newSolution, currentCurricula); iPenalty +=
-	 * costsOnCurriculumCompactnessAndRoomStability( newSolution,
-	 * currentCurricula); curriculumCosts[c] = iPenalty; c++;
+	/**
+	 * This method calculates the penalty in Room Capacity. This is not based on
+	 * curriculum but for entire solution
 	 * 
-	 * // Debug code iRoom += costsOnRoomCapacity(newSolution,
-	 * currentCurricula); iMinWDays += costsOnMinWorkingDays(newSolution,
-	 * currentCurricula); iCompRoomS +=
-	 * costsOnCurriculumCompactnessAndRoomStability( newSolution,
-	 * currentCurricula); }
-	 * 
-	 * //evaluateFairness(curriculumCosts, numberOfCurriculum);
-	 * 
-	 * //solutionTable.voteForSolution(i, iPenalty, iFairness);
-	 * System.out.println("RoomCapacity: " + iRoom);
-	 * System.out.println("MinWorking day: " + iMinWDays);
-	 * System.out.println("CirriculumRoom: " + iCompRoomS); }
+	 * @param solution
+	 *            A solution instance is send for evaluation
+	 * @return iCost Returns the penalty value
 	 */
 
 	private int costsOnRoomCapacity(final ISolution solution) {
 		int iCost = 0;
 		int iNoOfStudents, iRoomCapacity;
 		int r, p;
-		// String strArrayRoomCourse = "";
-		// Set<ICourse> courses;
 
 		// Get the problem instance to get the values related to it
 		currentInstance = solution.getProblemInstance();
 		// Get the solution array for this ISolution
 		currentCode = solution.getCoding();
 
-		// Get the courses for the curriculum
-		// courses = currentInstance.getCourses();
-
 		for (p = 0; p < currentInstance.getNumberOfPeriods(); p++) {
 			for (r = 0; r < currentInstance.getNumberOfRooms(); r++) {
 				// Assuming the value is null if no course is assigned
 				// the course should be contained in the curriculum
 				if ((currentCode[p][r] != null)) {
-					// currentRoom = currentInstance.getRoomByUniqueNumber(r);
-					// String str = ":" + currentCode[p][r].toString() + ","
-					// + currentRoom.toString() + ";";
-					// if (!strArrayRoomCourse.contains(str)) {
 
 					iNoOfStudents = currentCode[p][r].getNumberOfStudents();
 
 					currentRoom = currentInstance.getRoomByUniqueNumber(r);
 					iRoomCapacity = currentRoom.getCapacity();
 
-					// strArrayRoomCourse = strArrayRoomCourse + ":"
-					// + currentCode[p][r].toString() + ","
-					// + currentRoom.toString() + ";";
-
 					// Each student above the capacity counts as 1 point of
 					// penalty
 					if (iNoOfStudents > iRoomCapacity) {
 						iCost = iCost + iNoOfStudents - iRoomCapacity;
 					}
-
-					// There are no more courses in the same period but
-					// different room
-					// break;
-					// }
 				}
 			}
-
 		}
 
 		return iCost;
 	}
 
+	/**
+	 * Method to calculate the penalty on min working days. This method is based
+	 * on whole solution and not the curriculum
+	 * 
+	 * @param solution
+	 *            A solution instance is send for evaluation
+	 * @return iCost Returns the penalty value
+	 */
 	private int costsOnMinWorkingDays(final ISolution solution) {
+
 		int iCost = 0;
 		int p, r, iWorkingDays;
 		int iMinWorkingDays, iPeriodPerDay;
 		Set<ICourse> courses;
-		// String ArrayCourse[];
 		ICourse Course;
 		Iterator<ICourse> it;
 
@@ -606,11 +530,23 @@ public class Evaluator implements IEvaluatorService {
 		return iCost;
 	}
 
+	/**
+	 * Method to calculate the penalty on curriculum compactness. Need one more
+	 * parameter to make it curriculum specific
+	 * 
+	 * @param solution
+	 *            A solution instance is send for evaluation
+	 * @param curriculum
+	 *            The curriculum to check penalty for
+	 * 
+	 * @return iCost Returns the penalty value of both soft constrains
+	 */
+
 	private int costsOnCurriculumCompactness(final ISolution solution,
 			final ICurriculum curriculum) {
+
 		int iCost = 0;
 		int p, r, d, ppd;
-		// int iPreviousPeriod;
 		Set<ICourse> courses;
 
 		currentInstance = solution.getProblemInstance();
@@ -625,8 +561,8 @@ public class Evaluator implements IEvaluatorService {
 		p = 0;
 		// Make the looping for each day
 		while (d <= currentInstance.getNumberOfDays()) {
-			// iPreviousPeriod = -1;
 			int c = 0;
+			// put default value in the array
 			for (int i = 0; i < ppd; i++) {
 				periodArray[i] = -1;
 			}
@@ -634,42 +570,19 @@ public class Evaluator implements IEvaluatorService {
 				for (r = 0; r < currentInstance.getNumberOfRooms(); r++) {
 					// Assuming the value is null if no course is assigned
 					// the course should be contained in the curriculum
-					/*
-					 * if ((currentCode[p][r] != null) &&
-					 * courses.contains(currentCode[p][r])) { if
-					 * ((iPreviousPeriod == -1)) { iPreviousPeriod = p; // there
-					 * should not be another course of same // curriculum in
-					 * different room in the same period // it should also not
-					 * go with next if statement in // first run break; //
-					 * continue; }
-					 * 
-					 * // Check if not new day // if (p %
-					 * currentInstance.getPeriodsPerDay()!= 0) { else if
-					 * ((iPreviousPeriod != -1)) { // Check if the previous
-					 * period course is of the // same curriculum // if
-					 * (!courses.contains(currentCode[p - // 1][iPreviousRoom]))
-					 * // { if (iPreviousPeriod != (p - 1)) { iCost += 2; } //
-					 * Penalty for Room // currentRoom = //
-					 * currentInstance.getRoomByUniqueNumber(r); // previousRoom
-					 * = //
-					 * currentInstance.getRoomByUniqueNumber(iPreviousRoom); //
-					 * if (currentRoom.getId() != previousRoom.getId()) // {
-					 * 
-					 * // Assign the new previous Room and Period values
-					 * 
-					 * iPreviousPeriod = p; } // there should not be another
-					 * course of same // curriculum in different room in the
-					 * same period break; }
-					 */
-					// Get the periods in array to evaluate
 					if ((currentCode[p][r] != null)
 							&& courses.contains(currentCode[p][r])) {
+						// Get the periods into the array to evaluate
 						periodArray[c] = p;
 						break;
 					}
 				}
 				c++;
 			}
+			// Parse through the array for each condition:
+			// 1. First period, then 2nd must be of same curriculum
+			// 2. Last period, then 2nd last period must be from same curriculum
+			// 3. Periods before and after must be of same curriculum
 			for (int i = 0; i < ppd; i++) {
 				if (periodArray[i] != -1) {
 					if (i == 0) {
@@ -693,6 +606,13 @@ public class Evaluator implements IEvaluatorService {
 		return iCost;
 	}
 
+	/**
+	 * Method to calculate the penalty for room stability for entire solution
+	 * 
+	 * @param solution
+	 *            A solution instance is send for evaluation
+	 * @return iCost Returns the penalty value of both soft constrains
+	 */
 	private int costsOnRoomStability(final ISolution solution) {
 		int iCost = 0;
 		int p, r, rooms;
@@ -706,7 +626,7 @@ public class Evaluator implements IEvaluatorService {
 		rooms = currentInstance.getNumberOfRooms();
 		final int roomArray[] = new int[rooms];
 
-		// Initial value of day and period
+		// Iterate thru each course of problem instance
 		it = courses.iterator();
 		while (it.hasNext()) {
 			int c = 0;
@@ -718,44 +638,15 @@ public class Evaluator implements IEvaluatorService {
 			for (p = 0; p < currentInstance.getNumberOfPeriods(); p++) {
 				for (r = 0; r < currentInstance.getNumberOfRooms(); r++) {
 					// Assuming the value is null if no course is assigned
-					// the course should be contained in the curriculum
+					// the course should be contained in the problem instance
 					if ((currentCode[p][r] != null)
 							&& (currentCode[p][r] == Course)) {
-						// if (iPreviousRoom == -1) {
-						// iPreviousRoom = r;
-						// there should not be another course of same
-						// curriculum in different room in the same period
-						// it should also not go with next if statement in
-						// first run
-						// break;
-						// }
-
-						// Check if not new day
-						// if (p % currentInstance.getPeriodsPerDay()!= 0) {
-						// if (iPreviousRoom != -1) {
-						// Check if the previous period course is of the
-						// same curriculum
-						// if (!courses.contains(currentCode[p -
-						// 1][iPreviousRoom]))
-						// {
-
-						// Penalty for Room
-						// currentRoom =
-						// currentInstance.getRoomByUniqueNumber(r);
-						// previousRoom =
-						// currentInstance.getRoomByUniqueNumber(iPreviousRoom);
-						// if (currentRoom.getId() != previousRoom.getId())
-						// {
-						// if (r != iPreviousRoom) {
-						// iCost++;
-						// }
-						// Assign the new previous Room and Period values
-						// iPreviousRoom = r;
-						// }
 						if (c == 0) {
 							roomArray[c] = r;
 							c++;
 						} else {
+							// if room is found in array don't do not add
+							// penality again
 							boolean bRoomFromList = false;
 							for (int i = 0; i < c; i++) {
 								if (roomArray[i] == r) {
@@ -763,6 +654,7 @@ public class Evaluator implements IEvaluatorService {
 									break;
 								}
 							}
+							// add rooms to array that are not already in list
 							if (!bRoomFromList) {
 								roomArray[c] = r;
 								c++;
@@ -776,6 +668,8 @@ public class Evaluator implements IEvaluatorService {
 				}
 
 			}
+			// c starts with 0 but is incremented at the last
+			// reduce 1 to avoid extra penalty for first room ;-)
 			iCost += (c - 1);
 		}
 		return iCost;
