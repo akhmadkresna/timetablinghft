@@ -17,8 +17,6 @@ import de.hft.timetabling.services.ServiceLocator;
 
 public final class NewEvaluator {
 
-	private EvaluationResult result;
-
 	public void evaluateSolutions() {
 		final ISolutionTableService table = ServiceLocator.getInstance()
 				.getSolutionTableService();
@@ -26,14 +24,14 @@ public final class NewEvaluator {
 		int i = 0;
 
 		for (final ISolution solution : table.getNotVotedSolutions()) {
-			final EvaluationResult result = evaluateSolution(solution);
+			final SolutionEvaluation result = evaluateSolution(solution);
 			table.voteForSolution(i++, result.getTotalPenalty(), result
 					.getTotalFairness());
 		}
 	}
 
-	public EvaluationResult evaluateSolution(final ISolution newSolution) {
-		final EvaluationResult result = new EvaluationResult(newSolution);
+	public SolutionEvaluation evaluateSolution(final ISolution newSolution) {
+		final SolutionEvaluation result = new SolutionEvaluation(newSolution);
 
 		calcCurCompPen(newSolution, result);
 		calcMinWorkDaysPen(newSolution, result);
@@ -44,7 +42,7 @@ public final class NewEvaluator {
 		return result;
 	}
 
-	public int evaluateFairness(final EvaluationResult result) {
+	public int evaluateFairness(final SolutionEvaluation result) {
 		int iFairnessCost = 0, maxAvgDiff, minAvgDiff;
 		int maxPenalty = -1, minPenalty = -1, avgPenalty = -1, penaltySum = 0;
 
@@ -79,7 +77,8 @@ public final class NewEvaluator {
 		return iFairnessCost;
 	}
 
-	private void calcRoomCapPen(final ISolution sol, final EvaluationResult res) {
+	private void calcRoomCapPen(final ISolution sol,
+			final SolutionEvaluation res) {
 		final ICourse[][] schedule = sol.getCoding();
 		final IProblemInstance instance = sol.getProblemInstance();
 
@@ -105,7 +104,8 @@ public final class NewEvaluator {
 		}
 	}
 
-	private void calcRoomStabPen(final ISolution sol, final EvaluationResult res) {
+	private void calcRoomStabPen(final ISolution sol,
+			final SolutionEvaluation res) {
 		final ICourse[][] schedule = sol.getCoding();
 		final HashMap<ICourse, Set<Integer>> periods = new HashMap<ICourse, Set<Integer>>();
 
@@ -137,7 +137,7 @@ public final class NewEvaluator {
 	}
 
 	private void calcMinWorkDaysPen(final ISolution sol,
-			final EvaluationResult res) {
+			final SolutionEvaluation res) {
 		final IProblemInstance instance = sol.getProblemInstance();
 		final ICourse[][] schedule = sol.getCoding();
 		final Map<ICourse, Set<Integer>> workingDaysPerCourse = new HashMap<ICourse, Set<Integer>>();
@@ -176,7 +176,8 @@ public final class NewEvaluator {
 		}
 	}
 
-	private void calcCurCompPen(final ISolution sol, final EvaluationResult res) {
+	private void calcCurCompPen(final ISolution sol,
+			final SolutionEvaluation res) {
 		final IProblemInstance instance = sol.getProblemInstance();
 		final ICourse[][] schedule = sol.getCoding();
 		final Map<ICurriculum, List<Integer>> curriculaInPeriods = new HashMap<ICurriculum, List<Integer>>();

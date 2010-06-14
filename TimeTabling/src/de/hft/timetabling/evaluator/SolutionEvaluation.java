@@ -8,7 +8,7 @@ import java.util.Map;
 import de.hft.timetabling.common.ICurriculum;
 import de.hft.timetabling.common.ISolution;
 
-public class EvaluationResult {
+public class SolutionEvaluation {
 
 	private final ISolution solution;
 
@@ -32,7 +32,7 @@ public class EvaluationResult {
 
 	private final Map<ICurriculum, Integer> specificRoomStabilityPenalty = new HashMap<ICurriculum, Integer>();
 
-	public EvaluationResult(final ISolution solution) {
+	public SolutionEvaluation(final ISolution solution) {
 		this.solution = solution;
 
 		for (final ICurriculum curriculum : solution.getProblemInstance()

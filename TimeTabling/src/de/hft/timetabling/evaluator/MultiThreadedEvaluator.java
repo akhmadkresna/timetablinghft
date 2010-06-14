@@ -28,7 +28,7 @@ public class MultiThreadedEvaluator {
 		}
 	}
 
-	public EvaluationResult evaluateSolution(final ISolution newSolution) {
+	public SolutionEvaluation evaluateSolution(final ISolution newSolution) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -42,12 +42,12 @@ public class MultiThreadedEvaluator {
 		}
 
 		try {
-			final List<Future<EvaluationResult>> futureList = exec
+			final List<Future<SolutionEvaluation>> futureList = exec
 					.invokeAll(taskGroup.subList(0, unvotedSolutions.size()));
 
 			int i = 0;
-			for (final Future<EvaluationResult> future : futureList) {
-				final EvaluationResult result = future.get();
+			for (final Future<SolutionEvaluation> future : futureList) {
+				final SolutionEvaluation result = future.get();
 				solutionTable.voteForSolution(i++, result.getTotalPenalty(),
 						result.getTotalFairness());
 			}
@@ -62,19 +62,14 @@ public class MultiThreadedEvaluator {
 
 }
 
-final class EvaluatorTask implements Callable<EvaluationResult> {
-
-	private static int EVAL_ID = 0;
+final class EvaluatorTask implements Callable<SolutionEvaluation> {
 
 	private ISolution solution;
 
 	private final NewEvaluator evaluator;
 
-	private final int id;
-
 	public EvaluatorTask(final NewEvaluator evaluator) {
 		this.evaluator = evaluator;
-		id = EVAL_ID++;
 	}
 
 	public void setSolution(final ISolution solution) {
@@ -82,8 +77,7 @@ final class EvaluatorTask implements Callable<EvaluationResult> {
 	}
 
 	@Override
-	public EvaluationResult call() {
-		System.out.println("Eval task " + id);
+	public SolutionEvaluation call() {
 		return evaluator.evaluateSolution(solution);
 	}
 }

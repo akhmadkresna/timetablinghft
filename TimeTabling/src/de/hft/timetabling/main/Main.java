@@ -10,6 +10,7 @@ import java.util.Date;
 import de.hft.timetabling.common.IProblemInstance;
 import de.hft.timetabling.common.ISolution;
 import de.hft.timetabling.evaluator.Evaluator;
+import de.hft.timetabling.evaluator.MultiThreadedEvaluator;
 import de.hft.timetabling.generator.Generator;
 import de.hft.timetabling.generator.MultiThreadedGenerator;
 import de.hft.timetabling.genetist.CrazyGenetist;
@@ -31,6 +32,10 @@ import de.hft.timetabling.writer.Writer;
  * @author Alexander Weickmann
  */
 public final class Main {
+
+	// band-aid solution since interfaces of both evaluators are incompatible
+	private static final boolean NEW_EVALUATOR = false;
+	private static MultiThreadedEvaluator evaluator = null;
 
 	public static int generatorSuccess = 0;
 
@@ -236,7 +241,16 @@ public final class Main {
 
 	private static void callEvaluator() {
 		final long startMillis = System.currentTimeMillis();
-		ServiceLocator.getInstance().getEvaluatorService().evaluateSolutions();
+		if (NEW_EVALUATOR) {
+			if (evaluator == null) {
+				evaluator = new MultiThreadedEvaluator();
+			}
+			evaluator.evaluateSolutions();
+		} else {
+			ServiceLocator.getInstance().getEvaluatorService()
+					.evaluateSolutions();
+		}
+
 		final long time = System.currentTimeMillis() - startMillis;
 		System.out.println("EVALUATOR: Finished after " + time + "ms.");
 	}
