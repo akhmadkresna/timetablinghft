@@ -1,0 +1,1 @@
+This project tries to solve the curriculum-based time tabling problem by using an evolutionary algorithm. This project is done by students of the HFT Stuttgart in context of the course Data Structures and Algorithms.
